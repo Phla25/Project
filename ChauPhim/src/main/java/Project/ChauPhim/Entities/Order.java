@@ -1,6 +1,6 @@
 package Project.ChauPhim.Entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ public class Order {
 	private Long movieID;
 	
 	@Column(name = "date" , nullable = false)
-	private Date date;
+	private LocalDate date;
 	
 	@Column(name = "quantity", nullable = false)
 	private int quantity;
@@ -59,11 +59,11 @@ public class Order {
 		this.movieID = movieID;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 

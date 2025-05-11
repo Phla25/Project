@@ -1,8 +1,10 @@
 package Project.ChauPhim.Models;
 
+import java.time.LocalDate;
+
 public abstract class Person {
     protected String name;
-    protected String dob;
+    protected LocalDate dob;
     protected String gender;
     protected String nationality;
     protected String imageURL;
@@ -12,7 +14,7 @@ public abstract class Person {
         this.imageURL = imageURL;
     }
     // CÁC TRƯỜNG KHÔNG BẮT BUỘC NHẬP MÀ KHÔNG CÓ DỮ LIỆU THÌ MẶC ĐỊNH LÀ NULL
-	public Person(String name, String dob, String gender, String nationality, String imageURL, String bio) {
+	public Person(String name, LocalDate dob, String gender, String nationality, String imageURL, String bio) {
 		super();
 		this.name = name;	// BẮT BUỘC PHẢI NHẬP
 		this.dob = dob;
@@ -28,10 +30,10 @@ public abstract class Person {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getDob() {
+	public LocalDate getDob() {
 		return dob;
 	}
-	public void setDob(String dob) {
+	public void setDob(LocalDate dob) {
 		this.dob = dob;
 	}
 	public String getGender() {

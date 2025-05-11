@@ -1,7 +1,6 @@
 package Project.ChauPhim.Entities;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,7 +37,7 @@ public class Customer {
 	private String nationality;
 	
 	@Column(name = "dob", nullable = false)
-	private Date dob;
+	private LocalDate dob;
 	
 	@Column(name = "rank", nullable = false)
 	private int rank;
@@ -99,11 +98,11 @@ public class Customer {
 		this.nationality = nationality;
 	}
 
-	public Date getDob() {
+	public LocalDate getDob() {
 		return dob;
 	}
 
-	public void setDob(Date dob) {
+	public void setDob(LocalDate dob) {
 		this.dob = dob;
 	}
 

@@ -1,6 +1,6 @@
 package Project.ChauPhim.Entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +21,7 @@ public class Cart {
 	private Long customerID;
 	
 	@Column(name = "date", nullable = false)
-	private Date date;
+	private LocalDate date;
 	
 	@Column(name = "status", nullable = false)
 	private int status;
@@ -42,11 +42,11 @@ public class Cart {
 		this.customerID = customerID;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 

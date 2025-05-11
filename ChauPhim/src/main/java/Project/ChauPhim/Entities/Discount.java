@@ -1,6 +1,6 @@
 package Project.ChauPhim.Entities;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,10 +26,10 @@ public class Discount {
 	private int percentage;
 	
 	@Column(name = "releaseDate", nullable = false)
-	private Date releaseDate;
+	private LocalDate releaseDate;
 	
 	@Column(name = "expireDate", nullable = false)
-	private Date expireDate;
+	private LocalDate expireDate;
 
 	public Long getDiscountID() {
 		return discountID;
@@ -55,19 +55,19 @@ public class Discount {
 		this.percentage = percentage;
 	}
 
-	public Date getReleaseDate() {
+	public LocalDate getReleaseDate() {
 		return releaseDate;
 	}
 
-	public void setReleaseDate(Date releaseDate) {
+	public void setReleaseDate(LocalDate releaseDate) {
 		this.releaseDate = releaseDate;
 	}
 
-	public Date getExpireDate() {
+	public LocalDate getExpireDate() {
 		return expireDate;
 	}
 
-	public void setExpireDate(Date expireDate) {
+	public void setExpireDate(LocalDate expireDate) {
 		this.expireDate = expireDate;
 	}
 	

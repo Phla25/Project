@@ -1,7 +1,6 @@
 package Project.ChauPhim.Entities;
 
-import java.util.Date;
-
+import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +25,7 @@ public class Movie {
 	private String posterImageURL;
 	
 	@Column(name = "releaseDate", nullable = false)
-	private Date releaseDate;
+	private LocalDate releaseDate;
 	
 	@Column(name = "genre", length = 32, nullable = true)
 	private String genre;
@@ -67,11 +66,11 @@ public class Movie {
 		this.posterImageURL = posterImageURL;
 	}
 
-	public Date getReleaseDate() {
+	public LocalDate getReleaseDate() {
 		return releaseDate;
 	}
 
-	public void setReleaseDate(Date releaseDate) {
+	public void setReleaseDate(LocalDate releaseDate) {
 		this.releaseDate = releaseDate;
 	}
 
