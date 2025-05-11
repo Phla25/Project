@@ -15,7 +15,7 @@ import jakarta.persistence.UniqueConstraint;
 		uniqueConstraints = @UniqueConstraint(name = "Actor_imageURL_key", columnNames = "imageURL"))
 public class Actor {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "actorID", nullable = false)
 	private Long actorID;
 	

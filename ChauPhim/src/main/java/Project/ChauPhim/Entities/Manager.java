@@ -13,7 +13,7 @@ import jakarta.persistence.UniqueConstraint;
 		uniqueConstraints = @UniqueConstraint(name = "Manager_username_key", columnNames = "username"))
 public class Manager {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "managerID", nullable = false)
 	private Long managerID;
 	

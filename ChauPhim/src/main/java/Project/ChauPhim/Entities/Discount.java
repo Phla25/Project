@@ -15,7 +15,7 @@ import jakarta.persistence.UniqueConstraint;
 		uniqueConstraints = @UniqueConstraint(name = "Discount_name_key", columnNames = "name"))
 public class Discount {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "discountID", nullable = false)
 	private Long discountID;
 	

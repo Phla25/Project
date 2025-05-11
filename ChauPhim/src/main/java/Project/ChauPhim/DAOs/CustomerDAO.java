@@ -19,5 +19,20 @@ public class CustomerDAO {
 		query.setParameter("username", username);
 		return (Customer) query.getSingleResult();
 	}
+
+	public void addCustomer(Customer customer) {
+		// Tạo câu lệnh SQL gốc
+        String sql = "INSERT INTO \"Customer\" (\"username\", \"password\", \"email\", \"name\", \"dob\", \"rank\") VALUES (?, ?, ?, ?, ?, ?)";
+        
+        // Sử dụng createNativeQuery và truyền tham số
+        entityManager.createNativeQuery(sql)
+                     .setParameter(1, customer.getUsername()) // Tham số đầu tiên
+                     .setParameter(2, customer.getPassword()) // Tham số thứ hai
+                     .setParameter(3, customer.getEmail())    // Tham số thứ ba
+                     .setParameter(4, customer.getName())
+                     .setParameter(5, customer.getDob())
+                     .setParameter(6, customer.getRank())
+                     .executeUpdate(); // Thực thi câu lệnh
+	}
 	
 }

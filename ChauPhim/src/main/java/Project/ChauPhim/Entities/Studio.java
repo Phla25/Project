@@ -13,7 +13,7 @@ import jakarta.persistence.UniqueConstraint;
 		uniqueConstraints = @UniqueConstraint(name = "Studio_name_key", columnNames = "name"))
 public class Studio {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "studioID", nullable = false)
 	private Long studioID;
 	

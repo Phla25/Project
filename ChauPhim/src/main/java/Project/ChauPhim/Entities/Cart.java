@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 @Table(name = "Cart")
 public class Cart {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "cartID", nullable = false)
 	private Long cartID;
 	
