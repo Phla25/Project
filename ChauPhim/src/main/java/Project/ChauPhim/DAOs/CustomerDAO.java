@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import Project.ChauPhim.Entities.Customer;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 @Repository
 public class CustomerDAO {
@@ -33,6 +34,17 @@ public class CustomerDAO {
                      .setParameter(5, customer.getDob())
                      .setParameter(6, customer.getRank())
                      .executeUpdate(); // Thực thi câu lệnh
+	}
+
+	@Transactional
+	public void updateEmailAndName(String username, String newEmail, String newName) {
+    String sql = "UPDATE \"Customer\" SET \"email\" = ?, \"name\" = ? WHERE \"username\" = ?";
+	entityManager.createNativeQuery(sql)
+             .setParameter(1, newEmail)
+             .setParameter(2, newName)
+             .setParameter(3, username)
+             .executeUpdate();
+
 	}
 	
 }
