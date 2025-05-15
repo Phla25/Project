@@ -1,10 +1,14 @@
 package Project.ChauPhim.Configs;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,7 +17,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import Project.ChauPhim.Services.CustomCustomerDetailsService;
 import Project.ChauPhim.Services.CustomManagerDetailsService;
 
+
 @Configuration
+@EnableMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     private final CustomManagerDetailsService managerDetailsService;
@@ -29,39 +35,74 @@ public class WebSecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
-                .csrf(csrf -> csrf.disable()) // Chỉ tắt khi thực sự cần
-                .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                        "/sign-in-manager", 
-                        "/sign-in-customer",
-                        "/login-customer",
-                        "/login-manager",
-                        "/css/**", 
-                        "/js/**"
-                    ).permitAll()
-                    .requestMatchers("/customer-profile").hasAnyRole("CUSTOMER", "MANAGER")
-                    .anyRequest().authenticated()
-                )
-                .formLogin(login -> login
-                    .loginPage("/login-customer") // Trang login mặc định
-                    .loginProcessingUrl("/perform-login") // URL xử lý login
-                    .defaultSuccessUrl("/customer-profile", true) // Bắt buộc chuyển hướng
-                    .failureUrl("/login-customer?error=true")
-                    .permitAll()
-                )
-                .logout(logout -> logout
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/login-customer?logout=true")
-                    .permitAll()
-                )
-                .userDetailsService(customerDetailsService); // Sử dụng customer làm mặc định
+    public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/customer/**", "/login-customer", "/sign-in-customer", "/process-login-customer")  // Thêm URL xử lý đăng nhập
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login-customer", "/sign-in-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/customer/**").hasRole("CUSTOMER")  // Chỉ cho phép ROLE_CUSTOMER truy cập
+                .anyRequest().authenticated()
+            )
+            .formLogin(login -> login
+                .loginPage("/login-customer")
+                .loginProcessingUrl("/process-login-customer")  // URL xử lý form đăng nhập
+                .defaultSuccessUrl("/customer/profile", true)   // Chuyển hướng sau khi đăng nhập thành công
+                .failureUrl("/login-customer?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/customer/logout")
+                .logoutSuccessUrl("/login-customer?logout=true")
+                .permitAll()
+            )
+            .authenticationProvider(customerAuthenticationProvider());  // Chỉ định provider cho customer
 
-            return http.build();
-        }
-        // ... (giữ nguyên các bean khác)
+        return http.build();
+    }
+    
+    @Bean
+    public SecurityFilterChain managerSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/manager/**", "/login-manager", "/sign-in-manager")  // Áp dụng cho đường dẫn manager
+            .csrf(csrf -> csrf.disable())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login-manager", "/sign-in-manager", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/manager/**").hasRole("MANAGER")  // Chỉ cho phép ROLE_MANAGER truy cập
+                .anyRequest().authenticated()
+            )
+            .formLogin(login -> login
+                .loginPage("/login-manager")
+                .loginProcessingUrl("/process-login-manager")  // URL xử lý form đăng nhập
+                .defaultSuccessUrl("/manager/dashboard", true) // Chuyển hướng sau khi đăng nhập thành công
+                .failureUrl("/login-manager?error=true")
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/manager/logout")
+                .logoutSuccessUrl("/login-manager?logout=true")
+                .permitAll()
+            )
+            .authenticationProvider(managerAuthenticationProvider());  // Chỉ định provider cho manager
+
+        return http.build();
+    }
+    
+    // Cấu hình cho các đường dẫn công khai
+    @Bean
+    public SecurityFilterChain publicSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/", "/css/**", "/js/**", "/images/**")  // Các đường dẫn công khai
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll()
+            )
+            .csrf(csrf -> csrf.disable());
+
+        return http.build();
+    }
+    
     // AuthenticationProvider cho Manager
     @Bean
     public DaoAuthenticationProvider managerAuthenticationProvider() {
@@ -82,7 +123,13 @@ public class WebSecurityConfig {
 
     // Cấu hình AuthenticationManager
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration,
+            DaoAuthenticationProvider customerAuthenticationProvider,
+            DaoAuthenticationProvider managerAuthenticationProvider
+    ) throws Exception {
+        return new ProviderManager(
+                List.of(customerAuthenticationProvider, managerAuthenticationProvider)
+        );
     }
 }

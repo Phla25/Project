@@ -46,5 +46,6 @@ public class CustomerDAO {
              .setParameter(4, username)
              .executeUpdate();
 	}
-	
+	// viết 1 hàm updateCustomer và update tất cả các field, trường nào bị bỏ trống trong form điền thì không update 
+	// nói chung là d
 }
