@@ -1,6 +1,8 @@
 package Project.ChauPhim.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import Project.ChauPhim.DAOs.CustomerDAO;
 import Project.ChauPhim.Entities.Customer;
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CustomerController {
@@ -22,15 +23,17 @@ public class CustomerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
+    // Hiển thị trang đăng ký
     @GetMapping("/sign-in-customer")
     public String showSignInPage(Model model) {
         model.addAttribute("customer", new Customer());
         return "sign-in-customer";
     }
     
+    // Xử lý đăng ký
     @PostMapping("/sign-in-customer")
     @Transactional
-    public String processRegisterManager(
+    public String processRegisterCustomer(
         @ModelAttribute("customer") Customer customer,
         Model model
     ) {
@@ -44,64 +47,53 @@ public class CustomerController {
         }
     }
 
+    // Hiển thị trang đăng nhập
     @GetMapping("/login-customer")
     public String showLoginPage() {
-        return "login-customer"; // Trả về trang HTML đăng nhập
+        return "login-customer"; 
     }
 
-    // hien tai login xong se redirect vao trang profile
-    @PostMapping("/login-customer") // xac thuc user va mat khau, luu username vao HTTPSession
-    public String processLogin(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
-        try {
-            Customer customer = customerDAO.findByUserName(username);
-            if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
-                session.setAttribute("username", username); // Lưu username vào session
-                return "redirect:/customer-profile";
-            } else {
-                model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
-                return "login-customer";
-            }
-        } catch (Exception e) {
-            model.addAttribute("error", "Lỗi: " + e.getMessage());
-            return "login-customer";
-        }
-    }
-
-
-    // xem thong tin ca nhan
+    // Xem thông tin cá nhân - chỉ cho ROLE_CUSTOMER
     @GetMapping("/customer/profile")
-    public String viewProfile(Model model, HttpSession session) {
-        String username = (String) session.getAttribute("username"); // hoặc từ SecurityContextHolder nếu có
-        if (username != null) {
+    @PreAuthorize("hasRole('CUSTOMER')") // Thêm phân quyền chi tiết nếu cần
+    public String viewProfile(Model model, Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
             Customer customer = customerDAO.findByUserName(username);
+            if (customer == null) {
+                return "redirect:/login-customer";
+            }
             model.addAttribute("customer", customer);
             return "customer-profile";
         } else {
-            return "redirect:/login-customer"; // Nếu không có session, yêu cầu đăng nhập lại
+            return "redirect:/login-customer";
         }
     }
     
-    // cap nhat thong tin ca nhan
+    // Cập nhật thông tin cá nhân - chỉ cho ROLE_CUSTOMER
     @PostMapping("/customer/update")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public String updateCustomerInfo(
         @RequestParam String email,
         @RequestParam String name, 
-        HttpSession session,
+        Authentication authentication,
         Model model
     ) {
-        String username = (String) session.getAttribute("username");
-        if(username != null) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
             try {
                 customerDAO.updateEmailAndName(username, email, name);
-                return "redirect:/customer/profile?success=true"; // redirect voi success flag
+                return "redirect:/customer/profile?success=true"; // redirect với success flag
             }
             catch (Exception e) {
                 model.addAttribute("error", e.getMessage());
+                Customer customer = customerDAO.findByUserName(username);
+                model.addAttribute("customer", customer);
                 return "customer-profile";
             }
         }
         else {
-            return "redirect:/login-customer"; // khong co session thi tra ve trang login cus
+            return "redirect:/login-customer";
         }
     }
 }
