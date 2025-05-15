@@ -6,14 +6,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Act")
+@Table(name = "\"Act\"")
 public class Act {
 	@Id
-	@Column(name = "actorID", nullable = false)
+	@Column(name = "\"actorID\"", nullable = false)
 	private Long actorID;
 	
 	@Id
-	@Column(name = "movieID", nullable = false)
+	@Column(name = "\"movieID\"", nullable = false)
 	private Long movieID;
 	
 	@Column(name = "role", length = 128, nullable = false)

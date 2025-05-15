@@ -9,12 +9,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Studio",
+@Table(name = "\"Studio\"",
 		uniqueConstraints = @UniqueConstraint(name = "Studio_name_key", columnNames = "name"))
 public class Studio {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "studioID", nullable = false)
+	@Column(name = "\"studioID\"", nullable = false)
 	private Long studioID;
 	
 	@Column(name = "name", nullable = false)

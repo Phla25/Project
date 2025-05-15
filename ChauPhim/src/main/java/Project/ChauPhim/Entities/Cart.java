@@ -10,14 +10,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Cart")
+@Table(name = "\"Cart\"")
 public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "cartID", nullable = false)
+	@Column(name = "\"cartID\"", nullable = false)
 	private Long cartID;
 	
-	@Column(name = "customerID", nullable = false)
+	@Column(name = "\"customerID\"", nullable = false)
 	private Long customerID;
 	
 	@Column(name = "date", nullable = false)
