@@ -10,17 +10,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "Orders")
+@Table(name = "\"Orders\"")
 public class Orders {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "orderID", nullable = false)
+	@Column(name = "\"orderID\"", nullable = false)
 	private Long orderID;
 	
-	@Column(name = "customerID", nullable = false)
+	@Column(name = "\"customerID\"", nullable = false)
 	private Long customerID;
 	
-	@Column(name = "movieID", nullable = false)
+	@Column(name = "\"movieID\"", nullable = false)
 	private Long movieID;
 	
 	@Column(name = "date" , nullable = false)
@@ -32,7 +32,7 @@ public class Orders {
 	@Column(name = "rate", nullable = true)
 	private int rate;
 	
-	@Column(name = "cartID", nullable = true)
+	@Column(name = "\"cartID\"", nullable = true)
 	private Long cartID;
 
 	public Long getOrderID() {

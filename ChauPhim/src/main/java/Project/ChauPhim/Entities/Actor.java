@@ -11,18 +11,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Actor",
+@Table(name = "\"Actor\"",
 		uniqueConstraints = @UniqueConstraint(name = "Actor_imageURL_key", columnNames = "imageURL"))
 public class Actor {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "actorID", nullable = false)
+	@Column(name = "\"actorID\"", nullable = false)
 	private Long actorID;
 	
 	@Column(name = "name", length = 128, nullable = false)
 	private String name;
 	
-	@Column(name = "imageURL", length = 256, nullable = false)
+	@Column(name = "\"imageURL\"", length = 256, nullable = false)
 	private String imageURL;
 	
 	@Column(name = "gender", length = 10, nullable = true)

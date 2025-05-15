@@ -11,12 +11,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Discount",
+@Table(name = "\"Discount\"",
 		uniqueConstraints = @UniqueConstraint(name = "Discount_name_key", columnNames = "name"))
 public class Discount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "discountID", nullable = false)
+	@Column(name = "\"discountID\"", nullable = false)
 	private Long discountID;
 	
 	@Column(name = "name", length = 128, nullable = false)
@@ -25,10 +25,10 @@ public class Discount {
 	@Column(name = "percentage", nullable = false)
 	private int percentage;
 	
-	@Column(name = "releaseDate", nullable = false)
+	@Column(name = "\"releaseDate\"", nullable = false)
 	private LocalDate releaseDate;
 	
-	@Column(name = "expireDate", nullable = false)
+	@Column(name = "\"expireDate\"", nullable = false)
 	private LocalDate expireDate;
 
 	public Long getDiscountID() {

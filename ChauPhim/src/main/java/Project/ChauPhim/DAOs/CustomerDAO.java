@@ -37,14 +37,14 @@ public class CustomerDAO {
 	}
 
 	@Transactional
-	public void updateEmailAndName(String username, String newEmail, String newName) {
-    String sql = "UPDATE \"Customer\" SET \"email\" = ?, \"name\" = ? WHERE \"username\" = ?";
+	public void updateCustomer(String username, String newEmail, String newName, String newUsername) {
+    String sql = "UPDATE \"Customer\" SET username = ? \"email\" = ?, \"name\" = ? WHERE \"username\" = ?";
 	entityManager.createNativeQuery(sql)
-             .setParameter(1, newEmail)
-             .setParameter(2, newName)
-             .setParameter(3, username)
+             .setParameter(1, newUsername)
+             .setParameter(2, newEmail)
+             .setParameter(3, newName)
+             .setParameter(4, username)
              .executeUpdate();
-
 	}
 	
 }

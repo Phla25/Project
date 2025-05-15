@@ -31,25 +31,37 @@ public class WebSecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/sign-in-manager", "/sign-in-customer", "/css/**", "/js/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .formLogin(login -> login
-                .loginPage("/login-manager")
-                .loginPage("/login-customer")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessHandler(new CustomLogoutSuccessHandler()) // Sử dụng handler tùy chỉnh
-                .permitAll()
-            );
+            http
+                .csrf(csrf -> csrf.disable()) // Chỉ tắt khi thực sự cần
+                .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(
+                        "/sign-in-manager", 
+                        "/sign-in-customer",
+                        "/login-customer",
+                        "/login-manager",
+                        "/css/**", 
+                        "/js/**"
+                    ).permitAll()
+                    .requestMatchers("/customer-profile").hasAnyRole("CUSTOMER", "MANAGER")
+                    .anyRequest().authenticated()
+                )
+                .formLogin(login -> login
+                    .loginPage("/login-customer") // Trang login mặc định
+                    .loginProcessingUrl("/perform-login") // URL xử lý login
+                    .defaultSuccessUrl("/customer-profile", true) // Bắt buộc chuyển hướng
+                    .failureUrl("/login-customer?error=true")
+                    .permitAll()
+                )
+                .logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login-customer?logout=true")
+                    .permitAll()
+                )
+                .userDetailsService(customerDetailsService); // Sử dụng customer làm mặc định
 
-        return http.build();
-    }
+            return http.build();
+        }
+        // ... (giữ nguyên các bean khác)
     // AuthenticationProvider cho Manager
     @Bean
     public DaoAuthenticationProvider managerAuthenticationProvider() {
