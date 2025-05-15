@@ -1,5 +1,7 @@
 package Project.ChauPhim.Controllers;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -11,9 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import Project.ChauPhim.DAOs.CustomerDAO;
 import Project.ChauPhim.Entities.Customer;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class CustomerController {
@@ -23,17 +27,15 @@ public class CustomerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    // Hiển thị trang đăng ký
     @GetMapping("/sign-in-customer")
     public String showSignInPage(Model model) {
         model.addAttribute("customer", new Customer());
         return "sign-in-customer";
     }
     
-    // Xử lý đăng ký
     @PostMapping("/sign-in-customer")
     @Transactional
-    public String processRegisterCustomer(
+    public String processRegisterManager(
         @ModelAttribute("customer") Customer customer,
         Model model
     ) {
@@ -47,46 +49,74 @@ public class CustomerController {
         }
     }
 
-    // Hiển thị trang đăng nhập
     @GetMapping("/login-customer")
     public String showLoginPage() {
         return "login-customer"; 
     }
 
-    // Xem thông tin cá nhân - chỉ cho ROLE_CUSTOMER
-    @GetMapping("/customer/profile")
-    @PreAuthorize("hasRole('CUSTOMER')") // Thêm phân quyền chi tiết nếu cần
-    public String viewProfile(Model model, Authentication authentication) {
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            Customer customer = customerDAO.findByUserName(username);
-            if (customer == null) {
-                return "redirect:/login-customer";
-            }
-            model.addAttribute("customer", customer);
-            return "customer-profile";
+    // hien tai login xong se redirect vao trang profile
+    @PostMapping("/login-customer")
+    public String processLogin(@RequestParam String username, 
+                           @RequestParam String password, 
+                           Model model) {
+    try {
+        Customer customer = customerDAO.findByUserName(username);
+        if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
+            // ✅ KHÔNG cần session.setAttribute nữa
+            System.out.println("Đăng nhập thành công!");
+            return "redirect:/customer/profile"; // Chuyển sang controller hiển thị profile
         } else {
-            return "redirect:/login-customer";
+            model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
+            return "login-customer";
         }
+    } catch (Exception e) {
+        model.addAttribute("error", "Lỗi: " + e.getMessage());
+        return "login-customer";
     }
+}
+
+    // xem thong tin ca nhan
+    @GetMapping("/customer/profile")
+    public String viewProfile(Model model, Principal principal) {
+    if (principal != null) {
+        String username = principal.getName();
+        System.out.println("Username từ Principal: " + username);
+        
+        Customer customer = customerDAO.findByUserName(username);
+        model.addAttribute("customer", customer);
+        return "customer-profile";
+    } else {
+        return "redirect:/login-customer";
+    }
+}
     
-    // Cập nhật thông tin cá nhân - chỉ cho ROLE_CUSTOMER
     @PostMapping("/customer/update")
     @PreAuthorize("hasRole('CUSTOMER')")
     public String updateCustomerInfo(
-        @RequestParam String email,
-        @RequestParam String name, 
+        @ModelAttribute("customer") Customer formCustomer,
         Authentication authentication,
+        RedirectAttributes redirectAttributes,
         Model model
     ) {
         if (authentication != null && authentication.isAuthenticated()) {
             String username = authentication.getName();
             try {
-                customerDAO.updateEmailAndName(username, email, name);
-                return "redirect:/customer/profile?success=true"; // redirect với success flag
+                // Cập nhật thông tin từ form
+                customerDAO.updateCustomer(
+                    username, 
+                    formCustomer.getEmail(), 
+                    formCustomer.getName(),
+                    formCustomer.getGender(),
+                    formCustomer.getNationality(),
+                    formCustomer.getDob()
+                );
+                
+                redirectAttributes.addFlashAttribute("successMessage", "Thông tin đã được cập nhật thành công!");
+                return "redirect:/customer/profile"; 
             }
             catch (Exception e) {
                 model.addAttribute("error", e.getMessage());
+                // Lấy lại thông tin customer từ DB để hiển thị
                 Customer customer = customerDAO.findByUserName(username);
                 model.addAttribute("customer", customer);
                 return "customer-profile";
