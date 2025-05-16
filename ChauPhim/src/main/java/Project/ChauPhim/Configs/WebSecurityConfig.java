@@ -10,6 +10,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -39,27 +40,26 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/customer/**", "/login-customer", "/sign-in-customer", "/process-login-customer")  // Thêm URL xử lý đăng nhập
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login-customer", "/sign-in-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/customer/**").hasRole("CUSTOMER")  // Chỉ cho phép ROLE_CUSTOMER truy cập
-                .anyRequest().authenticated()
-            )
-            .formLogin(login -> login
-                .loginPage("/login-customer")
-                .loginProcessingUrl("/process-login-customer")  // URL xử lý form đăng nhập
-                .defaultSuccessUrl("/customer/profile", true)   // Chuyển hướng sau khi đăng nhập thành công
-                .failureUrl("/login-customer?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/customer/logout")
-                .logoutSuccessUrl("/login-customer?logout=true")
-                .permitAll()
-            )
-            .authenticationProvider(customerAuthenticationProvider());  // Chỉ định provider cho customer
-
+        .securityMatcher("/customer/**", "/login-customer", "/sign-in-customer", "/process-login-customer", "/customer-profile")
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login-customer", "/sign-in-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
+            .requestMatchers("/customer/**", "/customer-profile").hasRole("CUSTOMER")
+            .anyRequest().authenticated()
+        )
+        .formLogin(login -> login
+            .loginPage("/login-customer")
+            .loginProcessingUrl("/process-login-customer")
+            .defaultSuccessUrl("/customer/profile", true)  // Sửa thành đường dẫn /customer-profile thay vì /customer/profile
+            .failureUrl("/login-customer?error=true")
+            .permitAll()
+        )
+        .logout(logout -> logout
+            .logoutUrl("/customer/logout")
+            .logoutSuccessUrl("/login-customer?logout=true")
+            .permitAll()
+        )
+        .authenticationProvider(customerAuthenticationProvider());
         return http.build();
     }
     

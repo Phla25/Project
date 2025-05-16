@@ -1,5 +1,9 @@
 package Project.ChauPhim.DAOs;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -36,16 +40,63 @@ public class CustomerDAO {
                      .executeUpdate(); // Thực thi câu lệnh
 	}
 
-	@Transactional
-	public void updateCustomer(String username, String newEmail, String newName, String newUsername) {
-    String sql = "UPDATE \"Customer\" SET username = ? \"email\" = ?, \"name\" = ? WHERE \"username\" = ?";
-	entityManager.createNativeQuery(sql)
-             .setParameter(1, newUsername)
-             .setParameter(2, newEmail)
-             .setParameter(3, newName)
-             .setParameter(4, username)
-             .executeUpdate();
-	}
+	 @Transactional
+    public void updateCustomer(String username, String email, String name, 
+                              String gender, String nationality, LocalDate dob) {
+        
+        // Tạo câu lệnh SQL động dựa trên các trường không null
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE \"Customer\" SET ");
+        
+        // Danh sách tham số và giá trị sẽ được sử dụng
+        List<String> updateFields = new ArrayList<>();
+        List<Object> paramValues = new ArrayList<>();
+        
+        // Kiểm tra và thêm các trường cần cập nhật
+        if (email != null && !email.trim().isEmpty()) {
+            updateFields.add("\"email\" = ?");
+            paramValues.add(email);
+        }
+        
+        if (name != null && !name.trim().isEmpty()) {
+            updateFields.add("\"name\" = ?");
+            paramValues.add(name);
+        }
+        
+        if (gender != null && !gender.trim().isEmpty()) {
+            updateFields.add("\"gender\" = ?");
+            paramValues.add(gender);
+        }
+        
+        if (nationality != null && !nationality.trim().isEmpty()) {
+            updateFields.add("\"nationality\" = ?");
+            paramValues.add(nationality);
+        }
+        
+        if (dob != null) {
+            updateFields.add("\"dob\" = ?");
+            paramValues.add(dob);
+        }
+        
+        // Nếu không có trường nào cần cập nhật, trả về
+        if (updateFields.isEmpty()) {
+            return;
+        }
+        
+        // Hoàn thành câu lệnh SQL
+        sqlBuilder.append(String.join(", ", updateFields));
+        sqlBuilder.append(" WHERE \"username\" = ?");
+        paramValues.add(username);
+        
+        // Tạo câu truy vấn và thiết lập tham số
+        Query query = entityManager.createNativeQuery(sqlBuilder.toString());
+        
+        // Thiết lập các tham số
+        for (int i = 0; i < paramValues.size(); i++) {
+            query.setParameter(i + 1, paramValues.get(i));
+        }
+        
+        // Thực thi câu truy vấn
+        query.executeUpdate();
+    }
 	// viết 1 hàm updateCustomer và update tất cả các field, trường nào bị bỏ trống trong form điền thì không update 
-	// nói chung là d
 }
