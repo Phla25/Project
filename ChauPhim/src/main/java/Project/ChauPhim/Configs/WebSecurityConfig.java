@@ -50,7 +50,7 @@ public class WebSecurityConfig {
         .formLogin(login -> login
             .loginPage("/login-customer")
             .loginProcessingUrl("/process-login-customer")
-            .defaultSuccessUrl("/customer/profile", true)  // Sửa thành đường dẫn /customer-profile thay vì /customer/profile
+            .defaultSuccessUrl("/customer/profile", true)  // Sửa thành đường dẫn /customer/profile thay vì /customer-profile
             .failureUrl("/login-customer?error=true")
             .permitAll()
         )
