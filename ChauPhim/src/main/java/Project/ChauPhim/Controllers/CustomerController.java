@@ -1,5 +1,6 @@
 package Project.ChauPhim.Controllers;
 
+import java.math.BigDecimal;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,4 +126,79 @@ public class CustomerController {
             return "redirect:/login-customer";
         }
     }
+
+    @GetMapping("/customer/membership/register")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public String showMembershipRegistration(Authentication authentication, Model model) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            System.out.println("Username: " + username);
+            try {
+                // Lấy số dư hiện tại
+                BigDecimal currentBalance = customerDAO.getCustomerBalance(username);
+                model.addAttribute("currentBalance", currentBalance);
+
+                return "membership-registration";
+            } catch (Exception e) {
+                model.addAttribute("error", "Không thể lấy thông tin tài khoản: " + e.getMessage());
+                return "membership-registration";
+            }
+        } else {
+            return "redirect:/login-customer";
+        }
+    }
+
+    // Sau này endpoint này sẽ xử lý việc nâng cấp rank
+    @PostMapping("/customer/membership/upgrade")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public String upgradeMembership(
+        @RequestParam("membershipType") int membershipType,
+        Authentication authentication, 
+        RedirectAttributes redirectAttributes) {
+    if (authentication != null && authentication.isAuthenticated()) {
+        String username = authentication.getName();
+        try {
+            // Kiểm tra membershipType hợp lệ (1: vàng, 2: kim cương)
+            if (membershipType != 1 && membershipType != 2) {
+                redirectAttributes.addFlashAttribute("error", "Loại hội viên không hợp lệ");
+                return "redirect:/customer/membership/register";
+            }
+            
+            // Định nghĩa phí hội viên theo cấp bậc
+            BigDecimal goldFee = new BigDecimal("200"); 
+            BigDecimal diamondFee = new BigDecimal("500"); 
+            
+            BigDecimal membershipFee = membershipType == 1 ? goldFee : diamondFee;
+            
+            // Lấy số dư hiện tại
+            BigDecimal currentBalance = customerDAO.getCustomerBalance(username);
+            
+            // Kiểm tra số dư có đủ không
+            if (currentBalance.compareTo(membershipFee) < 0) {
+                redirectAttributes.addFlashAttribute("error", 
+                    "Số dư không đủ để nâng cấp hội viên. Cần tối thiểu " + 
+                    membershipFee + " VND để nâng cấp.");
+                return "redirect:/customer/membership/register";
+            }
+            
+            // Trừ tiền từ số dư
+            BigDecimal newBalance = currentBalance.subtract(membershipFee);
+            customerDAO.updateBalance(username, newBalance);
+            
+            customerDAO.updateRank(username, membershipType);
+            
+            String membershipName = membershipType == 1 ? "Vàng" : "Kim Cương";
+            redirectAttributes.addFlashAttribute("successMessage", 
+                "Chúc mừng! Bạn đã trở thành hội viên " + membershipName + 
+                ". Số dư hiện tại: " + newBalance + " $");
+            
+            return "redirect:/customer/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể nâng cấp tài khoản: " + e.getMessage());
+            return "redirect:/customer/membership/register";
+        }
+    } else {
+        return "redirect:/login-customer";
+    }
+}
 }

@@ -1,5 +1,6 @@
 package Project.ChauPhim.DAOs;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class CustomerDAO {
                      .executeUpdate(); // Thực thi câu lệnh
 	}
 
-	 @Transactional
+	@Transactional
     public void updateCustomer(String username, String email, String name, 
                               String gender, String nationality, LocalDate dob) {
         
@@ -99,4 +100,70 @@ public class CustomerDAO {
         query.executeUpdate();
     }
 	// viết 1 hàm updateCustomer và update tất cả các field, trường nào bị bỏ trống trong form điền thì không update 
+    
+    @Transactional
+    public void updateRank(String username, int rank) {
+        if (username == null || rank != 0 && rank != 1 && rank != 2) {
+        throw new IllegalArgumentException("Username và rank không hợp lệ!");
+    }
+    
+    String sql = "UPDATE \"Customer\" SET \"rank\" = ? WHERE \"username\" = ?";
+    
+    Query query = entityManager.createNativeQuery(sql);
+    query.setParameter(1, rank);
+    query.setParameter(2, username);
+    
+    int updatedRows = query.executeUpdate();
+    
+    if (updatedRows == 0) {
+        throw new RuntimeException("Không tìm thấy khách hàng với username: " + username);
+    }
+    }
+
+    @Transactional
+    public BigDecimal getCustomerBalance(String username) {
+        if (username == null) {
+            throw new IllegalArgumentException("Username không được null");
+        }
+
+        String sql = "SELECT \"balance\" FROM \"Customer\" WHERE \"username\" = ?";
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, username);
+
+        Object result = query.getSingleResult();
+
+        if (result == null) {
+            throw new RuntimeException("Không tìm thấy khách hàng với username: " + username);
+        }
+        System.out.println("result: " + result);
+        // Chuyển đổi từ Double sang BigDecimal
+        if (result instanceof Double) {
+            return new BigDecimal(result.toString());
+        } else if (result instanceof BigDecimal) {
+            return (BigDecimal) result;
+        } else {
+            // Trường hợp khác, chuyển đổi an toàn
+            return new BigDecimal(result.toString());
+        }
+    }
+
+    @Transactional
+    public void updateBalance(String username, BigDecimal newBalance) {
+        if (username == null || newBalance == null) {
+            throw new IllegalArgumentException("Username và balance không được null");
+        }
+
+        String sql = "UPDATE \"Customer\" SET \"balance\" = ? WHERE \"username\" = ?";
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter(1, newBalance);
+        query.setParameter(2, username);
+
+        int updatedRows = query.executeUpdate();
+
+        if (updatedRows == 0) {
+            throw new RuntimeException("Không tìm thấy khách hàng với username: " + username);
+        }
+    }
 }
