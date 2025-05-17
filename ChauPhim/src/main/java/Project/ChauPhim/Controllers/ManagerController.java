@@ -1,8 +1,10 @@
 package Project.ChauPhim.Controllers;
 
+import java.security.Principal;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import Project.ChauPhim.DAOs.ManagerDAO;
 import Project.ChauPhim.Entities.Manager;
@@ -36,17 +39,11 @@ public class ManagerController {
         Model model
     ) {
         try {
-            // Check if username already exists
-            if (managerDAO.existsByUsername(manager.getUsername())) {
-                model.addAttribute("error", "Username already exists. Please choose a different username.");
-                return "sign-in-manager";
-            }
-            
             manager.setPassword(passwordEncoder.encode(manager.getPassword()));
             managerDAO.addManager(manager);
             return "redirect:/login-manager?registered=true";
         } catch (Exception e) {
-            model.addAttribute("error", "Error: " + e.getMessage());
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
             return "sign-in-manager";
         }
     }
@@ -56,56 +53,87 @@ public class ManagerController {
         return "login-manager";
     }
     
-    
-    // Keep the original login-manager endpoint for backward compatibility
+    // hien tai login xong se redirect vao trang dashboard
     @PostMapping("/login-manager")
-    public String processLogin(
-            @RequestParam String username,
-            @RequestParam String password,
-            Model model) {
+    public String processLogin(@RequestParam String username, 
+                           @RequestParam String password, 
+                           Model model) {
         try {
             Manager manager = managerDAO.findByUserName(username);
             if (manager != null && passwordEncoder.matches(password, manager.getPassword())) {
-                // Login successful - Spring Security will handle the authentication
-                System.out.println("Login successful!");
-                return "redirect:/manager/dashboard";
+                // ✅ KHÔNG cần session.setAttribute nữa
+                System.out.println("Đăng nhập thành công!");
+                return "redirect:/manager/dashboard"; // Chuyển sang controller hiển thị dashboard
             } else {
-                model.addAttribute("error", "Invalid username or password!");
+                model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
                 return "login-manager";
             }
         } catch (Exception e) {
-            model.addAttribute("error", "Error: " + e.getMessage());
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
             return "login-manager";
         }
     }
     
-    @GetMapping("/manager/dashboard")
-    public String showDashboard(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        
-        try {
+    // xem thong tin ca nhan
+    @GetMapping("/manager/profile")
+    public String viewProfile(Model model, Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("Username từ Principal: " + username);
+            
             Manager manager = managerDAO.findByUserName(username);
             model.addAttribute("manager", manager);
-        } catch (Exception e) {
-            // Handle exception
+            return "manager-profile";
+        } else {
+            return "redirect:/login-manager";
         }
-        
-        return "manager-dashboard";
     }
     
-    @GetMapping("/manager/profile")
-    public String showProfile(Model model) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        
-        try {
+    // xem dashboard
+    @GetMapping("/manager/dashboard")
+    public String viewDashboard(Model model, Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("Username từ Principal: " + username);
+            
             Manager manager = managerDAO.findByUserName(username);
             model.addAttribute("manager", manager);
-        } catch (Exception e) {
-            // Handle exception
+            return "manager-dashboard";
+        } else {
+            return "redirect:/login-manager";
         }
-        
-        return "manager-profile";
+    }
+    
+    @PostMapping("/manager/update")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String updateManagerInfo(
+        @ModelAttribute("manager") Manager formManager,
+        Authentication authentication,
+        RedirectAttributes redirectAttributes,
+        Model model
+    ) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            try {
+                // Cập nhật thông tin từ form
+                managerDAO.updateManager(
+                    username, 
+                    formManager.getEmail() 
+                );
+                
+                redirectAttributes.addFlashAttribute("successMessage", "Thông tin đã được cập nhật thành công!");
+                return "redirect:/manager/profile"; 
+            }
+            catch (Exception e) {
+                model.addAttribute("error", e.getMessage());
+                // Lấy lại thông tin manager từ DB để hiển thị
+                Manager manager = managerDAO.findByUserName(username);
+                model.addAttribute("manager", manager);
+                return "manager-profile";
+            }
+        }
+        else {
+            return "redirect:/login-manager";
+        }
     }
 }

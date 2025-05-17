@@ -65,27 +65,26 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain managerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/manager/**", "/login-manager", "/sign-in-manager")  // Áp dụng cho đường dẫn manager
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login-manager", "/sign-in-manager", "/process-login-manager", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/manager/**", "/manager/profile", "/manager/dashboard").hasRole("MANAGER")  // Chỉ cho phép ROLE_MANAGER truy cập
-                .anyRequest().authenticated()
-            )
-            .formLogin(login -> login
-                .loginPage("/login-manager")
-                .loginProcessingUrl("/process-login-manager")  // URL xử lý form đăng nhập
-                .defaultSuccessUrl("/manager/dashboard", true) // Chuyển hướng sau khi đăng nhập thành công
-                .failureUrl("/login-manager?error=true")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/manager/logout")
-                .logoutSuccessUrl("/login-manager?logout=true")
-                .permitAll()
-            )
-            .authenticationProvider(managerAuthenticationProvider());  // Chỉ định provider cho manager
-
+        .securityMatcher("/manager/**", "/login-manager", "/sign-in-manager", "/process-login-manager", "/manager-profile")
+        .csrf(csrf -> csrf.disable())
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/login-manager", "/sign-in-manager", "/process-login-manager", "/css/**", "/js/**").permitAll()
+            .requestMatchers("/manager/**", "/manager/profile", "/manager/dashboard").hasRole("MANAGER")
+            .anyRequest().authenticated()
+        )
+        .formLogin(login -> login
+            .loginPage("/login-manager")
+            .loginProcessingUrl("/process-login-manager")
+            .defaultSuccessUrl("/manager/dashboard", true)  // Sửa thành đường dẫn /manager/dashboard
+            .failureUrl("/login-manager?error=true")
+            .permitAll()
+        )
+        .logout(logout -> logout
+            .logoutUrl("/manager/logout")
+            .logoutSuccessUrl("/login-manager?logout=true")
+            .permitAll()
+        )
+        .authenticationProvider(managerAuthenticationProvider());
         return http.build();
     }
     

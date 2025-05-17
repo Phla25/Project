@@ -1,5 +1,8 @@
 package Project.ChauPhim.DAOs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -39,5 +42,39 @@ public class ManagerDAO {
 
 	    Long count = (Long) query.getSingleResult();
 	    return count > 0;
+	}
+	public void updateManager(String username, String email) {
+		// Tạo câu lệnh SQL động dựa trên các trường không null
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE \"Customer\" SET ");
+        
+        // Danh sách tham số và giá trị sẽ được sử dụng
+        List<String> updateFields = new ArrayList<>();
+        List<Object> paramValues = new ArrayList<>();
+        
+        // Kiểm tra và thêm các trường cần cập nhật
+        if (email != null && !email.trim().isEmpty()) {
+            updateFields.add("\"email\" = ?");
+            paramValues.add(email);
+        }
+        // Nếu không có trường nào cần cập nhật, trả về
+        if (updateFields.isEmpty()) {
+            return;
+        } 
+        // Hoàn thành câu lệnh SQL
+        sqlBuilder.append(String.join(", ", updateFields));
+        sqlBuilder.append(" WHERE \"username\" = ?");
+        paramValues.add(username);
+        
+        // Tạo câu truy vấn và thiết lập tham số
+        Query query = entityManager.createNativeQuery(sqlBuilder.toString());
+        
+        // Thiết lập các tham số
+        for (int i = 0; i < paramValues.size(); i++) {
+            query.setParameter(i + 1, paramValues.get(i));
+        }
+        
+        // Thực thi câu truy vấn
+        query.executeUpdate();
+		
 	}
 }
