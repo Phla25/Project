@@ -1,5 +1,6 @@
 package Project.ChauPhim.Entities;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,12 +11,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Customer", 
+@Table(name = "\"Customer\"", 
 		uniqueConstraints = @UniqueConstraint(name = "Customer_username_key", columnNames = "username"))
 public class Customer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "customerID", nullable = false)
+	@Column(name = "\"customerID\"", nullable = false)
 	private Long customerID;
 	
 	@Column(name = "username", length = 256, nullable = false)
@@ -41,6 +42,9 @@ public class Customer {
 	
 	@Column(name = "rank", nullable = false)
 	private int rank;
+
+	@Column(name = "balance", nullable = false, columnDefinition = "money default 0")
+	private BigDecimal balance = BigDecimal.ZERO;
 
 	public Long getCustomerID() {
 		return customerID;
@@ -114,4 +118,12 @@ public class Customer {
 		this.rank = rank;
 	}
 
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
+	}
+
+	public BigDecimal getBalance() {
+		return this.balance;
+	}
 }
+

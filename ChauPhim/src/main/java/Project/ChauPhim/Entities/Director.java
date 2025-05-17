@@ -11,18 +11,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Director",
+@Table(name = "\"Director\"",
 		uniqueConstraints = @UniqueConstraint(name = "Director_imageURL_key", columnNames = "imageURL"))
 public class Director {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "directorID", nullable = false)
+	@Column(name = "\"directorID\"", nullable = false)
 	private Long directorID;
 	
 	@Column(name = "name", length = 128, nullable = false)
 	private String name;
 	
-	@Column(name = "imageURL", length = 256, nullable = false)
+	@Column(name = "\"imageURL\"", length = 256, nullable = false)
 	private String imageURL;
 	
 	@Column(name = "gender", length = 10, nullable = true)
@@ -93,3 +93,4 @@ public class Director {
 		this.bio = bio;
 	}
 }
+

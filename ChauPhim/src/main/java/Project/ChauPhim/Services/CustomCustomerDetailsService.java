@@ -1,5 +1,6 @@
 package Project.ChauPhim.Services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +15,7 @@ public class CustomCustomerDetailsService implements UserDetailsService {
 
     private final CustomerDAO customerDAO;
 
+    @Autowired
     public CustomCustomerDetailsService(CustomerDAO customerDAO) {
         this.customerDAO = customerDAO;
     }
@@ -21,14 +23,16 @@ public class CustomCustomerDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Customer customer = customerDAO.findByUserName(username);
+        
         if (customer == null) {
-            throw new UsernameNotFoundException("Customer not found with username: " + username);
+            throw new UsernameNotFoundException("Không tìm thấy khách hàng: " + username);
         }
-
+        
+        // Tạo một UserDetails với ROLE_CUSTOMER
         return User.builder()
                 .username(customer.getUsername())
-                .password(customer.getPassword()) // Password đã mã hóa
-                .roles("CUSTOMER")
+                .password(customer.getPassword())
+                .roles("CUSTOMER") // Quan trọng: sử dụng ROLE_CUSTOMER
                 .build();
     }
 }

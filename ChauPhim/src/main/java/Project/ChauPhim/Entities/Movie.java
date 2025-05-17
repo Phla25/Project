@@ -10,21 +10,21 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "Movie",
+@Table(name = "\"Movie\"",
 		uniqueConstraints = @UniqueConstraint(name = "Movie_posterImageURL_key", columnNames = "posterImageURL"))
 public class Movie {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@Column(name = "movieID", nullable = false)
+	@Column(name = "\"movieID\"", nullable = false)
 	private Long movieID;
 	
 	@Column(name = "title", length = 128, nullable = false)
 	private String title;
 	
-	@Column(name = "posterImageURL", length = 256, nullable = false)
+	@Column(name = "\"posterImageURL\"", length = 256, nullable = false)
 	private String posterImageURL;
 	
-	@Column(name = "releaseDate", nullable = false)
+	@Column(name = "\"releaseDate\"", nullable = false)
 	private LocalDate releaseDate;
 	
 	@Column(name = "genre", length = 32, nullable = true)
@@ -33,13 +33,13 @@ public class Movie {
 	@Column(name = "price", nullable = true)
 	private double price;
 	
-	@Column(name = "directorID", nullable = true)
+	@Column(name = "\"directorID\"", nullable = true)
 	private Long directorID;
 	
-	@Column(name = "studioID", nullable = true)
+	@Column(name = "\"studioID\"", nullable = true)
 	private Long studioID;
 	
-	@Column(name = "discountID", nullable = true)
+	@Column(name = "\"discountID\"", nullable = true)
 	private Long discountID;
 
 	public Long getMovieID() {
@@ -115,3 +115,4 @@ public class Movie {
 	}
 	
 }
+
