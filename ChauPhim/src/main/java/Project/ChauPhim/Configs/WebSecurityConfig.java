@@ -10,7 +10,6 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -44,7 +43,7 @@ public class WebSecurityConfig {
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/login-customer", "/sign-in-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
-            .requestMatchers("/customer/**", "/customer-profile").hasRole("CUSTOMER")
+            .requestMatchers("/customer/**", "/customer/profile").hasRole("CUSTOMER")
             .anyRequest().authenticated()
         )
         .formLogin(login -> login
@@ -69,8 +68,8 @@ public class WebSecurityConfig {
             .securityMatcher("/manager/**", "/login-manager", "/sign-in-manager")  // Áp dụng cho đường dẫn manager
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login-manager", "/sign-in-manager", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/manager/**").hasRole("MANAGER")  // Chỉ cho phép ROLE_MANAGER truy cập
+                .requestMatchers("/login-manager", "/sign-in-manager", "/process-login-manager", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/manager/**", "/manager/profile", "/manager/dashboard").hasRole("MANAGER")  // Chỉ cho phép ROLE_MANAGER truy cập
                 .anyRequest().authenticated()
             )
             .formLogin(login -> login
