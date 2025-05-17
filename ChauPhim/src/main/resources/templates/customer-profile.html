@@ -95,7 +95,7 @@
             <select id="gender" th:field="*{gender}">
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
+                <option value="Không tiết lộ">Không tiết lộ</option>
             </select>
         </div>
 
@@ -109,9 +109,20 @@
             <input type="date" id="dob" th:field="*{dob}" required />
         </div>
         
+        <div class="form-group">
+            <label for="rank">Cấp độ hội viên:</label>
+            <input type="text" id="rank" th:field="*{rank}" readonly class="readonly" />
+            <span th:if="*{rank == 0}" class="rank-badge rank-0">Khách hàng thông thường</span>
+            <span th:if="*{rank == 1}" class="rank-badge rank-1">Hội viên bậc vàng</span>
+            <span th:if="*{rank == 2}" class="rank-badge rank-2">Hội viên bậc kim cương</span>
+            <!-- Hiển thị nút đăng ký hội viên nếu chưa là hội viên -->
+            <a th:if="*{rank == 0}" th:href="@{/customer/membership/register}" class="button" style="margin-top: 5px; display: inline-block;">Đăng ký hội viên</a>
+            <a th:if="*{rank == 1}" th:href="@{/customer/membership/register}" class="button" style="margin-top: 5px; display: inline-block;">Nâng cấp hội viên</a>
+        </div>
+
         <div class="actions">
             <button type="submit">Cập nhật thông tin</button>
-            <a th:href="@{/customer/dashboard}" class="button">Quay lại</a>
+            <a th:href="@{/customer/dashboard}" class="button">Quay về trang chủ</a>
         </div>
     </form>
 

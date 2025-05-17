@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký hội viên</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .membership-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .membership-benefits {
+            margin: 20px 0;
+        }
+        .membership-benefits li {
+            margin-bottom: 10px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button-form {
+            margin-top: 20px;
+        }
+        .success-message {
+            color: green;
+            padding: 10px;
+            background-color: #f0f8f0;
+            border-radius: 4px;
+        }
+        .error-message {
+            color: red;
+            padding: 10px;
+            background-color: #fff0f0;
+            border-radius: 4px;
+        }
+
+        .balance-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            position: relative;
+            padding-top: 40px; /* Thêm padding để tránh overlap với số dư */
+        }
+    </style>
+</head>
+<body>
+    <div class="balance-display">
+            <span>Số dư tài khoản: </span>
+            <span th:text="${#numbers.formatDecimal(currentBalance, 0, 'COMMA', 0, 'POINT')} + '$'"></span>
+    </div>
+
+    <div class="container">
+        <h2>Hãy trở thành hội viên ngay hôm nay!</h2>
+        
+        <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+        
+        <div class="membership-card">
+            <h3>Quyền lợi hội viên bậc vàng</h3>
+            <div class="membership-benefits">
+                <ul>
+                    <li>Giảm giá 10% cho mọi dịch vụ</li>
+                    <li>Tích điểm đổi quà với mỗi lần sử dụng dịch vụ</li>
+                    <li>Được tặng voucher vào ngày sinh nhật</li>
+                </ul>
+            </div>
+            
+            <h3>Chi phí đăng ký hội viên bậc vàng</h3>
+            <p>Phí hội viên: 200$/năm</p>
+            
+            <form th:action="@{/customer/membership/upgrade}" method="post" class="button-form">
+                <input type="hidden" name="membershipType" value="1">
+                <button type="submit" class="button">Đăng ký ngay</button>
+            </form>           
+        </div>
+        
+        
+
+        <div class="membership-card">
+            <h3>Quyền lợi hội viên bậc kim cương</h3>
+            <div class="membership-benefits">
+                <ul>
+                    <li>Giảm giá 20% cho mọi dịch vụ</li>
+                    <li>Tích điểm đổi quà với mỗi lần sử dụng dịch vụ</li>
+                    <li>Nhận thông báo sớm về các chương trình khuyến mãi</li>
+                    <li>Được tặng voucher vào ngày sinh nhật, dịp lễ, dịp đặc biệt,...</li>
+                </ul>
+            </div>
+            
+            <h3>Chi phí đăng ký hội viên bậc kim cương</h3>
+            <p>Phí hội viên: 500$/năm</p>
+
+            <form th:action="@{/customer/membership/upgrade}" method="post" class="button-form">
+                <input type="hidden" name="membershipType" value="2">
+                <button type="submit" class="button">Đăng ký ngay</button>
+            </form>    
+        </div>
+        <a th:href="@{/customer/profile}" class="button" style="background-color: #6c757d;">Quay lại</a>
+    </div>
+</body>
+</html>

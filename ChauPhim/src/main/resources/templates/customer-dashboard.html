@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Rạp Chiếu Phim</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #e50914;
+            --secondary-color: #0f171e;
+            --accent-color: #f5c518;
+            --text-color: #333;
+            --light-gray: #f5f5f5;
+            --border-color: #ddd;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-welcome h1 {
+            margin: 0;
+            color: var(--secondary-color);
+        }
+        
+        .user-welcome p {
+            margin: 5px 0 0;
+            color: #666;
+        }
+        
+        .user-stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .stat-card h3 {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stat-card p {
+            margin: 10px 0 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .dashboard-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .dashboard-card h2 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .quick-link {
+            background-color: var(--light-gray);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quick-link:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .quick-link i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .recent-orders h3 {
+            margin-top: 0;
+        }
+        
+        .order-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .order-details span {
+            display: block;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .order-status {
+            font-weight: bold;
+        }
+        
+        .status-completed {
+            color: #28a745;
+        }
+        
+        .status-pending {
+            color: #ffc107;
+        }
+        
+        .balance-display {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        /* Movie display styles */
+        .movie-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .movie-section h2 {
+            margin-top: 0;
+            color: var(--secondary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .view-all-link {
+            font-size: 14px;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .movie-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            background-color: white;
+        }
+        
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .movie-poster {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .movie-info {
+            padding: 15px;
+        }
+        
+        .movie-title {
+            margin: 0 0 5px;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .movie-price {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .movie-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .movie-button {
+            padding: 8px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .detail-button {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            margin-right: 5px;
+        }
+        
+        .buy-button {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: 5px;
+        }
+        
+        @media (max-width: 992px) {
+            .movie-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-stats {
+                flex-direction: column;
+            }
+            
+            .quick-links {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .movie-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hiển thị số dư ở góc phải trên -->
+        <div class="balance-display">
+            <span>Số dư: </span>
+            <span th:text="${#numbers.formatDecimal(balance, 0, 'COMMA', 0, 'POINT')} + ' $'"></span>
+        </div>
+        <div th:if="${error}" class="error-message" th:text="${error}"></div>
+        
+        <div class="dashboard-header">
+            <div class="user-welcome">
+                <h1 th:text="'Xin chào, ' + ${customer.username}"></h1>
+                <p th:text="'Loại hội viên: ' + ${rankName}"></p>
+            </div>
+            <!-- <div class="user-stats"> -->
+                
+                <!-- Có thể thêm các thông tin thống kê khác ở đây -->
+        <!--    <div class="stat-card">
+                    <h3>Đơn đã đặt</h3>
+                    <p th:text="${customer.orderHistory != null ? customer.orderHistory.size() : '0'}">0</p>
+                </div>
+            </div>--> 
+        </div>
+        
+        <!-- Phần phim mới -->
+        <div class="movie-section">
+            <h2>
+                Phim mới nhất
+                <a th:href="@{/customer/movies}" class="view-all-link">Xem tất cả</a>
+            </h2>
+            
+            <div class="movie-grid">
+                <!-- Hiển thị danh sách phim mới nhất -->
+                <div th:each="movie : ${latestMovies}" class="movie-card">
+                    <img th:src="${movie.posterImageURL}" alt="Movie Poster" class="movie-poster">
+                    <div class="movie-info">
+                        <h3 class="movie-title" th:text="${movie.title}">Tên phim</h3>
+                        <div class="movie-meta">
+                            <span th:text="${movie.genre}">Thể loại</span>
+                            <span th:text="${#temporals.format(movie.releaseDate, 'dd/MM/yyyy')}">Ngày phát hành</span>
+                        </div>
+                        <div class="movie-price" th:text="${#numbers.formatDecimal(movie.price, 0, 'COMMA', 0, 'POINT')} + ' $'">$</div>
+                        <div class="movie-buttons">
+                            <a th:href="@{'/customer/movies/' + ${movie.movieID}}" class="movie-button detail-button">Chi tiết</a>
+                            <a th:href="@{'/customer/movies/' + ${movie.movieID} + '/buy'}" class="movie-button buy-button">Mua ngay</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="dashboard-card">
+                <h2>Truy cập nhanh</h2>
+                <div class="quick-links">
+                    <a th:href="@{/customer/profile}" class="quick-link">
+                        <i class="fas fa-user"></i>
+                        <span>Hồ sơ cá nhân</span>
+                    </a>
+                    <a th:href="@{/customer/membership/register}" class="quick-link">
+                        <i class="fas fa-crown"></i>
+                        <span>Đăng ký hội viên</span>
+                    </a>
+                    <a th:href="@{/customer/movies}" class="quick-link">
+                        <i class="fas fa-film"></i>
+                        <span>Danh sách phim</span>
+                    </a>
+                    <!-- <a th:href="@{/customer/cart}" class="quick-link">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Giỏ hàng</span>
+                    </a>
+                    <a th:href="@{/customer/orders}" class="quick-link">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Lịch sử đặt vé</span>
+                    </a>
+                    <a th:href="@{/customer/top-up}" class="quick-link">
+                        <i class="fas fa-wallet"></i>
+                        <span>Nạp tiền</span>
+                    </a>-->
+                </div>
+            </div>
+            
+            <!-- 
+            <div class="dashboard-card">
+                <h2>Đơn hàng gần đây</h2>
+                <div class="recent-orders">
+                    <div th:if="${customer.orderHistory != null && !customer.orderHistory.isEmpty()}">
+                        <div class="order-item" th:each="order, iterStat : ${customer.orderHistory}" 
+                             th:if="${iterStat.index < 5}">
+                            <div class="order-details">
+                                <strong th:text="'Đơn #' + ${order.id}">Đơn #123</strong>
+                                <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}">01/01/2023</span>
+                            </div>
+                            <div class="order-status status-completed">
+                                <span th:text="${order.status}">Hoàn thành</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${customer.orderHistory == null || customer.orderHistory.isEmpty()}" class="no-orders">
+                        <p>Bạn chưa có đơn hàng nào.</p>
+                        <a th:href="@{/customer/movies}" class="button">Đặt vé ngay</a>
+                    </div>
+                </div>
+            </div>
+        --> 
+        </div>
+    </div>
+</body>
+</html>
