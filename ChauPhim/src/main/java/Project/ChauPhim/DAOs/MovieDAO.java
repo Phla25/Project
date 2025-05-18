@@ -16,6 +16,7 @@ public class MovieDAO {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @SuppressWarnings("unchecked")
     public List<Movie> findLatestMovie(int limit) {
         String sql = "SELECT * FROM \"Movie\" ORDER BY \"releaseDate\" DESC"; 
         Query query = entityManager.createNativeQuery(sql, Movie.class);
@@ -23,6 +24,7 @@ public class MovieDAO {
         return query.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Movie> findFeaturedMovies(int limit) {
         // co the thay doi logic, lay cac phim noi bat theo tieu chi cua rieng minh
         String sql = "SELECT * FROM \"Movie\" WHERE \"discountID\" IS NOT NULL ORDER BY \"releaseDate\" DESC";
@@ -42,7 +44,7 @@ public class MovieDAO {
         }
     }
 
-
+    @SuppressWarnings("unchecked")
     public List<Movie> findAllMovies() {
         String sql = "SELECT * FROM \"Movie\" ORDER BY \"releaseDate\" DESC";
         Query query = entityManager.createNativeQuery(sql, Movie.class);

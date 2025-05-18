@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách phim</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .movie-card {
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .movie-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
+        }
+        .movie-poster {
+            height: 300px;
+            object-fit: cover;
+        }
+        .card-footer {
+            background-color: transparent;
+            border-top: none;
+        }
+        .price-tag {
+            font-weight: bold;
+            color: #dc3545;
+        }
+        .discounted-price {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .original-price {
+            text-decoration: line-through;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .genre-badge {
+            background-color: #6c757d;
+        }
+        .filters {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/customer/dashboard">Movie Store</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer/dashboard">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/customer/movies">Phim</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer/cart">Giỏ hàng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/customer/orders">Đơn hàng</a>
+                    </li>
+                </ul>
+                <div class="d-flex text-light align-items-center">
+                    <span class="me-3">Xin chào, <span th:text="${customer.name}">Customer</span></span>
+                    <a href="/logout" class="btn btn-outline-light">Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Alert for errors -->
+        <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+        
+        <h1 class="mb-4">Danh sách phim</h1>
+        
+        <!-- Filters Section -->
+        <div class="filters">
+            <div class="row">
+                <div class="col-md-8">
+                    <form th:action="@{/customer/movies}" method="get" class="row g-3">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Tìm kiếm theo tên phim..." 
+                                       name="search" th:value="${param.search}">
+                                <button class="btn btn-primary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select" name="genre">
+                                <option value="">Tất cả thể loại</option>
+                                <option value="Action" th:selected="${param.genre == 'Action'}">Action</option>
+                                <option value="Comedy" th:selected="${param.genre == 'Comedy'}">Comedy</option>
+                                <option value="Drama" th:selected="${param.genre == 'Drama'}">Drama</option>
+                                <option value="Thriller" th:selected="${param.genre == 'Thriller'}">Thriller</option>
+                                <option value="Sci-Fi" th:selected="${param.genre == 'Sci-Fi'}">Sci-Fi</option>
+                                <option value="Animation" th:selected="${param.genre == 'Animation'}">Animation</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-end">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                                Sắp xếp
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" th:href="@{/customer/movies(sort='price,asc')}">Giá: Thấp đến cao</a></li>
+                                <li><a class="dropdown-item" th:href="@{/customer/movies(sort='price,desc')}">Giá: Cao đến thấp</a></li>
+                                <li><a class="dropdown-item" th:href="@{/customer/movies(sort='releaseDate,desc')}">Mới nhất</a></li>
+                                <li><a class="dropdown-item" th:href="@{/customer/movies(sort='title,asc')}">Tên A-Z</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Movies Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            <div class="col mb-4" th:each="movie : ${movies}">
+                <div class="card movie-card">
+                    <img th:src="${movie.posterImageURL}" class="card-img-top movie-poster" alt="Movie Poster">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
+                        <p class="card-text">
+                            <span class="badge genre-badge" th:text="${movie.genre}">Genre</span>
+                            <small class="text-muted d-block mt-1" th:text="${#temporals.format(movie.releaseDate, 'dd/MM/yyyy')}">Release Date</small>
+                        </p>
+                        
+                        <!-- Price Section -->
+                        <div th:if="${movie.discountID != null}" class="mb-2">
+                            <span class="original-price" th:text="'$' + ${#numbers.formatDecimal(movie.price, 0, 'COMMA', 0, 'POINT')}">$100,000</span>
+                            <span class="discounted-price" th:text="'$' + ${#numbers.formatDecimal(movie.price * 0.9, 0, 'COMMA', 0, 'POINT')}">₫90,000</span>
+                            <span class="badge bg-success">-10%</span>
+                        </div>
+                        <div th:unless="${movie.discountID != null}" class="mb-2">
+                            <span class="price-tag" th:text="'$' + ${#numbers.formatDecimal(movie.price, 0, 'COMMA', 0, 'POINT')}">$100,000</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/customer/movies/__${movie.movieID}__}" class="btn btn-outline-primary">Chi tiết</a>
+                            <form th:action="@{/customer/cart/add}" method="post">
+                                <input type="hidden" name="movieID" th:value="${movie.movieID}">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-4" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/customer/movies(page=${currentPage - 1})}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}" 
+                    th:classappend="${currentPage == i} ? 'active'">
+                    <a class="page-link" th:href="@{/customer/movies(page=${i})}" th:text="${i}"></a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/customer/movies(page=${currentPage + 1})}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- No Movies Message -->
+        <div class="alert alert-info text-center" th:if="${#lists.isEmpty(movies)}">
+            <h4>Không tìm thấy phim nào</h4>
+            <p>Vui lòng thử lại với tiêu chí tìm kiếm khác</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Movie Store</h5>
+                    <p>Cửa hàng phim hàng đầu Việt Nam</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Liên kết</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/customer/dashboard" class="text-light">Trang chủ</a></li>
+                        <li><a href="/customer/movies" class="text-light">Phim</a></li>
+                        <li><a href="/customer/cart" class="text-light">Giỏ hàng</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Liên hệ</h5>
+                    <address>
+                        <p><i class="fas fa-map-marker-alt me-2"></i> 123 Đường Phim, TP. Hồ Chí Minh</p>
+                        <p><i class="fas fa-phone me-2"></i> (84) 123 456 789</p>
+                        <p><i class="fas fa-envelope me-2"></i> info@moviestore.com</p>
+                    </address>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p>&copy; 2025 Chau Phim. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

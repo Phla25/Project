@@ -2,7 +2,10 @@ package Project.ChauPhim.Controllers;
 
 import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,10 +21,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import Project.ChauPhim.DAOs.ActorDAO;
 import Project.ChauPhim.DAOs.CustomerDAO;
+import Project.ChauPhim.DAOs.DirectorDAO;
 import Project.ChauPhim.DAOs.MovieDAO;
+import Project.ChauPhim.DAOs.StudioDAO;
+import Project.ChauPhim.Entities.Actor;
 import Project.ChauPhim.Entities.Customer;
+import Project.ChauPhim.Entities.Director;
 import Project.ChauPhim.Entities.Movie;
+import Project.ChauPhim.Entities.Studio;
 
 @Controller
 public class CustomerController {
@@ -33,6 +42,15 @@ public class CustomerController {
     
     @Autowired
     private MovieDAO movieDAO; 
+
+    @Autowired
+    private DirectorDAO directorDAO;
+    
+    @Autowired
+    private StudioDAO studioDAO;
+
+    @Autowired
+    private ActorDAO actorDAO;
 
     @GetMapping("/sign-in-customer")
     public String showSignInPage(Model model) {
@@ -256,25 +274,156 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/customer/movies/{movieId}")
+    @GetMapping("/customer/movies")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public String showMovieDetails(@PathVariable Long movieId, Authentication authentication, Model model) {
+    public String showAllMovies(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String genre,
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "1") int page,
+            Authentication authentication,
+            Model model) {
+            
         if (authentication != null && authentication.isAuthenticated()) {
             try {
-                Movie movie = movieDAO.findById(movieId);
-                if (movie == null) {
-                    model.addAttribute("error", "Không tìm thấy phim với ID: " + movieId);
-                    return "redirect:/customer/movies";
-                }
-
-                model.addAttribute("movie", movie);
-
-                // Add customer info if needed
+                // Get customer info
                 String username = authentication.getName();
                 Customer customer = customerDAO.findByUserName(username);
                 model.addAttribute("customer", customer);
 
-                return "customer/movie-details";
+                // Get all movies (we'll implement filtering and pagination later)
+                List<Movie> allMovies = movieDAO.findAllMovies();
+
+                // Apply search filter if provided
+                if (search != null && !search.trim().isEmpty()) {
+                    String searchLower = search.toLowerCase();
+                    allMovies = allMovies.stream()
+                            .filter(movie -> movie.getTitle().toLowerCase().contains(searchLower))
+                            .collect(Collectors.toList());
+                }
+
+                // Apply genre filter if provided
+                if (genre != null && !genre.trim().isEmpty()) {
+                    allMovies = allMovies.stream()
+                            .filter(movie -> genre.equals(movie.getGenre()))
+                            .collect(Collectors.toList());
+                }
+
+                // Apply sorting if provided
+                if (sort != null && !sort.isEmpty()) {
+                    String[] sortParams = sort.split(",");
+                    String sortField = sortParams[0];
+                    boolean ascending = sortParams.length > 1 && "asc".equals(sortParams[1]);
+
+                    Comparator<Movie> comparator = null;
+                    switch (sortField) {
+                        case "price":
+                            comparator = Comparator.comparing(Movie::getPrice);
+                            break;
+                        case "releaseDate":
+                            comparator = Comparator.comparing(Movie::getReleaseDate);
+                            break;
+                        case "title":
+                            comparator = Comparator.comparing(Movie::getTitle);
+                            break;
+                        default:
+                            comparator = Comparator.comparing(Movie::getReleaseDate);
+                    }
+
+                    if (!ascending) {
+                        comparator = comparator.reversed();
+                    }
+
+                    allMovies = allMovies.stream()
+                            .sorted(comparator)
+                            .collect(Collectors.toList());
+                }
+
+                // Calculate pagination
+                int pageSize = 12; // 12 movies per page
+                int totalMovies = allMovies.size();
+                int totalPages = (int) Math.ceil((double) totalMovies / pageSize);
+
+                // Adjust page if out of bounds
+                if (page < 1) page = 1;
+                if (page > totalPages && totalPages > 0) page = totalPages;
+
+                // Get movies for current page
+                int fromIndex = (page - 1) * pageSize;
+                int toIndex = Math.min(fromIndex + pageSize, totalMovies);
+
+                List<Movie> pagedMovies;
+                if (fromIndex < totalMovies) {
+                    pagedMovies = allMovies.subList(fromIndex, toIndex);
+                } else {
+                    pagedMovies = new ArrayList<>();
+                }
+
+                // Load directors and studios for each movie
+                for (Movie movie : pagedMovies) {
+                    if (movie.getDirectorID() != null) {
+                        Director director = directorDAO.findById(movie.getDirectorID());
+                        movie.setDirector(director);
+                    }
+
+                    if (movie.getStudioID() != null) {
+                        Studio studio = studioDAO.findById(movie.getStudioID());
+                        movie.setStudio(studio);
+                    }
+                }
+
+                // Add attributes to model
+                model.addAttribute("movies", pagedMovies);
+                model.addAttribute("currentPage", page);
+                model.addAttribute("totalPages", totalPages);
+
+                return "customer-movies";
+            } catch (Exception e) {
+                model.addAttribute("error", "Không thể lấy danh sách phim: " + e.getMessage());
+                return "customer/dashboard";
+            }
+        } else {
+            return "redirect:/login-customer";
+        }
+    }
+
+    @GetMapping("/customer/movies/{movieID}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public String showMovieDetails(@PathVariable Long movieID, Authentication authentication, Model model) {
+        if (authentication != null && authentication.isAuthenticated()) {
+                System.out.println("Accessing movie details for ID: " + movieID);
+            try {
+                Movie movie = movieDAO.findById(movieID);
+                if (movie == null) {
+                    System.out.println("Cant find movie with ID: " + movieID);
+                    model.addAttribute("error", "Không tìm thấy phim với ID: " + movieID);
+                    return "redirect:/customer/movies";
+                }
+
+                // Load director if exists
+                if (movie.getDirectorID() != null) {
+                    Director director = directorDAO.findById(movie.getDirectorID());
+                    movie.setDirector(director);
+                }
+
+                // Load studio if exists
+                if (movie.getStudioID() != null) {
+                    Studio studio = studioDAO.findById(movie.getStudioID());
+                    movie.setStudio(studio);
+                }
+
+                // Load actors for this movie
+                List<Actor> actors = actorDAO.findActorsByMovieId(movieID);
+                movie.setActors(actors);
+
+                model.addAttribute("movie", movie);
+
+                // Add customer info
+                String username = authentication.getName();
+                Customer customer = customerDAO.findByUserName(username);
+                model.addAttribute("customer", customer);
+
+                return "customer-movie-details";
             } catch (Exception e) {
                 model.addAttribute("error", "Không thể lấy thông tin phim: " + e.getMessage());
                 return "redirect:/customer/movies";
@@ -284,14 +433,14 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/customer/movies/{movieId}/buy")
+    @GetMapping("/customer/movies/{movieID}/buy")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public String buyMovie(@PathVariable Long movieId, Authentication authentication, Model model) {
+    public String buyMovie(@PathVariable Long movieID, Authentication authentication, Model model) {
         if (authentication != null && authentication.isAuthenticated()) {
             try {
-                Movie movie = movieDAO.findById(movieId);
+                Movie movie = movieDAO.findById(movieID);
                 if (movie == null) {
-                    model.addAttribute("error", "Không tìm thấy phim với ID: " + movieId);
+                    model.addAttribute("error", "Không tìm thấy phim với ID: " + movieID);
                     return "redirect:/customer/movies";
                 }
 
@@ -309,7 +458,7 @@ public class CustomerController {
                 return "customer/buy-movie"; // chua co buy-movie, co the add to cart
             } catch (Exception e) {
                 model.addAttribute("error", "Không thể xử lý giao dịch: " + e.getMessage());
-                return "redirect:/customer/movies/" + movieId;
+                return "redirect:/customer/movies/" + movieID;
             }
         } else {
             return "redirect:/login-customer";
