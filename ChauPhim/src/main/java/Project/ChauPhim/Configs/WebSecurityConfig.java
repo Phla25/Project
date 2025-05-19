@@ -39,23 +39,23 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-        .securityMatcher("/customer/**", "/login-customer", "/sign-in-customer", "/process-login-customer", "/customer-profile")
+        .securityMatcher("/customer/**", "/customer-login", "/customer-register", "/process-customer-login", "/customer-profile")
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login-customer", "/sign-in-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
+            .requestMatchers("/customer-login", "/customer-register", "/process-customer-login", "/css/**", "/js/**").permitAll()
             .requestMatchers("/customer/**", "/customer-profile").hasRole("CUSTOMER")
             .anyRequest().authenticated()
         )
         .formLogin(login -> login
-            .loginPage("/login-customer")
-            .loginProcessingUrl("/process-login-customer")
-            .defaultSuccessUrl("/customer/profile", true)  // Sửa thành đường dẫn /customer/profile thay vì /customer-profile
-            .failureUrl("/login-customer?error=true")
+            .loginPage("/customer-login")
+            .loginProcessingUrl("/process-customer-login")
+            .defaultSuccessUrl("/customer/dashboard", true)  // Sửa thành đường dẫn /customer/profile thay vì /customer-profile
+            .failureUrl("/customer-login?error=true")
             .permitAll()
         )
         .logout(logout -> logout
             .logoutUrl("/customer/logout")
-            .logoutSuccessUrl("/login-customer?logout=true")
+            .logoutSuccessUrl("/customer-login?logout=true")
             .permitAll()
         )
         .authenticationProvider(customerAuthenticationProvider());

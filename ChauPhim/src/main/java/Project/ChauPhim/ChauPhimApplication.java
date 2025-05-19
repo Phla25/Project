@@ -9,5 +9,4 @@ public class ChauPhimApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ChauPhimApplication.class, args);
 	}
-
 }

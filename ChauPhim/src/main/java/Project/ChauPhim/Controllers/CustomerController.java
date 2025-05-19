@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -34,35 +35,46 @@ public class CustomerController {
     @Autowired
     private MovieDAO movieDAO; 
 
-    @GetMapping("/sign-in-customer")
+    @GetMapping("/customer-register")
     public String showSignInPage(Model model) {
         model.addAttribute("customer", new Customer());
-        return "sign-in-customer";
+        return "customer-register";
     }
     
-    @PostMapping("/sign-in-customer")
+    @PostMapping("/customer-register")
     @Transactional
-    public String processRegisterManager(
-        @ModelAttribute("customer") Customer customer,
-        Model model
-    ) {
+    public String processRegisterManager(@ModelAttribute("customer") Customer customer, Model model) {
         try {
+            // 1. Kiểm tra xem username đã tồn tại trong database chưa
+            Customer existingCustomer = customerDAO.findByUserName(customer.getUsername());
+
+            if (existingCustomer != null) {
+                // Nếu username đã tồn tại, thêm thông báo lỗi vào model và trả về trang đăng ký
+                model.addAttribute("error", "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
+                return "customer-register";
+            }
+
+            // 2. Nếu username chưa tồn tại, tiến hành mã hóa mật khẩu và thêm người dùng
             customer.setPassword(passwordEncoder.encode(customer.getPassword()));
             customerDAO.addCustomer(customer);
-            return "redirect:/login-customer?registered=true";
+            return "redirect:/customer-login?registered=true";
+
         } catch (Exception e) {
-            model.addAttribute("error", "Lỗi: " + e.getMessage());
-            return "sign-in-customer";
+            // Xử lý các lỗi khác (ví dụ: lỗi database)
+            model.addAttribute("error", "Đã xảy ra lỗi trong quá trình đăng ký: " + e.getMessage());
+            // Quan trọng: Đánh dấu transaction là rollback-only để tránh dữ liệu không nhất quán
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return "customer-register";
         }
     }
 
-    @GetMapping("/login-customer")
+    @GetMapping("/customer-login")
     public String showLoginPage() {
-        return "login-customer"; 
+        return "customer-login"; 
     }
 
     // hien tai login xong se redirect vao trang profile
-    @PostMapping("/login-customer")
+    @PostMapping("/customer-login")
     public String processLogin(@RequestParam String username, 
                            @RequestParam String password, 
                            Model model) {
@@ -70,14 +82,14 @@ public class CustomerController {
             Customer customer = customerDAO.findByUserName(username);
             if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
                 System.out.println("Đăng nhập thành công!");
-                return "redirect:/customer/profile"; // Chuyển sang controller hiển thị profile
+                return "redirect:/customer/dashboard"; // Chuyển sang controller hiển thị dashboard
             } else {
                 model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
-                return "login-customer";
+                return "customer-login";
             }
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi: " + e.getMessage());
-            return "login-customer";
+            return "customer-login";
         }
     }
 
@@ -92,7 +104,7 @@ public class CustomerController {
             model.addAttribute("customer", customer);
             return "customer-profile";
         } else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
     
@@ -129,7 +141,7 @@ public class CustomerController {
             }
         }
         else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
 
@@ -143,6 +155,7 @@ public class CustomerController {
                 // Lấy số dư hiện tại
                 BigDecimal currentBalance = customerDAO.getCustomerBalance(username);
                 model.addAttribute("currentBalance", currentBalance);
+                model.addAttribute("customer", customerDAO.findByUserName(username));
 
                 return "membership-registration";
             } catch (Exception e) {
@@ -150,7 +163,7 @@ public class CustomerController {
                 return "membership-registration";
             }
         } else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
 
@@ -203,7 +216,7 @@ public class CustomerController {
                 return "redirect:/customer/membership/register";
             }
         } else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
 
@@ -252,7 +265,7 @@ public class CustomerController {
                 return "customer-profile";
             }
         } else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
 
@@ -280,7 +293,7 @@ public class CustomerController {
                 return "redirect:/customer/movies";
             }
         } else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
 
@@ -312,7 +325,7 @@ public class CustomerController {
                 return "redirect:/customer/movies/" + movieId;
             }
         } else {
-            return "redirect:/login-customer";
+            return "redirect:/customer-login";
         }
     }
 

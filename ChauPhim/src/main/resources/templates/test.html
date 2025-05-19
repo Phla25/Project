@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: html (
+          customPageTitle='Dashboard - ChauPhim',
+          pageTitle=~{::viewTitle},
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/customer-specific.css}">
+        </th:block>
+</head>
+
+<body> 
+    <div th:fragment="viewContent">
+
+        <h1>Nội dung trang Test dành cho khách hàng</h1>
+        <p>Đây là nội dung cụ thể của trang này, được bao bọc bởi layout dành cho khách hàng.</p>
+        <p>Thử thêm nhiều nội dung để kiểm tra scroll và vị trí footer.</p>
+        <div style="height: 200px; background-color: #e9ecef; padding: 1rem; margin-top: 2rem;">
+            Một khối nội dung.
+        </div>
+
+    </div>
+<th:block th:fragment="viewScripts">
+    <script>
+        console.log("JavaScript của trang test đã được tải!");
+        // Logic JS tùy chỉnh cho trang này (nếu có)
+        // Không cần include lại Bootstrap JS ở đây.
+    </script>
+</th:block>
+
+</body>
+</html>

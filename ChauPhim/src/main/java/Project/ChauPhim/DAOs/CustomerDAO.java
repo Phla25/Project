@@ -23,7 +23,12 @@ public class CustomerDAO {
 				+ " e where e.username =: username";
 		Query query = entityManager.createQuery(sql, Customer.class);
 		query.setParameter("username", username);
-		return (Customer) query.getSingleResult();
+		List<Customer> results = query.getResultList();
+        if (results.isEmpty()) {
+            return null;
+        } else {
+            return results.get(0);
+        }
 	}
 
 	public void addCustomer(Customer customer) {

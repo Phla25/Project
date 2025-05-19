@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: html (
+          customPageTitle='Dashboard - ChauPhim',
+          pageTitle=~{::viewTitle},
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Thông tin cá nhân</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -66,68 +72,86 @@
             justify-content: space-between;
         }
     </style>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/customer-specific.css}">
+    </th:block>
+    <title th:fragment="viewTitle">Thông tin cá nhân</title>
 </head>
+
 <body>
-    <h2>Thông tin cá nhân</h2>
-    
-    <div th:if="${successMessage}" class="success-message" th:text="${successMessage}"></div>
-    <div th:if="${error}" class="error-message" th:text="${error}"></div>
-    <div th:if="${param.success}" class="success-message">Cập nhật thông tin thành công!</div>
-    
-    <form th:action="@{/customer/update}" method="post" th:object="${customer}">
-        <div class="form-group">
-            <label for="username">Tên đăng nhập:</label>
-            <input type="text" id="username" th:field="*{username}" readonly class="readonly" />
-        </div>
-        
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="text" id="email" th:field="*{email}" required />
-        </div>
+    <div th:fragment="viewContent">
+        <h2 class="mb-3">Thông tin cá nhân</h2>
+        <div class="row">
+        <div class="card">
+            <div class="card-body">
+                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <div th:if="${param.success}" class="alert alert-success">Cập nhật thông tin thành công!</div>
 
-        <div class="form-group">
-            <label for="name">Họ và tên:</label>
-            <input type="text" id="name" th:field="*{name}" required />
-        </div>
+                <form th:action="@{/customer/update}" method="post" th:object="${customer}" id="profileForm">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Tên đăng nhập:</label>
+                        <input type="text" class="form-control readonly" id="username" th:field="*{username}" readonly />
+                    </div>
 
-        <div class="form-group">
-            <label for="gender">Giới tính:</label>
-            <select id="gender" th:field="*{gender}">
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Không tiết lộ">Không tiết lộ</option>
-            </select>
-        </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="text" class="form-control" id="email" th:field="*{email}" required />
+                    </div>
 
-        <div class="form-group">
-            <label for="nationality">Quốc tịch:</label>
-            <input type="text" id="nationality" th:field="*{nationality}" required />
-        </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Họ và tên:</label>
+                        <input type="text" class="form-control" id="name" th:field="*{name}" required />
+                    </div>
 
-        <div class="form-group">
-            <label for="dob">Ngày sinh:</label>
-            <input type="date" id="dob" th:field="*{dob}" required />
-        </div>
-        
-        <div class="form-group">
-            <label for="rank">Cấp độ hội viên:</label>
-            <input type="text" id="rank" th:field="*{rank}" readonly class="readonly" />
-            <span th:if="*{rank == 0}" class="rank-badge rank-0">Khách hàng thông thường</span>
-            <span th:if="*{rank == 1}" class="rank-badge rank-1">Hội viên bậc vàng</span>
-            <span th:if="*{rank == 2}" class="rank-badge rank-2">Hội viên bậc kim cương</span>
-            <!-- Hiển thị nút đăng ký hội viên nếu chưa là hội viên -->
-            <a th:if="*{rank == 0}" th:href="@{/customer/membership/register}" class="button" style="margin-top: 5px; display: inline-block;">Đăng ký hội viên</a>
-            <a th:if="*{rank == 1}" th:href="@{/customer/membership/register}" class="button" style="margin-top: 5px; display: inline-block;">Nâng cấp hội viên</a>
-        </div>
+                    <div class="mb-3">
+                        <label for="gender" class="form-label">Giới tính:</label>
+                        <select class="form-select" id="gender" th:field="*{gender}">
+                            <option value="Nam" th:selected="${customer.gender == 'Nam'}">Nam</option>
+                            <option value="Nu" th:selected="${customer.gender == 'Nu'}">Nữ</option>
+                            <option value="Khac" th:selected="${customer.gender == 'Khac'}">Khác</option>
+                        </select>
+                    </div>
 
-        <div class="actions">
-            <button type="submit">Cập nhật thông tin</button>
-            <a th:href="@{/customer/dashboard}" class="button">Quay về trang chủ</a>
-        </div>
-    </form>
+                    <div class="mb-3">
+                        <label for="nationality" class="form-label">Quốc tịch:</label>
+                        <input type="text" class="form-control" id="nationality" th:field="*{nationality}" required />
+                    </div>
 
-    <div class="actions">
-        <a th:href="@{/customer/logout}">Đăng xuất</a>
+                    <div class="mb-3">
+                        <label for="dob" class="form-label">Ngày sinh:</label>
+                        <input type="date" class="form-control" id="dob"
+                            th:value="${customer.dob != null ? #temporals.format(customer.dob, 'yyyy-MM-dd') : ''}" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="rank" class="form-label">Cấp độ hội viên:</label>
+                        <input type="text" class="form-control readonly" id="rank" th:field="*{rank}" readonly />
+                        <span th:if="*{rank == 0}" class="badge bg-secondary">Khách hàng thông thường</span>
+                        <span th:if="*{rank == 1}" class="badge bg-warning text-dark">Hội viên bậc vàng</span>
+                        <span th:if="*{rank == 2}" class="badge bg-info text-dark">Hội viên bậc kim cương</span>
+                    </div>
+                    <div class="mb-3">
+                        <a th:if="*{rank == 0}" th:href="@{/customer/membership/register}" class="btn btn-sm btn-info mt-2">Đăng ký hội viên</a>
+                        <a th:if="*{rank == 1}" th:href="@{/customer/membership/register}" class="btn btn-sm btn-info mt-2">Nâng cấp hội viên</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu thay đổi
+                    </button>
+                </form>
+                </div>
+        </div>
+        </div>
     </div>
+
+    <th:block th:fragment="viewScripts">
+        <script>
+            console.log("JavaScript của trang test đã được tải!");
+            // Logic JS tùy chỉnh cho trang này (nếu có)
+            // Không cần include lại Bootstrap JS ở đây.
+        </script>
+    </th:block>
+
 </body>
 </html>
