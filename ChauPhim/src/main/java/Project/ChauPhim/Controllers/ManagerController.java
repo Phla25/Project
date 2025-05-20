@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import Project.ChauPhim.DAOs.ActorDAO;
 import Project.ChauPhim.DAOs.ManagerDAO;
 import Project.ChauPhim.Entities.Manager;
 import Project.ChauPhim.Services.ManagerDashboardService;
@@ -27,6 +28,9 @@ import Project.ChauPhim.Services.ManagerDashboardService;
 public class ManagerController {
     @Autowired
     private ManagerDAO managerDAO;
+    
+    @Autowired
+    private ActorDAO actorDAO;
     
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -222,4 +226,5 @@ public class ManagerController {
                              "July", "August", "September", "October", "November", "December"};
         return monthNames[month - 1];
     }
+
 }

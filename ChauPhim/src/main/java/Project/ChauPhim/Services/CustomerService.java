@@ -19,13 +19,13 @@ public class CustomerService implements AppUserService{
 	
 	@Override
 	public List<Movie> findMovieByActor(String name) {
-		movieDAO.findMovieByActor(name);
+		movieDAO.findMoviesByActor(name);
 		return null;
 	}
 
 	@Override
 	public List<Movie> findMovieByTitle(String title) {
-		movieDAO.findMovieByTitle(title);
+		movieDAO.findMoviesByPartialTitle(title);
 		return null;
 	}
 
