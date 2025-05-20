@@ -43,6 +43,35 @@ public class ManagerDAO {
 	    Long count = (Long) query.getSingleResult();
 	    return count > 0;
 	}
+	public Long countUser() {
+	    String queryStr = "SELECT COUNT(*) FROM \"Customer\"";
+	    Query query = entityManager.createNativeQuery(queryStr);
+
+	    Long count = (Long) query.getSingleResult();
+	    return count;
+	}
+	public Long countDiscount() {
+		String queryStr = "SELECT COUNT(*) FROM \"Discount\"";
+	    Query query = entityManager.createNativeQuery(queryStr);
+
+	    Long count = (Long) query.getSingleResult();
+	    return count;
+	}
+	public Long countSold2Day() {
+		String sql = "SELECT COUNT(*) FROM \"Cart\" WHERE status = 2 AND date = current_date";
+		Long count = (Long) entityManager.createNativeQuery(sql).getSingleResult();
+		return count;
+	}
+	public Long countSoldMonth(int month) {
+		String sql = "SELECT COUNT(*) FROM \"Cart\" WHERE status = 2 AND extract(month from date) = ?";
+		Long count = (Long) entityManager.createNativeQuery(sql).setParameter(1, month).getSingleResult();
+		return count;
+	}
+	public Long countSoldYear(int year) {
+		String sql = "SELECT COUNT(*) FROM \"Cart\" WHERE status = 2 AND extract(year from date) = ?";
+		Long count = (Long) entityManager.createNativeQuery(sql).setParameter(1, year).getSingleResult();
+		return count;
+	}
 	public void updateManager(String username, String email) {
 		// Tạo câu lệnh SQL động dựa trên các trường không null
         StringBuilder sqlBuilder = new StringBuilder("UPDATE \"Customer\" SET ");

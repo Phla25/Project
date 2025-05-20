@@ -14,7 +14,7 @@
                         <h3 class="text-center">Đăng ký Tài khoản</h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/sign-in-customer}" th:object="${customer}" method="post">
+                        <form th:action="@{/sign-up-customer}" th:object="${customer}" method="post">
                             <!-- CSRF Token -->
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf}"/>
                             

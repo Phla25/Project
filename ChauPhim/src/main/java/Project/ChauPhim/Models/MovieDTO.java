@@ -12,7 +12,7 @@ public class MovieDTO {
 	private LocalDate releaseDate;
 	private String genre;
 	private double price;
-	private Studio studio;
+	private StudioDTO studio;
 	private List<Actor> actors = new ArrayList<Actor>();
 	public MovieDTO(String title, String posterImageURL) {
 		this.title = title;
@@ -20,7 +20,7 @@ public class MovieDTO {
 	}
 	// CÁC TRƯỜNG KHÔNG BẮT BUỘC NHẬP MÀ KHÔNG CÓ DỮ LIỆU THÌ MẶC ĐỊNH LÀ NULL
 	public MovieDTO(String title, String posterImageURL, LocalDate releaseDate, String genre, double price,
-			Studio studio) {
+			StudioDTO studio) {
 		super();
 		this.title = title;		// BẮT BUỘC LÀ NOT NULL
 		this.posterImageURL = posterImageURL;	// BẮT BUỘC LÀ NOT NULL
@@ -66,10 +66,10 @@ public class MovieDTO {
 	public void setActors(List<Actor> actors) {
 		this.actors = actors;
 	}
-	public Studio getStudio() {
+	public StudioDTO getStudio() {
 		return studio;
 	}
-	public void setStudio(Studio studio) {
+	public void setStudio(StudioDTO studio) {
 		this.studio = studio;
 	}
 }

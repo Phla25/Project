@@ -26,13 +26,13 @@ public class CustomerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    @GetMapping("/sign-in-customer")
+    @GetMapping("/sign-up-customer")
     public String showSignInPage(Model model) {
         model.addAttribute("customer", new Customer());
-        return "sign-in-customer";
+        return "sign-up-customer";
     }
     
-    @PostMapping("/sign-in-customer")
+    @PostMapping("/sign-up-customer")
     @Transactional
     public String processRegisterManager(
         @ModelAttribute("customer") Customer customer,
@@ -44,7 +44,7 @@ public class CustomerController {
             return "redirect:/login-customer?registered=true";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi: " + e.getMessage());
-            return "sign-in-customer";
+            return "sign-up-customer";
         }
     }
 

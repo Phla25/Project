@@ -39,10 +39,10 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-        .securityMatcher("/customer/**", "/login-customer", "/sign-in-customer", "/process-login-customer", "/customer-profile")
+        .securityMatcher("/customer/**", "/login-customer", "/sign-up-customer", "/process-login-customer", "/customer-profile")
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login-customer", "/sign-in-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
+            .requestMatchers("/login-customer", "/sign-up-customer", "/process-login-customer", "/css/**", "/js/**").permitAll()
             .requestMatchers("/customer/**", "/customer/profile").hasRole("CUSTOMER")
             .anyRequest().authenticated()
         )
@@ -65,10 +65,10 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain managerSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-        .securityMatcher("/manager/**", "/login-manager", "/sign-in-manager", "/process-login-manager", "/manager-profile")
+        .securityMatcher("/manager/**", "/login-manager", "/sign-up-manager", "/process-login-manager", "/manager-profile")
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login-manager", "/sign-in-manager", "/process-login-manager", "/css/**", "/js/**").permitAll()
+            .requestMatchers("/login-manager", "/sign-up-manager", "/process-login-manager", "/css/**", "/js/**").permitAll()
             .requestMatchers("/manager/**", "/manager/profile", "/manager/dashboard").hasRole("MANAGER")
             .anyRequest().authenticated()
         )

@@ -1,0 +1,29 @@
+package Project.ChauPhim.Services;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import Project.ChauPhim.Entities.Actor;
+import Project.ChauPhim.Entities.Movie;
+
+@Service
+public interface AppUserService {	
+	public abstract List<Movie> findMovieByActor(String name);
+	
+	public abstract List<Movie> findMovieByTitle(String title);
+	
+	public abstract List<Movie> findMovieByCategory(String genre);
+	
+    public abstract List<Movie> findAllMovies();
+    
+    public abstract Actor findById(Long actorId);
+    
+    public abstract List<Actor> findActorsByName(String name);
+    
+    public abstract List<Actor> findActorsByMovieId(Long movieId);
+    
+    public abstract List<Actor> findAllActors();
+    
+    public abstract List<Actor> findPopularActors(int limit);
+}

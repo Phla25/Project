@@ -1,6 +1,9 @@
 package Project.ChauPhim.Controllers;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,10 +16,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import Project.ChauPhim.DAOs.ManagerDAO;
 import Project.ChauPhim.Entities.Manager;
+import Project.ChauPhim.Services.ManagerDashboardService;
 
 @Controller
 public class ManagerController {
@@ -26,13 +31,16 @@ public class ManagerController {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
-    @GetMapping("/sign-in-manager")
+    @Autowired
+    private ManagerDashboardService dashboardService;
+    
+    @GetMapping("/sign-up-manager")
     public String showSignInPage(Model model) {
         model.addAttribute("manager", new Manager());
-        return "sign-in-manager";
+        return "sign-up-manager";
     }
     
-    @PostMapping("/sign-in-manager")
+    @PostMapping("/sign-up-manager")
     @Transactional
     public String processRegisterManager(
         @ModelAttribute("manager") Manager manager,
@@ -44,7 +52,7 @@ public class ManagerController {
             return "redirect:/login-manager?registered=true";
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi: " + e.getMessage());
-            return "sign-in-manager";
+            return "sign-up-manager";
         }
     }
     
@@ -89,19 +97,60 @@ public class ManagerController {
         }
     }
     
-    // xem dashboard
+    // Combined dashboard method - handles both authentication and dashboard statistics
     @GetMapping("/manager/dashboard")
     public String viewDashboard(Model model, Principal principal) {
-        if (principal != null) {
-            String username = principal.getName();
-            System.out.println("Username từ Principal: " + username);
-            
-            Manager manager = managerDAO.findByUserName(username);
-            model.addAttribute("manager", manager);
-            return "manager-dashboard";
-        } else {
+        // Authentication check
+        if (principal == null) {
             return "redirect:/login-manager";
         }
+        
+        String username = principal.getName();
+        System.out.println("Username từ Principal: " + username);
+        
+        Manager manager = managerDAO.findByUserName(username);
+        model.addAttribute("manager", manager);
+        
+        // Get current date information for statistics
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
+        int currentYear = today.getYear();
+        
+        // Load dashboard statistics
+        Long userCount = dashboardService.getUserCount();
+        Long discountCount = dashboardService.getDiscountCount();
+        Long todaySales = dashboardService.getTodaySales();
+        Long monthlySales = dashboardService.getMonthlySales(currentMonth);
+        Long yearlySales = dashboardService.getYearlySales(currentYear);
+        
+        // Monthly sales data for chart (last 6 months)
+        Map<String, Long> monthlySalesData = new HashMap<>();
+        for (int i = 5; i >= 0; i--) {
+            int month = currentMonth - i;
+            int year = currentYear;
+            
+            // Handle month rollover to previous year
+            if (month <= 0) {
+                month += 12;
+                year -= 1;
+            }
+            
+            String monthName = getMonthName(month);
+            Long sales = dashboardService.getMonthlySales(month);
+            monthlySalesData.put(monthName, sales);
+        }
+        
+        // Add all data to the model
+        model.addAttribute("userCount", userCount);
+        model.addAttribute("discountCount", discountCount);
+        model.addAttribute("todaySales", todaySales);
+        model.addAttribute("monthlySales", monthlySales);
+        model.addAttribute("yearlySales", yearlySales);
+        model.addAttribute("monthlySalesData", monthlySalesData);
+        model.addAttribute("currentMonth", getMonthName(currentMonth));
+        model.addAttribute("currentYear", currentYear);
+        
+        return "manager-dashboard";
     }
     
     @PostMapping("/manager/update")
@@ -135,5 +184,42 @@ public class ManagerController {
         else {
             return "redirect:/login-manager";
         }
+    }
+    
+    @GetMapping("/api/sales-data")
+    @ResponseBody
+    public Map<String, Object> getSalesData() {
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
+        int currentYear = today.getYear();
+        
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Long> monthlySalesData = new HashMap<>();
+        
+        // Get monthly sales data for the last 6 months
+        for (int i = 5; i >= 0; i--) {
+            int month = currentMonth - i;
+            int year = currentYear;
+            
+            // Handle month rollover to previous year
+            if (month <= 0) {
+                month += 12;
+                year -= 1;
+            }
+            
+            String monthName = getMonthName(month);
+            Long sales = dashboardService.getMonthlySales(month);
+            monthlySalesData.put(monthName, sales);
+        }
+        
+        data.put("monthlySales", monthlySalesData);
+        return data;
+    }
+    
+    // Helper method to convert month number to month name
+    private String getMonthName(int month) {
+        String[] monthNames = {"January", "February", "March", "April", "May", "June", 
+                             "July", "August", "September", "October", "November", "December"};
+        return monthNames[month - 1];
     }
 }

@@ -1,0 +1,70 @@
+package Project.ChauPhim.DAOs;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import Project.ChauPhim.Entities.Movie;
+import Project.ChauPhim.Entities.Studio;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+
+@Repository
+public class MovieDAO {
+	@Autowired
+	private EntityManager entityManager;
+	
+	@Transactional
+	public void addMovie(Movie movie) {
+		String sql = "INSERT INTO \"Movie\" (title, \"posterImageURL\", \"releaseDate\") VALUES (?, ?, ?)";
+		entityManager.createNativeQuery(sql)
+					.setParameter(1, movie.getTitle())
+					.setParameter(2, movie.getPosterImageURL())
+					.setParameter(3, movie.getReleaseDate())
+					.executeUpdate();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByActor(String name){
+		String sql = "SELECT m.* FROM \"Movie\" m JOIN \"Act\" USING (\"movieID\")"
+				+ "JOIN \"Actor\" USING (\"actorID\") WHERE name = :name";
+		Query query = entityManager.createNativeQuery(sql).setParameter("name", name);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByTitle(String title){
+		String sql = "Select e from " + Movie.class.getName()
+				+ " e where e.title = :title";
+		Query query = entityManager.createQuery(sql, Movie.class);
+		query.setParameter("title", title);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByCategory(String genre){
+		String sql = "Select e from " + Movie.class.getName()
+				+ " e where e.genre = :genre";
+		Query query = entityManager.createQuery(sql, Movie.class);
+		query.setParameter("genre", genre);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+    public List<Movie> findAllMovies() {
+        String sql = "SELECT * FROM \"Movie\" ORDER BY \"releaseDate\" DESC";
+        Query query = entityManager.createNativeQuery(sql, Movie.class);
+        return query.getResultList();
+    }
+	
+	public Long countMovies() {
+		String sql = "SELECT COUNT(\"movieID\") FROM \"Movie\"";
+		return (Long) entityManager.createNativeQuery(sql).getSingleResult();
+	}
+	public Studio showStudioInfo(Movie movie) {
+		String sql = "SELECT * FROM \"Studio\" WHERE \"sutdioID\" = ?";
+		Query query = entityManager.createNativeQuery(sql, Movie.class).setParameter(1, movie.getStudioID());
+		return (Studio) query.getSingleResult();
+	}
+}

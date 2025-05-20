@@ -5,14 +5,14 @@ import java.util.List;
 
 import Project.ChauPhim.Entities.Movie;
 
-public class Studio {
+public class StudioDTO {
 	private String name;	// NOT NULL
     private int year;	// 
     private String country;
 
     private List<Movie> movies = new ArrayList<Movie>(); // danh sách phim của studio
 
-	public Studio(String name, int year, String country) {
+	public StudioDTO(String name, int year, String country) {
 		super();
 		this.name = name;
 		this.year = year;
