@@ -26,9 +26,6 @@ public class Orders {
 	@Column(name = "date" , nullable = false)
 	private LocalDate date;
 	
-	@Column(name = "quantity", nullable = false)
-	private int quantity;
-	
 	@Column(name = "rate", nullable = true)
 	private int rate;
 	
@@ -65,14 +62,6 @@ public class Orders {
 
 	public void setDate(LocalDate date) {
 		this.date = date;
-	}
-
-	public int getQuantity() {
-		return quantity;
-	}
-
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
 	}
 
 	public int getRate() {

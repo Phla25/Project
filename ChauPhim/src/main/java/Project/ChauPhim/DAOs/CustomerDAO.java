@@ -23,6 +23,7 @@ public class CustomerDAO {
 				+ " e where e.username =: username";
 		Query query = entityManager.createQuery(sql, Customer.class);
 		query.setParameter("username", username);
+		@SuppressWarnings("unchecked")
 		List<Customer> results = query.getResultList();
         if (results.isEmpty()) {
             return null;

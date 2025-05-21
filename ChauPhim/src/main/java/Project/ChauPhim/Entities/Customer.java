@@ -2,6 +2,9 @@ package Project.ChauPhim.Entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+
+import org.hibernate.annotations.ColumnDefault;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -43,9 +46,10 @@ public class Customer {
 	@Column(name = "rank", nullable = false)
 	private int rank;
 
-	@Column(name = "balance", nullable = false, columnDefinition = "money default 0")
+	@Column(name = "balance", nullable = false)
+	@ColumnDefault("0::money")
 	private BigDecimal balance = BigDecimal.ZERO;
-
+	
 	public Long getCustomerID() {
 		return customerID;
 	}
@@ -126,4 +130,3 @@ public class Customer {
 		return this.balance;
 	}
 }
-

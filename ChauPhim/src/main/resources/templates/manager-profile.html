@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Profile</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background-color: #343a40;
+            color: white;
+            padding-top: 20px;
+        }
+        
+        .sidebar-header {
+            padding: 10px 15px;
+            border-bottom: 1px solid #495057;
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+        
+        .sidebar li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar a {
+            display: block;
+            padding: 10px 15px;
+            color: #ced4da;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .sidebar a:hover, .sidebar a.active {
+            background-color: #495057;
+            color: white;
+        }
+        
+        .sidebar .logout {
+            margin-top: 30px;
+        }
+        
+        .sidebar .logout a {
+            color: #ff8585;
+        }
+        
+        /* Main content styling */
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .content-header {
+            background-color: white;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content-header h2 {
+            margin: 0;
+            color: #343a40;
+        }
+        
+        .profile-container {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin-right: 20px;
+        }
+        
+        .profile-info h3 {
+            margin: 0;
+            color: #343a40;
+            font-size: 1.5rem;
+        }
+        
+        .profile-info p {
+            margin: 5px 0 0;
+            color: #6c757d;
+        }
+        
+        .profile-details {
+            margin-top: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            width: 150px;
+            font-weight: bold;
+            color: #343a40;
+        }
+        
+        .detail-value {
+            flex: 1;
+            color: #495057;
+        }
+        
+        .profile-actions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0069d9;
+        }
+        
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        /* Form styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .content {
+                order: 1;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+            }
+            
+            .detail-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>ChauPhim Admin</h3>
+            </div>
+            
+            <ul>
+                <li><a href="/manager/dashboard">Dashboard</a></li>
+                <li><a href="/manager/movies">Movies</a></li>
+                <li><a href="/manager/screenings">Screenings</a></li>
+                <li><a href="/manager/theaters">Theaters</a></li>
+                <li><a href="/manager/customers">Customers</a></li>
+                <li><a href="/manager/bookings">Bookings</a></li>
+                <li><a href="/manager/profile" class="active">Profile</a></li>
+                <li class="logout"><a href="/manager/logout">Logout</a></li>
+            </ul>
+        </div>
+        
+        <!-- Main content -->
+        <div class="content">
+            <div class="content-header">
+                <h2>My Profile</h2>
+            </div>
+            
+            <!-- Success message -->
+            <div th:if="${param.updated}" class="alert alert-success">
+                Profile updated successfully!
+            </div>
+            
+            <div class="profile-container">
+                <div class="profile-header">
+                    <div class="profile-avatar" th:text="${#strings.substring(manager.username, 0, 1).toUpperCase()}">
+                        M
+                    </div>
+                    <div class="profile-info">
+                        <h3 th:text="${manager.username}">Manager Name</h3>
+                        <p th:text="${manager.email}">manager@example.com</p>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <div class="detail-label">Username:</div>
+                        <div class="detail-value" th:text="${manager.username}">username</div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">Email:</div>
+                        <div class="detail-value" th:text="${manager.email}">manager@example.com</div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">Role:</div>
+                        <div class="detail-value">Manager</div>
+                    </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">Last Login:</div>
+                        <div class="detail-value" th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}">Date</div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <a href="/manager/profile/edit" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

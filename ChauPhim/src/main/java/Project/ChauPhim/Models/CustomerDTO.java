@@ -1,6 +1,5 @@
 package Project.ChauPhim.Models;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,15 +10,13 @@ public class CustomerDTO extends AppUser{
     private List<CartDTO> cartHistory = new ArrayList<CartDTO>();	// Danh sách các Cart đã đặt từ trước tới giờ
     private List<OrderDTO> orderHistory = new ArrayList<OrderDTO>(); // Danh sách các Order của người dùng từ trước tới giờ
     private LocalDate dob;
-    private BigDecimal balance = BigDecimal.ZERO;
-
-	public CustomerDTO(String username, String password, String email, int rank, LocalDate dob, BigDecimal balance) {
-	    super(username, password, email);
-	    this.rank = rank;
-	    this.dob = dob;
-	    this.balance = BigDecimal.ZERO;
+    
+	public CustomerDTO(String username, String password, String email, int rank, LocalDate dob) {
+		super(username, password, email);
+		// TODO Auto-generated constructor stub
+		this.rank = rank;
+		this.dob = dob;
 	}
-	
 	public int getRank() {
 		return this.rank;
 	}
@@ -45,10 +42,5 @@ public class CustomerDTO extends AppUser{
 		this.cartHistory = cartHistory;
 	}
     
-    public BigDecimal getBalance() {
-    return balance;
-}
-	public void setBalance(BigDecimal balance) {
-	    this.balance = balance;
-	}
+    
 }
