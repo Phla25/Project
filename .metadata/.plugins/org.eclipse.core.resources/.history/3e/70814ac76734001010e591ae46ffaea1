@@ -1,0 +1,30 @@
+package Project.ChauPhim.DAOs;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import java.time.LocalDate;
+import Project.ChauPhim.Entities.Movie;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+
+@Repository
+public class MovieDAOs {
+	@Autowired
+	private EntityManager entityManager;
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByTitle(String title){
+		String sql = "Select e from " + Movie.class.getName()
+				+ " e where e.title =: title";
+		Query query = entityManager.createQuery(sql, Movie.class);
+		query.setParameter("title", title);
+		return query.getResultList();
+	}
+	
+	@Transactional
+	public void addMovie(String title, String posterImageURL, LocalDate releaseDate) {
+		
+	}
+}

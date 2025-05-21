@@ -1,0 +1,227 @@
+package Project.ChauPhim.Controllers;
+
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import Project.ChauPhim.DAOs.ManagerDAO;
+import Project.ChauPhim.Entities.Manager;
+import Project.ChauPhim.Services.ManagerDashboardService;
+
+@Controller
+public class ManagerController {
+    @Autowired
+    private ManagerDAO managerDAO;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @GetMapping("/sign-up-manager")
+    public String showSignInPage(Model model) {
+        model.addAttribute("manager", new Manager());
+        return "sign-up-manager";
+    }
+    
+    @PostMapping("/sign-up-manager")
+    @Transactional
+    public String processRegisterManager(
+        @ModelAttribute("manager") Manager manager,
+        Model model
+    ) {
+        try {
+            manager.setPassword(passwordEncoder.encode(manager.getPassword()));
+            managerDAO.addManager(manager);
+            return "redirect:/login-manager?registered=true";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "sign-up-manager";
+        }
+    }
+    
+    @GetMapping("/login-manager")
+    public String showLoginPage() {
+        return "login-manager";
+    }
+    
+    // hien tai login xong se redirect vao trang dashboard
+    @PostMapping("/login-manager")
+    public String processLogin(@RequestParam String username, 
+                           @RequestParam String password, 
+                           Model model) {
+        try {
+            Manager manager = managerDAO.findByUserName(username);
+            if (manager != null && passwordEncoder.matches(password, manager.getPassword())) {
+                // ✅ KHÔNG cần session.setAttribute nữa
+                System.out.println("Đăng nhập thành công!");
+                return "redirect:/manager/dashboard"; // Chuyển sang controller hiển thị dashboard
+            } else {
+                model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
+                return "login-manager";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "login-manager";
+        }
+    }
+    
+    // xem thong tin ca nhan
+    @GetMapping("/manager/profile")
+    public String viewProfile(Model model, Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("Username từ Principal: " + username);
+            
+            Manager manager = managerDAO.findByUserName(username);
+            model.addAttribute("manager", manager);
+            return "manager-profile";
+        } else {
+            return "redirect:/login-manager";
+        }
+    }
+    
+    // xem dashboard
+    @GetMapping("/manager/dashboard")
+    public String viewDashboard(Model model, Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("Username từ Principal: " + username);
+            
+            Manager manager = managerDAO.findByUserName(username);
+            model.addAttribute("manager", manager);
+            return "manager-dashboard";
+        } else {
+            return "redirect:/login-manager";
+        }
+    }
+    
+    @PostMapping("/manager/update")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String updateManagerInfo(
+        @ModelAttribute("manager") Manager formManager,
+        Authentication authentication,
+        RedirectAttributes redirectAttributes,
+        Model model
+    ) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            try {
+                // Cập nhật thông tin từ form
+                managerDAO.updateManager(
+                    username, 
+                    formManager.getEmail() 
+                );
+                
+                redirectAttributes.addFlashAttribute("successMessage", "Thông tin đã được cập nhật thành công!");
+                return "redirect:/manager/profile"; 
+            }
+            catch (Exception e) {
+                model.addAttribute("error", e.getMessage());
+                // Lấy lại thông tin manager từ DB để hiển thị
+                Manager manager = managerDAO.findByUserName(username);
+                model.addAttribute("manager", manager);
+                return "manager-profile";
+            }
+        }
+        else {
+            return "redirect:/login-manager";
+        }
+    }
+    @Autowired
+    private ManagerDashboardService dashboardService;
+    
+    @GetMapping("/manager/dashboard")
+    public String dashboard(Model model) {
+        // Get current date information for statistics
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
+        int currentYear = today.getYear();
+        
+        // Load dashboard statistics
+        Long userCount = dashboardService.getUserCount();
+        Long discountCount = dashboardService.getDiscountCount();
+        Long todaySales = dashboardService.getTodaySales();
+        Long monthlySales = dashboardService.getMonthlySales(currentMonth);
+        Long yearlySales = dashboardService.getYearlySales(currentYear);
+        
+        // Monthly sales data for chart (last 6 months)
+        Map<String, Long> monthlySalesData = new HashMap<>();
+        for (int i = 5; i >= 0; i--) {
+            int month = currentMonth - i;
+            int year = currentYear;
+            
+            // Handle month rollover to previous year
+            if (month <= 0) {
+                month += 12;
+                year -= 1;
+            }
+            
+            String monthName = getMonthName(month);
+            Long sales = dashboardService.getMonthlySales(month);
+            monthlySalesData.put(monthName, sales);
+        }
+        
+        // Add all data to the model
+        model.addAttribute("userCount", userCount);
+        model.addAttribute("discountCount", discountCount);
+        model.addAttribute("todaySales", todaySales);
+        model.addAttribute("monthlySales", monthlySales);
+        model.addAttribute("yearlySales", yearlySales);
+        model.addAttribute("monthlySalesData", monthlySalesData);
+        model.addAttribute("currentMonth", getMonthName(currentMonth));
+        model.addAttribute("currentYear", currentYear);
+        
+        return "manager/dashboard";
+    }
+    
+    @GetMapping("/api/sales-data")
+    @ResponseBody
+    public Map<String, Object> getSalesData() {
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
+        int currentYear = today.getYear();
+        
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Long> monthlySalesData = new HashMap<>();
+        
+        // Get monthly sales data for the last 6 months
+        for (int i = 5; i >= 0; i--) {
+            int month = currentMonth - i;
+			int year = currentYear;
+            
+            // Handle month rollover to previous year
+            if (month <= 0) {
+                month += 12;
+                year -= 1;
+            }
+            
+            String monthName = getMonthName(month);
+            Long sales = dashboardService.getMonthlySales(month);
+            monthlySalesData.put(monthName, sales);
+        }
+        
+        data.put("monthlySales", monthlySalesData);
+        return data;
+    }
+    
+    // Helper method to convert month number to month name
+    private String getMonthName(int month) {
+        String[] monthNames = {"January", "February", "March", "April", "May", "June", 
+                             "July", "August", "September", "October", "November", "December"};
+        return monthNames[month - 1];
+    }
+}

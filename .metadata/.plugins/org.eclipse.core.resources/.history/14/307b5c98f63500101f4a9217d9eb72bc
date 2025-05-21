@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register Manager</title>
+</head>
+<body>
+    <h1>Register as Manager</h1>
+    <form th:action="@{/sign-in-manager}" th:object="${manager}" method="post">
+        <!-- Thêm CSRF token tự động nếu dùng Spring Security -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf}"/>
+        
+        <label for="username">Username:</label>
+        <input type="text" th:field="*{username}" placeholder="Username"><br>
+        
+        <label for="email">Email:</label>
+        <input type="email" th:field="*{email}" placeholder="abcd@gmail.com"><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" th:field="*{password}" required><br>
+        
+        <button type="submit">Register</button>
+    </form>
+    
+    <div th:if="${error}" th:text="${error}" style="color:red; font-style:italic;"></div>
+    <p><a href="/login-manager">Back to Login</a></p>
+</body>
+</html>

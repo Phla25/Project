@@ -1,0 +1,16 @@
+package Project.ChauPhim.Services;
+
+import java.util.List;
+
+import Project.ChauPhim.Entities.Movie;
+
+public interface AppUserService {
+	
+	public abstract List<Movie> findMovieByActor(String name);
+	
+	public abstract List<Movie> findMovieByTitle(String title);
+	
+	public abstract List<Movie> findMovieByCategory(String genre);
+	
+    public abstract List<Movie> findAllMovies();
+}

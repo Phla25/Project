@@ -1,0 +1,54 @@
+package Project.ChauPhim.DAOs;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import Project.ChauPhim.Entities.Actor;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+
+@Repository
+public class ActorDAO {
+    @PersistenceContext
+    private EntityManager entityManager;
+    
+    public Actor findById(Long actorId) {
+        String sql = "SELECT * FROM \"Actor\" WHERE \"actorID\" = ?";
+        try {
+            Query query = entityManager.createNativeQuery(sql, Actor.class);
+            query.setParameter(1, actorId);
+            return (Actor) query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Actor> findActorsByMovieId(Long movieId) {
+        String sql = "SELECT a.* FROM \"Actor\" a " +
+                     "JOIN \"Act\" act ON a.\"actorID\" = act.\"actorID\" " +
+                     "WHERE act.\"movieID\" = ?";
+        Query query = entityManager.createNativeQuery(sql, Actor.class);
+        query.setParameter(1, movieId);
+        return query.getResultList();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Actor> findAllActors() {
+        String sql = "SELECT * FROM \"Actor\" ORDER BY \"name\"";
+        Query query = entityManager.createNativeQuery(sql, Actor.class);
+        return query.getResultList();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public List<Actor> findPopularActors(int limit) {
+        String sql = "SELECT a.* FROM \"Actor\" a " +
+                     "ORDER BY a.\"rank\" DESC NULLS LAST";
+        Query query = entityManager.createNativeQuery(sql, Actor.class);
+        query.setMaxResults(limit);
+        return query.getResultList();
+    }
+}

@@ -1,0 +1,355 @@
+package Project.ChauPhim.Controllers;
+
+import java.security.Principal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import Project.ChauPhim.DAOs.ActorDAO;
+import Project.ChauPhim.DAOs.ManagerDAO;
+import Project.ChauPhim.DAOs.MovieDAO;
+import Project.ChauPhim.Entities.Actor;
+import Project.ChauPhim.Entities.Manager;
+import Project.ChauPhim.Entities.Movie;
+import Project.ChauPhim.Models.MovieDTO;
+import Project.ChauPhim.Services.ManagerDashboardService;
+import Project.ChauPhim.Services.MovieService;
+
+@Controller
+public class ManagerController {
+    @Autowired
+    private ManagerDAO managerDAO;
+    
+    @Autowired
+    private ActorDAO actorDAO;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private ManagerDashboardService dashboardService;
+    
+    @GetMapping("/sign-up-manager")
+    public String showSignInPage(Model model) {
+        model.addAttribute("manager", new Manager());
+        return "sign-up-manager";
+    }
+    
+    @PostMapping("/sign-up-manager")
+    @Transactional
+    public String processRegisterManager(
+        @ModelAttribute("manager") Manager manager,
+        Model model
+    ) {
+        try {
+            manager.setPassword(passwordEncoder.encode(manager.getPassword()));
+            managerDAO.addManager(manager);
+            return "redirect:/login-manager?registered=true";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "sign-up-manager";
+        }
+    }
+    
+    @GetMapping("/login-manager")
+    public String showLoginPage() {
+        return "login-manager";
+    }
+    
+    // hien tai login xong se redirect vao trang dashboard
+    @PostMapping("/login-manager")
+    public String processLogin(@RequestParam String username, 
+                           @RequestParam String password, 
+                           Model model) {
+        try {
+            Manager manager = managerDAO.findByUserName(username);
+            if (manager != null && passwordEncoder.matches(password, manager.getPassword())) {
+                // ✅ KHÔNG cần session.setAttribute nữa
+                System.out.println("Đăng nhập thành công!");
+                return "redirect:/manager/dashboard"; // Chuyển sang controller hiển thị dashboard
+            } else {
+                model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
+                return "login-manager";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "login-manager";
+        }
+    }
+    
+    // xem thong tin ca nhan
+    @GetMapping("/manager/profile")
+    public String viewProfile(Model model, Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("Username từ Principal: " + username);
+            
+            Manager manager = managerDAO.findByUserName(username);
+            model.addAttribute("manager", manager);
+            return "manager-profile";
+        } else {
+            return "redirect:/login-manager";
+        }
+    }
+    
+    // Combined dashboard method - handles both authentication and dashboard statistics
+    @GetMapping("/manager/dashboard")
+    public String viewDashboard(Model model, Principal principal) {
+        // Authentication check
+        if (principal == null) {
+            return "redirect:/login-manager";
+        }
+        
+        String username = principal.getName();
+        System.out.println("Username từ Principal: " + username);
+        
+        Manager manager = managerDAO.findByUserName(username);
+        model.addAttribute("manager", manager);
+        
+        // Get current date information for statistics
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
+        int currentYear = today.getYear();
+        
+        // Load dashboard statistics
+        Long userCount = dashboardService.getUserCount();
+        Long discountCount = dashboardService.getDiscountCount();
+        Long todaySales = dashboardService.getTodaySales();
+        Long monthlySales = dashboardService.getMonthlySales(currentMonth);
+        Long yearlySales = dashboardService.getYearlySales(currentYear);
+        
+        // Monthly sales data for chart (last 6 months)
+        Map<String, Long> monthlySalesData = new HashMap<>();
+        for (int i = 5; i >= 0; i--) {
+            int month = currentMonth - i;
+            int year = currentYear;
+            
+            // Handle month rollover to previous year
+            if (month <= 0) {
+                month += 12;
+                year -= 1;
+            }
+            
+            String monthName = getMonthName(month);
+            Long sales = dashboardService.getMonthlySales(month);
+            monthlySalesData.put(monthName, sales);
+        }
+        
+        // Add all data to the model
+        model.addAttribute("userCount", userCount);
+        model.addAttribute("discountCount", discountCount);
+        model.addAttribute("todaySales", todaySales);
+        model.addAttribute("monthlySales", monthlySales);
+        model.addAttribute("yearlySales", yearlySales);
+        model.addAttribute("monthlySalesData", monthlySalesData);
+        model.addAttribute("currentMonth", getMonthName(currentMonth));
+        model.addAttribute("currentYear", currentYear);
+        
+        return "manager-dashboard";
+    }
+    
+    @PostMapping("/manager/update")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String updateManagerInfo(
+        @ModelAttribute("manager") Manager formManager,
+        Authentication authentication,
+        RedirectAttributes redirectAttributes,
+        Model model
+    ) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            try {
+                // Cập nhật thông tin từ form
+                managerDAO.updateManager(
+                    username, 
+                    formManager.getEmail() 
+                );
+                
+                redirectAttributes.addFlashAttribute("successMessage", "Thông tin đã được cập nhật thành công!");
+                return "redirect:/manager/profile"; 
+            }
+            catch (Exception e) {
+                model.addAttribute("error", e.getMessage());
+                // Lấy lại thông tin manager từ DB để hiển thị
+                Manager manager = managerDAO.findByUserName(username);
+                model.addAttribute("manager", manager);
+                return "manager-profile";
+            }
+        }
+        else {
+            return "redirect:/login-manager";
+        }
+    }
+    
+    @GetMapping("/api/sales-data")
+    @ResponseBody
+    public Map<String, Object> getSalesData() {
+        LocalDate today = LocalDate.now();
+        int currentMonth = today.getMonthValue();
+        int currentYear = today.getYear();
+        
+        Map<String, Object> data = new HashMap<>();
+        Map<String, Long> monthlySalesData = new HashMap<>();
+        
+        // Get monthly sales data for the last 6 months
+        for (int i = 5; i >= 0; i--) {
+            int month = currentMonth - i;
+            int year = currentYear;
+            
+            // Handle month rollover to previous year
+            if (month <= 0) {
+                month += 12;
+                year -= 1;
+            }
+            
+            String monthName = getMonthName(month);
+            Long sales = dashboardService.getMonthlySales(month);
+            monthlySalesData.put(monthName, sales);
+        }
+        
+        data.put("monthlySales", monthlySalesData);
+        return data;
+    }
+    
+    // Helper method to convert month number to month name
+    private String getMonthName(int month) {
+        String[] monthNames = {"January", "February", "March", "April", "May", "June", 
+                             "July", "August", "September", "October", "November", "December"};
+        return monthNames[month - 1];
+    }
+    @Autowired
+    private MovieService movieService;
+    
+    @GetMapping("/manager/movies")
+    public String viewMovies(Model model, Principal principal) {
+        // Authentication check
+        if (principal == null) {
+            return "redirect:/login-manager";
+        }
+        
+        String username = principal.getName();
+        Manager manager = managerDAO.findByUserName(username);
+        model.addAttribute("manager", manager);
+        
+        // Get all movies with details using the service
+        List<MovieDTO> movies = movieService.getAllMoviesWithDetails();
+        model.addAttribute("movies", movies);
+        
+        // Get all actors for the dropdown in the add movie form
+        List<Actor> allActors = actorDAO.findAllActors();
+        model.addAttribute("allActors", allActors);
+        
+        // Add empty movie object for the add movie form
+        model.addAttribute("newMovie", new Movie());
+        model.addAttribute("newActor", new Actor());
+        
+        return "manager-movie";
+    }
+    @Autowired
+    private MovieDAO movieDAO;
+    @PostMapping("/manager/movies/add")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String addMovie(
+        @ModelAttribute("newMovie") Movie newMovie,
+        Principal principal,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // Add the new movie
+            movieDAO.addMovie(newMovie);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Movie added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error adding movie: " + e.getMessage());
+        }
+        
+        return "redirect:/manager/movies";
+    }
+    
+    @GetMapping("/manager/movies/search")
+    public String searchMovies(
+        @RequestParam(value = "searchType", required = false) String searchType,
+        @RequestParam(value = "searchTerm", required = false) String searchTerm,
+        Model model,
+        Principal principal
+    ) {
+        // Authentication check
+        if (principal == null) {
+            return "redirect:/login-manager";
+        }
+        
+        String username = principal.getName();
+        Manager manager = managerDAO.findByUserName(username);
+        model.addAttribute("manager", manager);
+        
+        // Get searched movies using the service
+        List<MovieDTO> movies = movieService.searchMovies(searchType, searchTerm);
+        model.addAttribute("movies", movies);
+        model.addAttribute("searchType", searchType);
+        model.addAttribute("searchTerm", searchTerm);
+        
+        // Get all actors for the dropdown in the add movie form
+        List<Actor> allActors = actorDAO.findAllActors();
+        model.addAttribute("allActors", allActors);
+        
+        // Add empty movie object for the add movie form
+        model.addAttribute("newMovie", new Movie());
+        model.addAttribute("newActor", new Actor());
+        
+        return "manager-movie";
+    }
+    
+    @PostMapping("/manager/actors/add")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String addActor(
+        @ModelAttribute("newActor") Actor newActor,
+        Principal principal,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // Add the new actor
+            actorDAO.addActor(newActor);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Actor added successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error adding actor: " + e.getMessage());
+        }
+        
+        return "redirect:/manager/movies";
+    }
+    
+    @PostMapping("/manager/movies/add-actor")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String addActorToMovie(
+        @RequestParam("movieId") Long movieId,
+        @RequestParam("actorId") Long actorId,
+        Principal principal,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            // Add the actor to the movie
+            actorDAO.addActorToMovie(actorId, movieId);
+            
+            redirectAttributes.addFlashAttribute("successMessage", "Actor added to movie successfully!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Error adding actor to movie: " + e.getMessage());
+        }
+        
+        return "redirect:/manager/movies";
+    }
+}

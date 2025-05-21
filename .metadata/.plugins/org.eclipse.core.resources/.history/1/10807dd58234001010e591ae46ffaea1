@@ -1,0 +1,61 @@
+package Project.ChauPhim.Services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import Project.ChauPhim.Entities.Movie;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+
+public interface AppUserService {
+	@Autowired
+	private EntityManager entityManager;
+	
+	@Transactional
+	public void addMovie(Movie movie) {
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByActor(String name){
+		String sql = "SELECT m.* FROM \"Movie\" m JOIN \"Act\" USING (\"movieID\")"
+				+ "JOIN \"Actor\" USING (\"actorID\") WHERE name = :name";
+		Query query = entityManager.createNativeQuery(sql).setParameter("name", name);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByTitle(String title){
+		String sql = "Select e from " + Movie.class.getName()
+				+ " e where e.title = :title";
+		Query query = entityManager.createQuery(sql, Movie.class);
+		query.setParameter("title", title);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByCategory(String genre){
+		String sql = "Select e from " + Movie.class.getName()
+				+ " e where e.genre = :genre";
+		Query query = entityManager.createQuery(sql, Movie.class);
+		query.setParameter("genre", genre);
+		return query.getResultList();
+	}
+	
+	@SuppressWarnings("unchecked")
+    public List<Movie> findFeaturedMovies(int limit) {
+        // co the thay doi logic, lay cac phim noi bat theo tieu chi cua rieng minh
+        String sql = "SELECT * FROM \"Movie\" WHERE \"discountID\" IS NOT NULL ORDER BY \"releaseDate\" DESC";
+        Query query = entityManager.createNativeQuery(sql, Movie.class);
+        query.setMaxResults(limit);
+        return query.getResultList();
+    }
+	
+	@SuppressWarnings("unchecked")
+    public List<Movie> findAllMovies() {
+        String sql = "SELECT * FROM \"Movie\" ORDER BY \"releaseDate\" DESC";
+        Query query = entityManager.createNativeQuery(sql, Movie.class);
+        return query.getResultList();
+    }
+}

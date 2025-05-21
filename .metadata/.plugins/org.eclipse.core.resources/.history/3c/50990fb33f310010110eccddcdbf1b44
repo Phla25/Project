@@ -1,0 +1,123 @@
+package Project.ChauPhim.Controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import Project.ChauPhim.DAOs.CustomerDAO;
+import Project.ChauPhim.Entities.Customer;
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+public class CustomerController {
+    @Autowired
+    private CustomerDAO customerDAO;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @GetMapping("/sign-in-customer")
+    public String showSignInPage(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "sign-in-customer";
+    }
+    
+    @PostMapping("/sign-in-customer")
+    @Transactional
+    public String processRegisterManager(
+        @ModelAttribute("customer") Customer customer,
+        Model model
+    ) {
+        try {
+            customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+            customerDAO.addCustomer(customer);
+            return "redirect:/login-customer?registered=true";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "sign-in-customer";
+        }
+    }
+
+    @GetMapping("/login-customer")
+    public String showLoginPage() {
+        return "login-customer"; // Trả về trang HTML đăng nhập
+    }
+
+    // hien tai login xong se redirect vao trang profile
+    @PostMapping("/login-customer") // xac thuc user va mat khau, luu username vao HTTPSession
+    public String processLogin(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
+        try {
+            Customer customer = customerDAO.findByUserName(username);
+            if (customer != null && passwordEncoder.matches(password, customer.getPassword())) {
+                session.setAttribute("username", username); // Lưu username vào session
+                return "customer-profile";
+            } else {
+                model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu sai!");
+                return "login-customer";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi: " + e.getMessage());
+            return "login-customer";
+        }
+    }
+
+
+    @GetMapping
+    public String showProfile(HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
+        
+        if (username == null) {
+            return "redirect:/login-customer";
+        }
+        
+        Customer customer = customerDAO.findByUserName(username);
+        if (customer == null) {
+            // Nếu không tìm thấy, tạo customer mới chỉ với username
+            customer = new Customer();
+            customer.setUsername(username);
+        }
+        
+        model.addAttribute("customer", customer);
+        return "customer-profile";
+    }
+
+    // Xử lý cập nhật thông tin
+    @PostMapping
+    public String updateProfile(
+        @RequestParam String currentUsername,
+        @RequestParam String email,
+        @RequestParam String name,
+        @RequestParam String username,
+        HttpSession session,
+        Model model
+    ) {
+        try {
+            // Gọi hàm update
+            customerDAO.updateCustomer(currentUsername, email, name, username);
+            
+            // Cập nhật session nếu username thay đổi
+            if (!currentUsername.equals(username)) {
+                session.setAttribute("username", username);
+            }
+            
+            return "redirect:/customer-profile?success=true";
+        } catch (Exception e) {
+            // Nếu có lỗi, giữ lại giá trị đã nhập
+            Customer customer = new Customer();
+            customer.setUsername(username);
+            customer.setEmail(email);
+            customer.setName(name);
+            
+            model.addAttribute("customer", customer);
+            model.addAttribute("error", "Cập nhật thất bại: " + e.getMessage());
+            return "customer-profile";
+        }
+    }
+}

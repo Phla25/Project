@@ -1,0 +1,35 @@
+package Project.ChauPhim.Services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import Project.ChauPhim.Entities.Movie;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+
+public interface AppUserService {
+	
+	@Transactional
+	public abstract void addMovie(Movie movie) {
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByActor(String name){
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByTitle(String title){
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Movie> findMovieByCategory(String genre){
+	}
+	
+	@SuppressWarnings("unchecked")
+    public List<Movie> findFeaturedMovies(int limit);
+	
+	@SuppressWarnings("unchecked")
+    public List<Movie> findAllMovies();
+}

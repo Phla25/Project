@@ -1,0 +1,44 @@
+package Project.ChauPhim.Services;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import Project.ChauPhim.DAOs.MovieDAO;
+import Project.ChauPhim.Entities.Movie;
+
+public class ManagerService implements AppUserService{
+	@Autowired
+	private MovieDAO movieDAO;
+
+	@Override
+	public void addMovie(Movie movie) {
+		movieDAO.addMovie(movie);		
+	}
+
+	@Override
+	public List<Movie> findMovieByActor(String name) {
+		movieDAO.findMovieByActor(name);
+		return null;
+	}
+
+	@Override
+	public List<Movie> findMovieByTitle(String title) {
+		movieDAO.findMovieByTitle(title);
+		return null;
+	}
+
+	@Override
+	public List<Movie> findMovieByCategory(String genre) {
+		movieDAO.findMovieByCategory(genre);
+		return null;
+	}
+
+	@Override
+	public List<Movie> findAllMovies() {
+		movieDAO.findAllMovies();
+		return null;
+	}
+	
+	
+}

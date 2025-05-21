@@ -1,0 +1,22 @@
+package Project.ChauPhim.Services;
+
+import java.util.List;
+
+import Project.ChauPhim.Entities.Movie;
+import jakarta.transaction.Transactional;
+
+public interface AppUserService {
+	
+	@Transactional
+	public abstract void addMovie(Movie movie);
+	
+	public List<Movie> findMovieByActor(String name);
+	
+	public List<Movie> findMovieByTitle(String title);
+	
+	public List<Movie> findMovieByCategory(String genre);
+	
+    public List<Movie> findFeaturedMovies(int limit);
+	
+    public List<Movie> findAllMovies();
+}

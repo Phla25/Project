@@ -1,0 +1,132 @@
+package Project.ChauPhim.Controllers;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import Project.ChauPhim.DAOs.ManagerDAO;
+import Project.ChauPhim.Entities.Manager;
+
+@Controller
+public class ManagerController {
+    @Autowired
+    private ManagerDAO managerDAO;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+    @GetMapping("/sign-in-manager")
+    public String showSignInPage(Model model) {
+        model.addAttribute("manager", new Manager());
+        return "sign-in-manager";
+    }
+    
+    @PostMapping("/sign-in-manager")
+    @Transactional
+    public String processRegisterManager(
+        @ModelAttribute("manager") Manager manager,
+        Model model
+    ) {
+        try {
+            // Check if username already exists
+            if (managerDAO.existsByUsername(manager.getUsername())) {
+                model.addAttribute("error", "Username already exists. Please choose a different username.");
+                return "sign-in-manager";
+            }
+            
+            manager.setPassword(passwordEncoder.encode(manager.getPassword()));
+            managerDAO.addManager(manager);
+            return "redirect:/login-manager?registered=true";
+        } catch (Exception e) {
+            model.addAttribute("error", "Error: " + e.getMessage());
+            return "sign-in-manager";
+        }
+    }
+    
+    @GetMapping("/login-manager")
+    public String showLoginPage() {
+        return "login-manager";
+    }
+    
+    // Add the missing endpoint that matches the form action
+    @PostMapping("/process-login-manager")
+    public String processLoginManager(
+            @RequestParam String username,
+            @RequestParam String password,
+            Model model) {
+        try {
+            Manager manager = managerDAO.findByUserName(username);
+            if (manager != null && passwordEncoder.matches(password, manager.getPassword())) {
+                // Login successful - Spring Security will handle the authentication
+                System.out.println("Login successful!");
+                return "redirect:/manager/dashboard";
+            } else {
+                model.addAttribute("error", "Invalid username or password!");
+                return "login-manager";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Error: " + e.getMessage());
+            return "login-manager";
+        }
+    }
+    
+    // Keep the original login-manager endpoint for backward compatibility
+    @PostMapping("/login-manager")
+    public String processLogin(
+            @RequestParam String username,
+            @RequestParam String password,
+            Model model) {
+        try {
+            Manager manager = managerDAO.findByUserName(username);
+            if (manager != null && passwordEncoder.matches(password, manager.getPassword())) {
+                // Login successful - Spring Security will handle the authentication
+                System.out.println("Login successful!");
+                return "redirect:/manager/dashboard";
+            } else {
+                model.addAttribute("error", "Invalid username or password!");
+                return "login-manager";
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Error: " + e.getMessage());
+            return "login-manager";
+        }
+    }
+    
+    @GetMapping("/manager/dashboard")
+    public String showDashboard(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        
+        try {
+            Manager manager = managerDAO.findByUserName(username);
+            model.addAttribute("manager", manager);
+        } catch (Exception e) {
+            // Handle exception
+        }
+        
+        return "manager-dashboard";
+    }
+    
+    @GetMapping("/manager/profile")
+    public String showProfile(Model model) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        
+        try {
+            Manager manager = managerDAO.findByUserName(username);
+            model.addAttribute("manager", manager);
+        } catch (Exception e) {
+            // Handle exception
+        }
+        
+        return "manager-profile";
+    }
+}
