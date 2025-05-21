@@ -48,7 +48,7 @@
                     <a class="nav-link">
                         <i class="fas fa-money-bill-wave"></i> Số dư:
                         <span class="badge rounded-pill bg-success"
-                            th:text="${customer != null ? #numbers.formatDecimal(customer.balance, 0, 'COMMA', 2, 'POINT') + '$' : '0.00$'}"
+                            th:text="${customer != null ? #numbers.formatDecimal(customer.balance, 1, 'COMMA', 2, 'POINT') + '$' : '0.00$'}"
                         >0.00$</span>
                     </a>
                 </li>

@@ -18,6 +18,7 @@
 <body> 
     <div th:fragment="viewContent">
         <div class="container mt-4 mb-5">
+        <!-- SLIDE -->
         <div id="hotMoviesCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#hotMoviesCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -57,7 +58,7 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-        
+        <!-- SORT and FILTER -->
         <div class="row g-3 mb-4 align-items-center bg-light p-3 rounded">
              <div class="col-md-3">
                 <select class="form-select" id="genreFilter">
@@ -92,7 +93,7 @@
                     </select>
             </div>
         </div>
-        
+        <!-- MOVIE LIST -->
         <h2 class="mb-3">Danh sách phim</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             <div class="col">
@@ -150,7 +151,7 @@
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
         
         <nav aria-label="Page navigation" class="mt-4">
              <ul class="pagination justify-content-center">
