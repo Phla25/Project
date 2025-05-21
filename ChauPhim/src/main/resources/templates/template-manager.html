@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/manager-layout :: html (
+          customPageTitle='Dashboard - Quản lý hệ thống',
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/manager-dashboard.css}">
+        </th:block>
+</head>
+
+<body>
+    <div th:fragment="viewContent">
+        <h1>Nội dung trang Dashboard dành cho quản lý</h1>
+    </div>
+
+    <th:block th:fragment="viewScripts">
+        <script>
+            console.log("JavaScript của trang Dashboard manager đã được tải!");
+            // Logic JS tùy chỉnh cho trang này (ví dụ: vẽ biểu đồ, xử lý sự kiện)
+        </script>
+    </th:block>
+
+</body>
+</html>
