@@ -7,6 +7,7 @@ import java.util.List;
 import Project.ChauPhim.Entities.Actor;
 
 public class MovieDTO {
+	private Long movieID;
 	private String title;
 	private String posterImageURL;
 	private LocalDate releaseDate;
@@ -30,6 +31,12 @@ public class MovieDTO {
 		this.setStudio(studio);
 	}
 
+	public Long getMovieID() {
+		return movieID;
+	}
+	public void setMovieID(Long movieID) {
+		this.movieID = movieID;
+	}
 	public String getTitle() {
 		return title;
 	}

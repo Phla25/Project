@@ -265,11 +265,14 @@ public class MovieDAO {
         return query.getResultList();
 		
 	}
+
 	@SuppressWarnings("unchecked")
 	 public List<Movie> findLatestMovie(int limit) {
 	        String sql = "SELECT * FROM \"Movie\" ORDER BY \"releaseDate\" DESC"; 
 	        Query query = entityManager.createNativeQuery(sql, Movie.class);
 	        query.setMaxResults(limit);
 	        return query.getResultList();
-	    }
+	}
+
+    
 }
