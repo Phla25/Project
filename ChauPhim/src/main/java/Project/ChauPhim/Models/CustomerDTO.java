@@ -10,12 +10,18 @@ public class CustomerDTO extends AppUser{
     private List<CartDTO> cartHistory = new ArrayList<CartDTO>();	// Danh sách các Cart đã đặt từ trước tới giờ
     private List<OrderDTO> orderHistory = new ArrayList<OrderDTO>(); // Danh sách các Order của người dùng từ trước tới giờ
     private LocalDate dob;
-    
-	public CustomerDTO(String username, String password, String email, int rank, LocalDate dob) {
+	private Long customerID;
+	public CustomerDTO(Long customerID, String username, String password, String email, int rank, LocalDate dob) {
 		super(username, password, email);
-		// TODO Auto-generated constructor stub
+		this.customerID = customerID;
 		this.rank = rank;
 		this.dob = dob;
+	}
+	public Long getCustomerID() {
+		return customerID;
+	}
+	public void setCustomerID(Long customerID) {
+		this.customerID = customerID;
 	}
 	public int getRank() {
 		return this.rank;

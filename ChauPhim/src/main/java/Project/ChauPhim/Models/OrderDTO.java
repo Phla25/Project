@@ -4,14 +4,14 @@ import java.time.LocalDate;
 
 public class OrderDTO {
     private MovieDTO movie;	// NOT NULL
-    private int quantity;	// NOT NULL
     private LocalDate date;	// NOT NULL
     private CustomerDTO customer;	// NOT NULL
     private int rate;
     private DiscountDTO discount;
     private double totalPrice;
+	private Long customerID;
 	public OrderDTO(MovieDTO movie, LocalDate date, CustomerDTO customer, int rate, DiscountDTO discount,
-			double totalPrice) {
+			double totalPrice, Long customerID) {
 		super();
 		this.movie = movie;
 		this.date = date;
@@ -19,18 +19,20 @@ public class OrderDTO {
 		this.rate = rate;
 		this.discount = discount;
 		this.totalPrice = totalPrice;
+		this.customerID = customerID;
+	}
+	public OrderDTO() {}
+	public Long getCustomerID() {
+		return customerID;
+	}
+	public void setCustomerID(Long customerID) {
+		this.customerID = customerID;
 	}
 	public MovieDTO getMovie() {
 		return movie;
 	}
 	public void setMovie(MovieDTO movie) {
 		this.movie = movie;
-	}
-	public int getQuantity() {
-		return quantity;
-	}
-	public void setQuantity(int quantity) {
-		this.quantity = quantity;
 	}
 	public LocalDate getDate() {
 		return date;
