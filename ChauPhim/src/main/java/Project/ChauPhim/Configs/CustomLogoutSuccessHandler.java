@@ -17,7 +17,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
         if (authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_MANAGER"))) {
             // Redirect tới login-manager nếu là MANAGER
-            response.sendRedirect("/login-manager");
+            response.sendRedirect("/manager-login");
         } else {
             // Redirect tới login-customer nếu không phải MANAGER
             response.sendRedirect("/customer-login");

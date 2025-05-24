@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .checkout-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .movie-item {
+            transition: transform 0.2s;
+        }
+        .movie-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .total-section {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a th:href="@{/customer-dashboard}">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a th:href="@{/customer/cart}">Giỏ hàng</a></li>
+                <li class="breadcrumb-item active">Thanh toán</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="fas fa-credit-card text-primary"></i> 
+                    Xác nhận thanh toán
+                </h2>
+            </div>
+        </div>
+
+        <!-- Alert messages -->
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <!-- Order Summary -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header checkout-summary">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list-ul"></i> 
+                            Chi tiết đơn hàng
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:each="movie, iterStat : ${cartMovies}" 
+                             class="movie-item p-3" 
+                             th:class="'movie-item p-3' + (${!iterStat.last} ? ' border-bottom' : '')">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img th:src="${movie.posterImageURL}" 
+                                         class="img-fluid rounded shadow-sm" 
+                                         alt="Movie Poster"
+                                         style="max-height: 80px; object-fit: cover; width: 100%;">
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-1 fw-bold" th:text="${movie.title}">Tên phim</h6>
+                                    <div class="text-muted small">
+                                        <div class="mb-1">
+                                            <i class="fas fa-calendar-alt"></i> 
+                                            <span th:text="${#temporals.format(movie.releaseDate, 'dd/MM/yyyy')}">Ngày phát hành</span>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-tags"></i>
+                                            <span th:text="${movie.genre}">Thể loại</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <h6 class="text-success mb-0">
+                                        <span th:text="${#numbers.formatDecimal(movie.price, 0, 'COMMA', 0, 'POINT')}">Giá</span>
+                                        <small>VND</small>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calculator"></i> 
+                            Tổng kết thanh toán
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Customer Info -->
+                        <div class="mb-3">
+                            <h6 class="border-bottom pb-2">Thông tin khách hàng</h6>
+                            <div class="text-muted small">
+                                <div><strong>Tên:</strong> <span th:text="${customer.name}">Tên khách hàng</span></div>
+                                <div><strong>Email:</strong> <span th:text="${customer.email}">Email</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Order Summary -->
+                        <div class="total-section p-3 rounded">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Tạm tính:</span>
+                                <strong th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</strong>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>Tổng cộng:</h6>
+                                <h5 class="text-success" th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</h5>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-grid gap-2">
+                            <form th:action="@{/customer/orders/checkout}" method="post">
+                                <button type="submit" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-lock"></i> 
+                                    Xác nhận thanh toán
+                                </button>
+                            </form>
+                            
+                            <a th:href="@{/customer/cart}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> 
+                                Quay lại giỏ hàng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Notice -->
+                <div class="card mt-3 border-0 bg-light">
+                    <div class="card-body text-center py-3">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt text-success"></i>
+                            Thông tin của bạn được bảo mật an toàn
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Confirm payment
+        document.querySelector('form[action*="checkout"]').addEventListener('submit', function(e) {
+            if (!confirm('Bạn có chắc chắn muốn thanh toán đơn hàng này?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

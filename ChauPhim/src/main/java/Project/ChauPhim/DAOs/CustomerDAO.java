@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import Project.ChauPhim.Entities.Customer;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
@@ -23,6 +24,7 @@ public class CustomerDAO {
 				+ " e where e.username =: username";
 		Query query = entityManager.createQuery(sql, Customer.class);
 		query.setParameter("username", username);
+		@SuppressWarnings("unchecked")
 		List<Customer> results = query.getResultList();
         if (results.isEmpty()) {
             return null;
@@ -169,6 +171,24 @@ public class CustomerDAO {
 
         if (updatedRows == 0) {
             throw new RuntimeException("Không tìm thấy khách hàng với username: " + username);
+        }
+    }
+
+    public Customer findById(Long customerId) {
+        if (customerId == null) {
+            throw new IllegalArgumentException("Customer ID không được null");
+        }
+
+        String sql = "SELECT * FROM \"Customer\" WHERE \"customerID\" = ?";
+
+        Query query = entityManager.createNativeQuery(sql, Customer.class);
+        query.setParameter(1, customerId);
+
+        try {
+            Customer result = (Customer) query.getSingleResult();
+            return result;
+        } catch (NoResultException e) {
+            throw new RuntimeException("Không tìm thấy khách hàng với ID: " + customerId);
         }
     }
 }

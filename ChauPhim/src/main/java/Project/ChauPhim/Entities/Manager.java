@@ -58,5 +58,6 @@ public class Manager {
 		this.password = password;
 	}
 
+
 }
 
