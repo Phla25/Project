@@ -1442,3 +1442,100 @@
 2025-05-21 11:09:27,651 [Worker-33: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
 2025-05-21 11:09:27,656 [Worker-33: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 14 resources from src\main\resources to target\classes
 2025-05-21 11:09:27,661 [Worker-33: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:37:13,477 [Worker-58: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2025-05-21 15:37:13,480 [Worker-58: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-21 15:37:13,485 [Worker-58: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:39:56,267 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2025-05-21 15:39:56,268 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-21 15:39:56,272 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:40:52,476 [Worker-55: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2025-05-21 15:40:52,477 [Worker-55: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-21 15:40:52,481 [Worker-55: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:41:13,858 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2025-05-21 15:41:13,860 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-21 15:41:13,866 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:41:37,007 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\main\resources to target\classes
+2025-05-21 15:41:37,009 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-21 15:41:37,014 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:42:29,146 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-21 15:42:29,163 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 14 resources from src\main\resources to target\classes
+2025-05-21 15:42:29,167 [Worker-57: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-21 15:46:36,235 [Worker-5: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2025-05-21 15:47:01,572 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409 [638])
+2025-05-21 15:47:01,576 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409
+2025-05-21 15:47:01,576 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\aopalliance-1.0.jar
+2025-05-21 15:47:01,576 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\guice-5.1.0.jar
+2025-05-21 15:47:01,576 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\httpclient-4.5.14.jar
+2025-05-21 15:47:01,576 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\httpcore-4.4.16.jar
+2025-05-21 15:47:01,576 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\jansi-2.4.1.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\jcl-over-slf4j-1.7.36.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-artifact-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-builder-support-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-compat-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-core-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-embedder-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-model-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-model-builder-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-plugin-api-3.9.9.jar
+2025-05-21 15:47:01,577 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-repository-metadata-3.9.9.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-api-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-connector-basic-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-impl-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-named-locks-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-provider-3.9.9.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-spi-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-transport-file-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-transport-http-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-transport-wagon-1.9.22.jar
+2025-05-21 15:47:01,578 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-resolver-util-1.9.22.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-settings-3.9.9.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-settings-builder-3.9.9.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\maven-shared-utils-3.4.2.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\org.eclipse.sisu.inject-0.9.0.M3.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\org.eclipse.sisu.plexus-0.9.0.M3.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-build-api-0.0.7.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-build-api-1.2.0.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-cipher-2.0.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-classworlds-2.8.0.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-component-annotations-2.1.0.jar
+2025-05-21 15:47:01,579 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-interpolation-1.27.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-sec-dispatcher-2.0.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-utils-3.5.1.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\plexus-xml-3.0.1.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\wagon-file-3.5.3.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\wagon-http-3.5.3.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\wagon-http-shared-3.5.3.jar
+2025-05-21 15:47:01,580 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.eclipse.m2e.maven.runtime_3.9.900.20240824-1409\jars\wagon-provider-api-3.5.3.jar
+2025-05-21 15:47:01,583 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=com.google.guava_33.4.0.jre [1020])
+2025-05-21 15:47:01,583 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\com.google.guava_33.4.0.jre.jar
+2025-05-21 15:47:01,583 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=slf4j.api_2.0.17 [1170])
+2025-05-21 15:47:01,583 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\slf4j.api_2.0.17.jar
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=jakarta.inject.jakarta.inject-api_1.0.5 [34])
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\jakarta.inject.jakarta.inject-api_1.0.5.jar
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=jakarta.annotation-api_1.3.5 [29])
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\jakarta.annotation-api_1.3.5.jar
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=org.apache.commons.cli_1.9.0 [75])
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.apache.commons.cli_1.9.0.jar
+2025-05-21 15:47:01,584 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=org.apache.commons.commons-codec_1.16.0 [78])
+2025-05-21 15:47:01,585 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\org.apache.commons.commons-codec_1.16.0.jar
+2025-05-21 15:47:01,585 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - getClasspathEntries(Bundle=com.google.guava.failureaccess_1.0.2 [17])
+2025-05-21 15:47:01,585 [Worker-27: Launching ChauPhim Build] INFO  o.eclipse.m2e.core.internal.Bundles - 	Entry: C:\Users\lamca\.p2\pool\plugins\com.google.guava.failureaccess_1.0.2.jar
+2025-05-21 15:47:01,589 [Worker-27: Launching ChauPhim Build] INFO  o.e.m.i.launch.MavenLaunchDelegate - Run build in "D:\lessonsatuniversity\OOP\project\ChauPhim":
+2025-05-21 15:47:01,592 [Worker-27: Launching ChauPhim Build] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn  -B -Dmaven.test.skip=true -DskipTests -Dstyle.color=always clean install
+2025-05-22 21:56:21,303 [Worker-143: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-22 21:56:21,352 [Worker-143: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 14 resources from src\main\resources to target\classes
+2025-05-22 21:56:21,361 [Worker-143: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-23 09:26:18,767 [Worker-163: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update started
+2025-05-23 09:26:19,580 [Worker-163: Updating Maven Project] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: Project:ChauPhim:0.0.1-SNAPSHOT @ D:\lessonsatuniversity\OOP\project\ChauPhim\pom.xml.
+2025-05-23 09:26:20,950 [Worker-163: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ChauPhim/src/main/java
+2025-05-23 09:26:20,953 [Worker-163: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ChauPhim/src/main/resources
+2025-05-23 09:26:20,954 [Worker-163: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ChauPhim/src/main/resources
+2025-05-23 09:26:20,955 [Worker-163: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /ChauPhim/src/test/java
+2025-05-23 09:26:20,956 [Worker-163: Updating Maven Project] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /ChauPhim/src/test/resources
+2025-05-23 09:26:21,303 [Worker-163: Updating Maven Project] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Update completed for 1 poms: local refresh takes 0.00 sec, refresh facades takes 2.00 sec, update config takes 0.00 sec 
+2025-05-23 09:26:22,252 [Worker-165: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-23 09:26:22,370 [Worker-165: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 19 resources from src\main\resources to target\classes
+2025-05-23 09:26:22,421 [Worker-165: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes
+2025-05-24 08:39:16,692 [Worker-208: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 1 resource from src\main\resources to target\classes
+2025-05-24 08:39:16,762 [Worker-208: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 19 resources from src\main\resources to target\classes
+2025-05-24 08:39:16,769 [Worker-208: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 0 resource from src\test\resources to target\test-classes

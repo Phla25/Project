@@ -6,6 +6,7 @@
 		<list key="findhistory">
 			<item value="sign-up-manager"/>
 			<item value="login-manager"/>
+			<item value="sign-in-manager"/>
 			<item value="sign-in"/>
 			<item value="@SuppressWarnings(&quot;unchecked&quot;)"/>
 		</list>

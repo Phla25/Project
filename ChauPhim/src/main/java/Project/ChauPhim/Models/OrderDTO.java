@@ -10,11 +10,10 @@ public class OrderDTO {
     private int rate;
     private DiscountDTO discount;
     private double totalPrice;
-	public OrderDTO(MovieDTO movie, int quantity, LocalDate date, CustomerDTO customer, int rate, DiscountDTO discount,
+	public OrderDTO(MovieDTO movie, LocalDate date, CustomerDTO customer, int rate, DiscountDTO discount,
 			double totalPrice) {
 		super();
 		this.movie = movie;
-		this.quantity = quantity;
 		this.date = date;
 		this.customer = customer;
 		this.rate = rate;
