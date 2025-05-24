@@ -20,7 +20,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
             response.sendRedirect("/manager-login");
         } else {
             // Redirect tới login-customer nếu không phải MANAGER
-            response.sendRedirect("/customer-login");
+            response.sendRedirect("/login-customer");
         }
     }
 }

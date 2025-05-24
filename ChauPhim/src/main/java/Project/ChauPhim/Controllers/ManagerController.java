@@ -51,6 +51,13 @@ public class ManagerController {
         Model model
     ) {
         try {
+            // Kiểm tra xem tên đăng nhập đã tồn tại chưa
+            Manager existingManager = managerDAO.findByUserName(manager.getUsername());
+            if (existingManager != null) {
+                model.addAttribute("error", "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
+                return "manager-register";
+            }
+
             manager.setPassword(passwordEncoder.encode(manager.getPassword()));
             managerDAO.addManager(manager);
             return "redirect:/manager-login?registered=true";
@@ -151,7 +158,7 @@ public class ManagerController {
         model.addAttribute("monthlySales", monthlySales);
         model.addAttribute("yearlySales", yearlySales);
         model.addAttribute("monthlySalesData", monthlySalesData);
-        model.addAttribute("currentMonth", getMonthName(currentMonth));
+        model.addAttribute("currentMonth", currentMonth);
         model.addAttribute("currentYear", currentYear);
         
         return "manager-dashboard";

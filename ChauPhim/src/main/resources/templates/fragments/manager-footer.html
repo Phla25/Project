@@ -1,0 +1,5 @@
+<footer th:fragment="managerFooter" class="bg-light text-center text-lg-start mt-auto"> <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.05);">
+        © <span th:text="${#dates.year(#dates.createNow())}">2024</span> Bản quyền thuộc về:
+        <a class="text-dark" th:href="@{/}">ChauPhim</a>
+    </div>
+</footer>
