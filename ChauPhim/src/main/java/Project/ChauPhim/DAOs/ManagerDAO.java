@@ -58,17 +58,17 @@ public class ManagerDAO {
 	    return count;
 	}
 	public Long countSold2Day() {
-		String sql = "SELECT COUNT(*) FROM \"Cart\" WHERE status = 2 AND date = current_date";
+		String sql = "SELECT COUNT(*) FROM \"Orders\" WHERE date = current_date";
 		Long count = (Long) entityManager.createNativeQuery(sql).getSingleResult();
 		return count;
 	}
 	public Long countSoldMonth(int month) {
-		String sql = "SELECT COUNT(*) FROM \"Cart\" WHERE status = 2 AND extract(month from date) = ?";
+		String sql = "SELECT COUNT(*) FROM \"Orders\" WHERE extract(month from date) = ?";
 		Long count = (Long) entityManager.createNativeQuery(sql).setParameter(1, month).getSingleResult();
 		return count;
 	}
 	public Long countSoldYear(int year) {
-		String sql = "SELECT COUNT(*) FROM \"Cart\" WHERE status = 2 AND extract(year from date) = ?";
+		String sql = "SELECT COUNT(*) FROM \"Orders\" WHERE extract(year from date) = ?";
 		Long count = (Long) entityManager.createNativeQuery(sql).setParameter(1, year).getSingleResult();
 		return count;
 	}

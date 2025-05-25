@@ -13,6 +13,7 @@ public class MovieDTO {
 	private LocalDate releaseDate;
 	private String genre;
 	private double price;
+	private DirectorDTO director;
 	private StudioDTO studio;
 	private List<Actor> actors = new ArrayList<Actor>();
 	public MovieDTO(String title, String posterImageURL) {
@@ -31,6 +32,24 @@ public class MovieDTO {
 		this.setStudio(studio);
 	}
 
+	public DirectorDTO getDirector() {
+		return director;
+	}
+	public void setDirector(DirectorDTO director) {
+		this.director = director;
+	}
+	public MovieDTO(Long movieID, String title, String posterImageURL, LocalDate releaseDate, String genre,
+			double price, DirectorDTO director, StudioDTO studio) {
+		super();
+		this.movieID = movieID;
+		this.title = title;
+		this.posterImageURL = posterImageURL;
+		this.releaseDate = releaseDate;
+		this.genre = genre;
+		this.price = price;
+		this.director = director;
+		this.studio = studio;
+	}
 	public Long getMovieID() {
 		return movieID;
 	}

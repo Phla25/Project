@@ -1,6 +1,7 @@
 package Project.ChauPhim.DAOs;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -83,9 +84,9 @@ public class MovieDAO {
      */
     @SuppressWarnings("unchecked")
     public List<Movie> findMoviesByTitle(String title) {
-        String sql = "SELECT * FROM \"Movie\" WHERE title = ?";
+        String sql = "SELECT * FROM \"Movie\" WHERE LOWER(title) LIKE ?";
         Query query = entityManager.createNativeQuery(sql, Movie.class);
-        query.setParameter(1, title);
+        query.setParameter(1, title.toLowerCase());
         return query.getResultList();
     }
     
@@ -160,10 +161,78 @@ public class MovieDAO {
      * Update movie information
      */
     @Transactional
-    public void updateMovie(Movie movie) {
-        entityManager.merge(movie);
+    public void updateMovie(Long movieID, String title, String posterImageURL, 
+                              LocalDate releaseDate,Double price, String genre, Long discountID, Long directorID, Long studioID) {
+        
+        // Tạo câu lệnh SQL động dựa trên các trường không null
+        StringBuilder sqlBuilder = new StringBuilder("UPDATE \"Movie\" SET ");
+        
+        // Danh sách tham số và giá trị sẽ được sử dụng
+        List<String> updateFields = new ArrayList<>();
+        List<Object> paramValues = new ArrayList<>();
+        
+        // Kiểm tra và thêm các trường cần cập nhật
+        if (title != null && !title.trim().isEmpty()) {
+            updateFields.add("\"title\" = ?");
+            paramValues.add(title);
+        }
+        
+        if (posterImageURL != null && !posterImageURL.trim().isEmpty()) {
+            updateFields.add("\"posterImageURL\" = ?");
+            paramValues.add(posterImageURL);
+        }
+        
+        if (releaseDate != null) {
+            updateFields.add("\"releaseDate\" = ?");
+            paramValues.add(releaseDate);
+        }
+        
+        if (releaseDate != null) {
+            updateFields.add("\"price\" = ?");
+            paramValues.add(price);
+        }
+        
+        if (genre != null && !genre.trim().isEmpty()) {
+            updateFields.add("\"genre\" = ?");
+            paramValues.add(genre);
+        }
+        
+        if (discountID != null) {
+            updateFields.add("\"discountID\" = ?");
+            paramValues.add(discountID);
+        }
+        
+        if (directorID != null) {
+            updateFields.add("\"directorID\" = ?");
+            paramValues.add(directorID);
+        }
+        
+        if (studioID != null) {
+            updateFields.add("\"studioID\" = ?");
+            paramValues.add(studioID);
+        }
+        
+        // Nếu không có trường nào cần cập nhật, trả về
+        if (updateFields.isEmpty()) {
+            return;
+        }
+        
+        // Hoàn thành câu lệnh SQL
+        sqlBuilder.append(String.join(", ", updateFields));
+        sqlBuilder.append(" WHERE \"movieID\" = ?");
+        paramValues.add(movieID);
+        
+        // Tạo câu truy vấn và thiết lập tham số
+        Query query = entityManager.createNativeQuery(sqlBuilder.toString());
+        
+        // Thiết lập các tham số
+        for (int i = 0; i < paramValues.size(); i++) {
+            query.setParameter(i + 1, paramValues.get(i));
+        }
+        
+        // Thực thi câu truy vấn
+        query.executeUpdate();
     }
-    
     /**
      * Update specific movie information
      */
@@ -273,6 +342,16 @@ public class MovieDAO {
 	        query.setMaxResults(limit);
 	        return query.getResultList();
 	}
-
+	
+	public String getDirectorName(Long directorID) {
+		String sql = "SELECT name FROM \"Movie\" JOIN \"Director\" USING (\"directorID\") WHERE \"directorID\" = ?";
+		Query query = entityManager.createNativeQuery(sql).setParameter(1, directorID);
+		return (String) query.getSingleResult();
+	}
     
+	public String getStudioName(Long studioID) {
+		String sql = "SELECT name FROM \"Movie\" JOIN \"Studio\" USING (\"studioID\") WHERE \"studioID\" = ?";
+		Query query = entityManager.createNativeQuery(sql).setParameter(1, studioID);
+		return (String) query.getSingleResult();
+	}
 }
