@@ -39,7 +39,7 @@
                     </form>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{#}"> <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                    <a class="nav-link" th:href="@{/customer/cart}"> <i class="fas fa-shopping-cart"></i> Giỏ hàng
                         <span class="badge rounded-pill bg-danger" th:text="${cartItemCount != null ? cartItemCount : 0}">0</span>
                     </a>
                 </li>
@@ -59,13 +59,13 @@
                         <i class="fas fa-user"></i>
                         <span th:if="${customer != null}">
                             <th:block th:if="${customer.rank == 0}">
-                                <span th:text="'Xin chào, ' + ${customer.username}"></span>!
+                                <span th:text="'Xin chào, ' + ${customer.username}"></span> !
                             </th:block>
                             <th:block th:if="${customer.rank == 1}">
-                                <span th:text="'Xin chào, ' + ${customer.username}"></span>🏅!
+                                <span th:text="'Xin chào, ' + ${customer.username}"></span> 🏅!
                             </th:block>
                             <th:block th:if="${customer.rank == 2}">
-                                <span th:text="'Xin chào, ' + ${customer.username}"></span>💎!
+                                <span th:text="'Xin chào, ' + ${customer.username}"></span> 💎!
                             </th:block>
                         </span>
                     </a>
