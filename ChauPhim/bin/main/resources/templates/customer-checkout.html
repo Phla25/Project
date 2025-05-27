@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: html (
+          customPageTitle='Checkout - ChauPhim',
+          pageTitle=~{::viewTitle},
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/customer-specific.css}">
+        </th:block>
+</head>
+
+<body> 
+    <div th:fragment="viewContent">
+
+    <div class="container mt-4">
+
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">
+                    <i class="fas fa-credit-card"></i> 
+                    Xác nhận thanh toán
+                </h2>
+            </div>
+        </div>
+
+        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span th:text="${success}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header checkout-summary">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list-ul"></i> 
+                            Chi tiết đơn hàng
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div th:each="movie, iterStat : ${cartMovies}" 
+                             class="movie-item p-3" 
+                             th:class="'movie-item p-3' + (${!iterStat.last} ? ' border-bottom' : '')">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img th:src="${movie.posterImageURL}" 
+                                         class="img-fluid rounded shadow-sm" 
+                                         alt="Movie Poster"
+                                         style="max-height: 80px; object-fit: cover; width: 100%;">
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-1 fw-bold" th:text="${movie.title}">Tên phim</h6>
+                                    <div class="text-muted small">
+                                        <div class="mb-1">
+                                            <i class="fas fa-calendar-alt"></i> 
+                                            <span th:text="${#temporals.format(movie.releaseDate, 'dd/MM/yyyy')}">Ngày phát hành</span>
+                                        </div>
+                                        <div>
+                                            <i class="fas fa-tags"></i>
+                                            <span th:text="${movie.genre}">Thể loại</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <h6 class="text-success mb-0">
+                                        <span th:text="${movie != null ? #numbers.formatDecimal(movie.price, 1, 'COMMA', 2, 'POINT') + '$' : '0.00$'}">Giá</span>
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calculator"></i> 
+                            Tổng kết thanh toán
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6 class="border-bottom pb-2">Thông tin khách hàng</h6>
+                            <div class="text-muted small">
+                                <div><strong>Tên:</strong> <span th:text="${customer != null ? customer.name : 'N/A'}">Tên khách hàng</span></div> 
+                                <div><strong>Email:</strong> <span th:text="${customer != null ? customer.email : 'N/A'}">Email</span></div>
+                            </div>
+                        </div>
+
+                        <div class="total-section p-3 rounded">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Tạm tính:</span>
+                                <strong th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT') + '$'}">0.00$</strong>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>Tổng cộng:</h6>
+                                <h5 class="text-success" th:text="${#numbers.formatDecimal(totalPrice, 1, 'COMMA', 2, 'POINT') + '$'}">0.00$</h5>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <form th:action="@{/customer/orders/checkout}" method="post">
+                                <button type="submit" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-lock"></i> 
+                                    Xác nhận thanh toán
+                                </button>
+                            </form>
+                            
+                            <a th:href="@{/customer/cart}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> 
+                                Quay lại giỏ hàng
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3 border-0 bg-light">
+                    <div class="card-body text-center py-3">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt text-success"></i>
+                            Thông tin của bạn được bảo mật an toàn
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+<th:block th:fragment="viewScripts">
+    <script>
+        console.log("JavaScript của trang checkout đã được tải!"); // Đổi tên log cho đúng trang
+        // Auto-dismiss alerts after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Confirm payment
+        document.querySelector('form[action*="checkout"]').addEventListener('submit', function(e) {
+            if (!confirm('Bạn có chắc chắn muốn thanh toán đơn hàng này?')) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</th:block>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: html (
+          customPageTitle='Dashboard - ChauPhim',
+          pageTitle=~{::viewTitle},
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/customer-specific.css}">
+        </th:block>
+</head>
+
+<body> 
+    <div th:fragment="viewContent">
+
+    <div class="container mt-4 mb-5">
+    <h2 class="mb-3">Trở thành hội viên ngay hôm nay!</h2>
+
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card h-100 border-warning shadow">
+                    <div class="card-header bg-warning text-dark">
+                        <h3 class="mb-0">Hội viên Bậc Vàng 🏅</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="membership-benefits">
+                            <ul>
+                                <li>Giảm giá 10% cho mọi dịch vụ</li>
+                                <li>Tích điểm đổi quà với mỗi lần sử dụng dịch vụ</li>
+                                <li>Được tặng voucher vào ngày sinh nhật</li>
+                                <li>Được hỗ trợ nâng cấp lên hội viên Bậc Kim Cương</li>
+                            </ul>
+                        </div>
+                        <p class="card-text"><strong>Chi phí đăng ký:</strong> 200$/năm</p>
+                        <form th:action="@{/customer/membership/upgrade}" method="post" class="button-form text-center">
+                            <input type="hidden" name="membershipType" value="1">
+                            <button type="submit" class="btn btn-warning"><b>Đăng ký ngay</b></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 border-info shadow">
+                    <div class="card-header bg-info text-dark">
+                        <h3 class="mb-0">Hội viên Bậc Kim Cương 💎</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="membership-benefits">
+                            <ul>
+                                <li>Giảm giá 20% cho mọi dịch vụ</li>
+                                <li>Tích điểm đổi quà với mỗi lần sử dụng dịch vụ</li>
+                                <li>Nhận thông báo sớm về các chương trình khuyến mãi</li>
+                                <li>Được tặng voucher vào ngày sinh nhật, dịp lễ, dịp đặc biệt,...</li>
+                            </ul>
+                        </div>
+                        <p class="card-text"><strong>Chi phí đăng ký:</strong> 500$/năm</p>
+                        <form th:action="@{/customer/membership/upgrade}" method="post" class="button-form text-center">
+                            <input type="hidden" name="membershipType" value="2">
+                            <button type="submit" class="btn btn-info"><b>Đăng ký ngay</b></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+<th:block th:fragment="viewScripts">
+    <script>
+        console.log("JavaScript của trang test đã được tải!");
+        // Logic JS tùy chỉnh cho trang này (nếu có)
+        // Không cần include lại Bootstrap JS ở đây.
+    </script>
+</th:block>
+
+</body>
+</html>

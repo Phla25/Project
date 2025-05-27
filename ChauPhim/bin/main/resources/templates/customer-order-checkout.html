@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Xác nhận đặt mua</title>
+    <!-- CSS của bạn -->
+</head>
+<body>
+    <div class="container">
+        <h2>Xác nhận đặt mua phim</h2>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title" th:text="${movie.title}">Tên phim</h5>
+                <p><strong>Giá:</strong> <span th:text="${movie.price}">Giá</span> VND</p>
+                
+                <form th:action="@{/customer/orders/confirm}" method="post">
+                    <input type="hidden" name="movieId" th:value="${movie.movieID}" />
+                    
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Xác nhận đặt mua
+                    </button>
+                    
+                    <a th:href="@{/customer-dashboard}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Quay lại
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
