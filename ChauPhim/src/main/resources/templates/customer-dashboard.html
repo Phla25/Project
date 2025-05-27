@@ -32,13 +32,13 @@
                     </div>
             </div>
             <div class="carousel-item">
-                <img src="https://images3.alphacoders.com/128/thumb-1920-1283861.jpg" class="d-block w-100" alt="Parasite Poster" style="object-fit: cover; height: 450px;">
+                <img src="https://images6.alphacoders.com/112/1122542.jpg" class="d-block w-100" alt="Parasite Poster" style="object-fit: cover; height: 450px;">
                 <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
                     <h5>Parasite</h5>
                 </div>
             </div>
             <div class="carousel-item">
-                <img src="https://images3.alphacoders.com/117/thumb-1920-1174531.jpg" class="d-block w-100" alt="Dune Poster" style="object-fit: cover; height: 450px;">
+                <img src="https://images8.alphacoders.com/131/1314205.jpeg" class="d-block w-100" alt="Dune Poster" style="object-fit: cover; height: 450px;">
                 <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-2">
                     <h5>Dune</h5>
                 </div>
@@ -89,7 +89,7 @@
             </div>
         </div>
         <!-- MOVIE LIST -->
-        <h2 class="mb-3">Danh sách phim</h2>
+        <h2 class="mb-3"><i class="fas fa-film"></i> Danh sách phim</h2>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
             <div class="col" th:each="movie, iterStat : ${movies}">
                 <div class="card h-100 shadow-sm">
@@ -106,7 +106,7 @@
                         </p>
                          <p class="card-text fw-bold text-danger fs-5 mb-2">
                             <!-- <span class="text-decoration-line-through text-muted me-1">150,000đ</span> -->
-                            <span th:text="${#numbers.formatDecimal(movie.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Price</span>
+                            <span th:text="${movie != null ? #numbers.formatDecimal(movie.price, 1, 'COMMA', 2, 'POINT') + '$' : '0.00$'}">Price</span>
                         </p>
                         <div class="mt-auto d-flex justify-content-between">
                              <button class="btn btn-sm btn-outline-primary" 
@@ -176,7 +176,7 @@
                                      </p>
                                      <p class="fw-bold text-danger fs-4 mt-2 mb-3">
                                          <!-- <span class="text-decoration-line-through text-muted me-1 fs-5">150,000đ</span> -->
-                                         <span th:text="${#numbers.formatDecimal(movie.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">Price</span>
+                                         <span th:text="${movie != null ? #numbers.formatDecimal(movie.price, 1, 'COMMA', 2, 'POINT') + '$' : '0.00$'}">Price</span>
                                          <!-- <span class="badge bg-danger ms-2">KM 20%</span> -->
                                      </p>
                                      <p><strong>Mô tả:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...</p>
