@@ -2,10 +2,14 @@ package Project.ChauPhim.Controllers;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -26,11 +30,13 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import Project.ChauPhim.DAOs.ActRepository;
 import Project.ChauPhim.DAOs.ActorDAO;
 import Project.ChauPhim.DAOs.DirectorDAO;
 import Project.ChauPhim.DAOs.ManagerDAO;
 import Project.ChauPhim.DAOs.MovieDAO;
 import Project.ChauPhim.DAOs.StudioDAO;
+import Project.ChauPhim.Entities.Act;
 import Project.ChauPhim.Entities.Actor;
 import Project.ChauPhim.Entities.Director;
 import Project.ChauPhim.Entities.Manager;
@@ -50,10 +56,16 @@ public class ManagerController {
     @Autowired
     private StudioDAO studioDAO;
     @Autowired
+    private DirectorDAO directorDAO;
+    @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ManagerDashboardService dashboardService;
-
+    @Autowired
+    private ActRepository actRepository;
+    
+    private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
+    
     @GetMapping("/manager-register")
     public String showSignInPage(Model model) {
         model.addAttribute("manager", new Manager());
@@ -200,6 +212,7 @@ public class ManagerController {
                 "July", "August", "September", "October", "November", "December"};
         return monthNames[month - 1];
     }
+
     @GetMapping("/manager/movies")
     @PreAuthorize("hasRole('MANAGER')")
     public String showMoviePage(Model model) {
@@ -276,7 +289,7 @@ public class ManagerController {
         } else {
             movies = movieDAO.findAllMovies();
         }
-        // Convert movies to include directorName and studioName
+
         List<Map<String, Object>> movieMaps = movies.stream().map(movie -> {
             Map<String, Object> movieMap = new HashMap<>();
             movieMap.put("movieID", movie.getMovieID());
@@ -288,6 +301,7 @@ public class ManagerController {
             movieMap.put("studioID", movie.getStudioID());
             movieMap.put("directorID", movie.getDirectorID());
             movieMap.put("discountID", movie.getDiscountID());
+
             if (movie.getDirectorID() != null) {
                 movieMap.put("directorName", movieDAO.getDirectorName(movie.getDirectorID()));
             } else {
@@ -298,8 +312,25 @@ public class ManagerController {
             } else {
                 movieMap.put("studioName", "Unknown Studio");
             }
+
+            List<Act> acts = movie.getActs();
+            logger.info("Movie ID: {}, Acts size: {}", movie.getMovieID(), acts.size());
+            List<Map<String, Object>> actors = acts.stream()
+                    .filter(act -> act.getActor() != null && act.getActor().getName() != null)
+                    .map(act -> {
+                        Map<String, Object> actorMap = new HashMap<>();
+                        actorMap.put("actorID", act.getActor().getActorID());
+                        actorMap.put("name", act.getActor().getName());
+                        actorMap.put("role", act.getRole() != null ? act.getRole() : "Supporting Actor");
+                        return actorMap;
+                    })
+                    .collect(Collectors.toList());
+            movieMap.put("actors", actors);
+            logger.info("Movie ID: {}, Actors mapped: {}", movie.getMovieID(), actors);
+
             return movieMap;
         }).toList();
+
         return ResponseEntity.ok(movieMaps);
     }
 
@@ -359,7 +390,7 @@ public class ManagerController {
 
     @GetMapping("/actors")
     @ResponseBody
-    public ResponseEntity<List<Actor>> getActors(
+    public ResponseEntity<List<Map<String, Object>>> getActors(
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "gender", required = false) String gender) {
         List<Actor> actors;
@@ -372,7 +403,20 @@ public class ManagerController {
         } else {
             actors = actorDAO.findAllActors();
         }
-        return ResponseEntity.ok(actors);
+
+        List<Map<String, Object>> actorMaps = actors.stream().map(actor -> {
+            Map<String, Object> actorMap = new HashMap<>();
+            actorMap.put("actorID", actor.getActorID());
+            actorMap.put("name", actor.getName());
+            actorMap.put("imageURL", actor.getImageURL() != null ? actor.getImageURL() : "");
+            actorMap.put("gender", actor.getGender());
+            actorMap.put("dob", actor.getDob());
+            actorMap.put("bio", actor.getBio());
+            actorMap.put("rank", actor.getRank());
+            return actorMap;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(actorMaps);
     }
 
     @PostMapping("/manager/actors")
@@ -575,8 +619,6 @@ public class ManagerController {
                     .body(Map.of("success", false, "message", "Failed to update studio: " + e.getMessage()));
         }
     }
-    @Autowired
-    private DirectorDAO directorDAO;
 
     @GetMapping("/manager/directors")
     public String showDirectorPage(Model model) {
@@ -584,7 +626,7 @@ public class ManagerController {
         model.addAttribute("director", director);
         return "manager-directors";
     }
-    // Fetch directors with optional name or genre filters
+
     @GetMapping("/directors")
     public ResponseEntity<List<Director>> getDirectors(
             @RequestParam(value = "name", required = false) String name,
@@ -600,7 +642,6 @@ public class ManagerController {
         return ResponseEntity.ok(directors);
     }
 
-    // Add a new director
     @PostMapping("/manager/directors")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> addDirector(
@@ -612,14 +653,12 @@ public class ManagerController {
             @RequestParam(value = "bio", required = false) String bio) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validate required fields
             if (name == null || name.trim().isEmpty() || imageURL == null || imageURL.trim().isEmpty()) {
                 response.put("success", false);
                 response.put("message", "Name and Image URL are required.");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Check for duplicate imageURL
             if (directorDAO.findAllDirectors().stream().anyMatch(d -> d.getImageURL().equals(imageURL))) {
                 response.put("success", false);
                 response.put("message", "Image URL must be unique.");
@@ -646,11 +685,10 @@ public class ManagerController {
         }
     }
 
-    // Update an existing director
     @PutMapping("/manager/directors/{id}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> updateDirector(
-            @PathVariable("id") Long  directorID,
+            @PathVariable("id") Long directorID,
             @RequestParam("name") String name,
             @RequestParam("imageURL") String imageURL,
             @RequestParam(value = "gender", required = false) String gender,
@@ -666,14 +704,12 @@ public class ManagerController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
             }
 
-            // Validate required fields
             if (name == null || name.trim().isEmpty() || imageURL == null || imageURL.trim().isEmpty()) {
                 response.put("success", false);
                 response.put("message", "Name and Image URL are required.");
                 return ResponseEntity.badRequest().body(response);
             }
 
-            // Check for duplicate imageURL (excluding current director)
             if (!imageURL.equals(existingDirector.getImageURL()) &&
                 directorDAO.findAllDirectors().stream()
                     .anyMatch(d -> !d.getDirectorID().equals(directorID) && d.getImageURL().equals(imageURL))) {
@@ -699,5 +735,99 @@ public class ManagerController {
             response.put("message", "Error updating director: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @Transactional
+    @PostMapping("/manager/movies/{movieID}/actor")
+    @ResponseBody
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Map<String, Object>> addActorsToMovie(
+            @PathVariable("movieID") Long movieID,
+            @RequestParam("actorIDs") List<Long> actorIDs,
+            @RequestParam("roles") List<String> roles) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Movie movie = movieDAO.findById(movieID);
+            if (movie == null) {
+                response.put("success", false);
+                response.put("message", "Movie not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+
+            if (actorIDs.size() != roles.size()) {
+                response.put("success", false);
+                response.put("message", "Number of actor IDs and roles must match");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            List<String> errors = new ArrayList<>();
+            List<Act> actsToSave = new ArrayList<>();
+            for (int i = 0; i < actorIDs.size(); i++) {
+                Long actorID = actorIDs.get(i);
+                String role = roles.get(i).trim();
+
+                Actor actor = actorDAO.findById(actorID);
+                if (actor == null) {
+                    errors.add("Actor with ID " + actorID + " not found");
+                    logger.warn("Attempted to add non-existent actor ID: {}", actorID);
+                    continue;
+                }
+
+                if (actRepository.existsByActorIDAndMovieID(actorID, movieID)) {
+                    errors.add("Actor with ID " + actorID + " is already associated with this movie");
+                    logger.warn("Actor ID {} is already linked to movie ID {}", actorID, movieID);
+                    continue;
+                }
+
+                Act act = new Act();
+                act.setMovieID(movieID);
+                act.setActorID(actorID);
+                act.setRole(role.isEmpty() ? "Supporting Actor" : role);
+                actsToSave.add(act);
+            }
+
+            if (!errors.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Some actors could not be added: " + String.join("; ", errors));
+                logger.error("Failed to add some actors to movie ID {}: {}", movieID, String.join("; ", errors));
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            for (Act act : actsToSave) {
+                actRepository.save(act);
+            }
+
+            response.put("success", true);
+            response.put("message", "Actors added to movie successfully");
+            logger.info("All actors successfully added to movie ID: {}", movieID);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error adding actors to movie: " + e.getMessage());
+            logger.error("Exception occurred while adding actors to movie ID {}: {}", movieID, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/actor")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getAllActors(
+            @RequestParam(value = "name", required = false) String name) {
+        List<Actor> actors;
+        if (name != null && !name.trim().isEmpty()) {
+            actors = actorDAO.findActorsByPartialName(name.trim());
+        } else {
+            actors = actorDAO.findAllActors();
+        }
+
+        List<Map<String, Object>> actorMaps = actors.stream().map(actor -> {
+            Map<String, Object> actorMap = new HashMap<>();
+            actorMap.put("actorID", actor.getActorID());
+            actorMap.put("name", actor.getName());
+            actorMap.put("imageURL", actor.getImageURL() != null ? actor.getImageURL() : "");
+            return actorMap;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(actorMaps);
     }
 }

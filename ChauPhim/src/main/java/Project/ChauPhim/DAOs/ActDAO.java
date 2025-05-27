@@ -5,9 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import Project.ChauPhim.Entities.Act;
+import Project.ChauPhim.Entities.Movie;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
@@ -16,6 +21,14 @@ public class ActDAO {
     @Autowired
     private EntityManager entityManager;
     
+    @OneToMany(mappedBy = "actor") // hoặc tương tự
+    @JsonIgnore  // Thêm dòng này
+    private List<Act> acts;
+    
+    // hoặc nếu có relationship khác
+    @ManyToMany
+    @JsonIgnore  // Thêm dòng này  
+    private List<Movie> movies;
     /**
      * Add a new actor-movie relationship with role information
      */
@@ -133,4 +146,5 @@ public class ActDAO {
                                   .setParameter(1, movieId)
                                   .getSingleResult();
     }
+    
 }

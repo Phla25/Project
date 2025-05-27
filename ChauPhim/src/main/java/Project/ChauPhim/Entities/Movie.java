@@ -1,11 +1,14 @@
 package Project.ChauPhim.Entities;
 
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,9 +50,8 @@ public class Movie {
     private Long discountID;
     
     // Add relationship to Act entities
-    @OneToMany(mappedBy = "movie")
-    private Set<Act> acts = new HashSet<>();
-    
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Act> acts = new ArrayList<>();
     public Long getMovieID() {
         return movieID;
     }
@@ -121,12 +123,14 @@ public class Movie {
     public void setDiscountID(Long discountID) {
         this.discountID = discountID;
     }
+
+	public List<Act> getActs() {
+		return acts;
+	}
+
+	public void setActs(List<Act> acts) {
+		this.acts = acts;
+	}
     
-    public Set<Act> getActs() {
-        return acts;
-    }
-    
-    public void setActs(Set<Act> acts) {
-        this.acts = acts;
-    }
+
 }

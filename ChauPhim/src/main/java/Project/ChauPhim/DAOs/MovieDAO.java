@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import Project.ChauPhim.Entities.Actor;
 import Project.ChauPhim.Entities.Movie;
 import Project.ChauPhim.Entities.Studio;
 import jakarta.persistence.EntityManager;
@@ -19,6 +20,34 @@ import jakarta.transaction.Transactional;
 public class MovieDAO {
     @Autowired
     private EntityManager entityManager;
+    
+    @Autowired
+    private ActRepository actRepository;
+
+    public List<Movie> findAllMovies() {
+        List<Movie> movies = entityManager.createQuery("SELECT m FROM Movie m", Movie.class).getResultList();
+        // Load actors for each movie
+        for (Movie movie : movies) {
+            List<Actor> actors = actRepository.findActorsByMovieID(movie.getMovieID());
+            movie.getActs().forEach(act -> act.setActor(actors.stream()
+                    .filter(actor -> actor.getActorID().equals(act.getActorID()))
+                    .findFirst()
+                    .orElse(null)));
+        }
+        return movies;
+    }
+
+    public Movie findById(Long movieID) {
+        Movie movie = entityManager.find(Movie.class, movieID);
+        if (movie != null) {
+            List<Actor> actors = actRepository.findActorsByMovieID(movieID);
+            movie.getActs().forEach(act -> act.setActor(actors.stream()
+                    .filter(actor -> actor.getActorID().equals(act.getActorID()))
+                    .findFirst()
+                    .orElse(null)));
+        }
+        return movie;
+    }
     
     /**
      * Add a new movie with complete details
@@ -41,16 +70,6 @@ public class MovieDAO {
                     .executeUpdate();
     }
     
-    /**
-     * Find movie by ID
-     */
-    public Movie findById(Long movieId) {
-        try {
-            return entityManager.find(Movie.class, movieId);
-        } catch (NoResultException e) {
-            return null;
-        }
-    }
     
     /**
      * Find movies by actor name
@@ -121,16 +140,6 @@ public class MovieDAO {
         Query query = entityManager.createNativeQuery(sql, Movie.class);
         query.setParameter(1, startDate);
         query.setParameter(2, endDate);
-        return query.getResultList();
-    }
-    
-    /**
-     * Find all movies ordered by release date (newest first)
-     */
-    @SuppressWarnings("unchecked")
-    public List<Movie> findAllMovies() {
-        String sql = "SELECT * FROM \"Movie\" ORDER BY \"releaseDate\" DESC";
-        Query query = entityManager.createNativeQuery(sql, Movie.class);
         return query.getResultList();
     }
     
