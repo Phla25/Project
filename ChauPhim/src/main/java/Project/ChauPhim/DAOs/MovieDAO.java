@@ -352,15 +352,17 @@ public class MovieDAO {
 	        return query.getResultList();
 	}
 	
-	public String getDirectorName(Long directorID) {
+	@SuppressWarnings("unchecked")
+	public List<String> getDirectorName(Long directorID) {
 		String sql = "SELECT name FROM \"Movie\" JOIN \"Director\" USING (\"directorID\") WHERE \"directorID\" = ?";
 		Query query = entityManager.createNativeQuery(sql).setParameter(1, directorID);
-		return (String) query.getSingleResult();
+		return query.getResultList();
 	}
     
-	public String getStudioName(Long studioID) {
+	@SuppressWarnings("unchecked")
+	public List<String> getStudioName(Long studioID) {
 		String sql = "SELECT name FROM \"Movie\" JOIN \"Studio\" USING (\"studioID\") WHERE \"studioID\" = ?";
 		Query query = entityManager.createNativeQuery(sql).setParameter(1, studioID);
-		return (String) query.getSingleResult();
+		return query.getResultList();
 	}
 }
