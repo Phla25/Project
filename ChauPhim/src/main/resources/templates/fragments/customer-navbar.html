@@ -26,18 +26,21 @@
                         </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{#}">Khuyến mãi</a> 
-                </li>
-                <li class="nav-item">
+
                     <a class="nav-link" th:href="@{/customer/membership/register}">Hội viên</a> 
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+
+                <!--
+
                 <li class="nav-item me-2">
                     <form class="d-flex" th:action="@{#}" method="get"> <input class="form-control me-2" type="search" placeholder="Tìm phim..." aria-label="Search" name="keyword">
                         <button class="btn btn-outline-success" type="submit"><i class="fas fa-search"></i></button>
                     </form>
                 </li>
+
+                -->
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/customer/cart}"> <i class="fas fa-shopping-cart"></i> Giỏ hàng
                         <span class="badge rounded-pill bg-danger" th:text="${cartItemCount != null ? cartItemCount : 0}">0</span>
@@ -59,13 +62,15 @@
                         <i class="fas fa-user"></i>
                         <span th:if="${customer != null}">
                             <th:block th:if="${customer.rank == 0}">
-                                <span th:text="'Xin chào, ' + ${customer.username}"></span>!
+
+                                <span th:text="'Xin chào, ' + ${customer.username}"></span> !
                             </th:block>
                             <th:block th:if="${customer.rank == 1}">
-                                <span th:text="'Xin chào, ' + ${customer.username}"></span>🏅!
+                                <span th:text="'Xin chào, ' + ${customer.username}"></span> 🏅!
                             </th:block>
                             <th:block th:if="${customer.rank == 2}">
-                                <span th:text="'Xin chào, ' + ${customer.username}"></span>💎!
+                                <span th:text="'Xin chào, ' + ${customer.username}"></span> 💎!
+
                             </th:block>
                         </span>
                     </a>
@@ -74,7 +79,6 @@
                         <li><a class="dropdown-item" th:href="@{#}">Lịch sử mua hàng</a></li> 
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" th:href="@{/customer/logout}">Đăng xuất</a></li>
-                        
                     </ul>
                 </li>
 

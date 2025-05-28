@@ -1,12 +1,15 @@
 package Project.ChauPhim.DAOs;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 
 import Project.ChauPhim.Entities.Actor;
 import Project.ChauPhim.Entities.Movie;
@@ -20,7 +23,7 @@ import jakarta.transaction.Transactional;
 public class MovieDAO {
     @Autowired
     private EntityManager entityManager;
-    
+   
     @Autowired
     private ActRepository actRepository;
 
@@ -48,7 +51,7 @@ public class MovieDAO {
         }
         return movie;
     }
-    
+
     /**
      * Add a new movie with complete details
      */
@@ -70,6 +73,7 @@ public class MovieDAO {
                     .executeUpdate();
     }
     
+
     
     /**
      * Find movies by actor name
@@ -106,6 +110,7 @@ public class MovieDAO {
         String sql = "SELECT * FROM \"Movie\" WHERE LOWER(title) LIKE ?";
         Query query = entityManager.createNativeQuery(sql, Movie.class);
         query.setParameter(1, title.toLowerCase());
+
         return query.getResultList();
     }
     
@@ -144,6 +149,7 @@ public class MovieDAO {
     }
     
     /**
+
      * Find all movies with pagination
      */
     @SuppressWarnings("unchecked")
@@ -242,6 +248,7 @@ public class MovieDAO {
         // Thực thi câu truy vấn
         query.executeUpdate();
     }
+
     /**
      * Update specific movie information
      */
@@ -350,6 +357,7 @@ public class MovieDAO {
 	        Query query = entityManager.createNativeQuery(sql, Movie.class);
 	        query.setMaxResults(limit);
 	        return query.getResultList();
+
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -365,4 +373,5 @@ public class MovieDAO {
 		Query query = entityManager.createNativeQuery(sql).setParameter(1, studioID);
 		return query.getResultList();
 	}
+
 }

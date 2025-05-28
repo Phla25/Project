@@ -244,6 +244,16 @@ public class CustomerController {
         }
     }
 
+
+    @GetMapping("/customer/gallery")
+    @PreAuthorize("hasRole('CUSTOMER')") // Nếu bạn muốn chỉ khách hàng mới xem được
+    public String showGallery(Authentication authentication, Model model) {
+        String username = authentication.getName();
+        Customer customer = customerDAO.findByUserName(username);
+        model.addAttribute("customer", customer);
+        return "customer-gallery"; // Trả về tên file template
+    }
+
     @GetMapping("/customer/dashboard")
     @PreAuthorize("hasRole('CUSTOMER')")
     public String showDashboard(Authentication authentication, Model model) {
@@ -390,7 +400,9 @@ public class CustomerController {
                 
                 model.addAttribute("cartMovies", cartMovies);
                 model.addAttribute("totalPrice", totalPrice);
-                model.addAttribute("customer", convertToCustomerDTO(customer));
+
+                model.addAttribute("customer", customer);
+
                 
                 return "customer-cart";
                 
@@ -482,6 +494,7 @@ public class CustomerController {
             }
         } else {
             return "redirect:/customer-login";
+
         }
     }
 

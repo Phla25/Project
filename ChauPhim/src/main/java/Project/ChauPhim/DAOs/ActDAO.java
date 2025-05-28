@@ -13,6 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.OneToMany;
+
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
@@ -29,6 +30,7 @@ public class ActDAO {
     @ManyToMany
     @JsonIgnore  // Thêm dòng này  
     private List<Movie> movies;
+
     /**
      * Add a new actor-movie relationship with role information
      */
@@ -146,5 +148,4 @@ public class ActDAO {
                                   .setParameter(1, movieId)
                                   .getSingleResult();
     }
-    
 }
