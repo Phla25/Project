@@ -9,149 +9,140 @@
       )}">
 
 <head>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-        h2 {
-            color: #333;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-        }
-        form {
-            max-width: 500px;
-            margin: 20px 0;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="date"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .success-message {
-            color: green;
-            padding: 10px;
-            background-color: #f0f8f0;
-            border-radius: 4px;
-        }
-        .error-message {
-            color: red;
-            padding: 10px;
-            background-color: #fff0f0;
-            border-radius: 4px;
-        }
-        .readonly {
-            background-color: #f9f9f9;
-        }
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
     <th:block th:fragment="viewHead">
-        <link rel="stylesheet" th:href="@{/css/customer-specific.css}">
+        <link rel="stylesheet" th:href="@{/css/customer-theme.css}">
     </th:block>
-    <title th:fragment="viewTitle">Thông tin cá nhân</title>
 </head>
 
 <body>
-    <div th:fragment="viewContent">
-        <h2 class="mb-3">Thông tin cá nhân</h2>
-        <div class="row">
-        <div class="card">
-            <div class="card-body">
-                <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-                <div th:if="${param.success}" class="alert alert-success">Cập nhật thông tin thành công!</div>
+    <div th:fragment="viewContent" class="main-content-area">
+        
+            <div class="header">
+                <h1>Thông tin cá nhân</h1>
+            </div>
 
+            <!-- Alert Messages -->
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${param.success}" class="alert alert-success">Cập nhật thông tin thành công!</div>
+
+            <!-- Profile Form Card -->
+            <div class="profile-card">
                 <form th:action="@{/customer/update}" method="post" th:object="${customer}" id="profileForm">
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Tên đăng nhập:</label>
-                        <input type="text" class="form-control readonly" id="username" th:field="*{username}" readonly />
+                    <div class="form-grid">
+                        <!-- Username Field -->
+                        <div class="form-group">
+                            <label for="username" class="form-label">Tên đăng nhập:</label>
+                            <input type="text" class="form-input readonly" id="username" th:field="*{username}" readonly />
+                        </div>
+
+                        <!-- Email Field -->
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="email" class="form-input" id="email" th:field="*{email}" required />
+                        </div>
+
+                        <!-- Name Field -->
+                        <div class="form-group">
+                            <label for="name" class="form-label">Họ và tên:</label>
+                            <input type="text" class="form-input" id="name" th:field="*{name}" required />
+                        </div>
+
+                        <!-- Gender Field -->
+                        <div class="form-group">
+                            <label for="gender" class="form-label">Giới tính:</label>
+                            <select class="form-select" id="gender" th:field="*{gender}">
+                                <option value="Nam" th:selected="${customer.gender == 'Nam'}">Nam</option>
+                                <option value="Nu" th:selected="${customer.gender == 'Nu'}">Nữ</option>
+                                <option value="Khac" th:selected="${customer.gender == 'Khac'}">Khác</option>
+                            </select>
+                        </div>
+
+                        <!-- Nationality Field -->
+                        <div class="form-group">
+                            <label for="nationality" class="form-label">Quốc tịch:</label>
+                            <input type="text" class="form-input" id="nationality" th:field="*{nationality}" required />
+                        </div>
+
+                        <!-- Date of Birth Field -->
+                        <div class="form-group">
+                            <label for="dob" class="form-label">Ngày sinh:</label>
+                            <input type="date" class="form-input" id="dob"
+                                th:value="${customer.dob != null ? #temporals.format(customer.dob, 'yyyy-MM-dd') : ''}" required />
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email:</label>
-                        <input type="text" class="form-control" id="email" th:field="*{email}" required />
+                    <!-- Membership Section -->
+                    <div class="membership-section">
+                        <div class="form-group">
+                            <label for="rank" class="form-label">Cấp độ hội viên:</label>
+                            <input type="text" class="form-input readonly" id="rank" th:field="*{rank}" readonly style="display: none;" />
+                            <div class="membership-info">
+                                <span th:if="*{rank == 0}" class="membership-badge badge-normal">
+                                    <i class="fas fa-user"></i> Khách hàng thông thường
+                                </span>
+                                <span th:if="*{rank == 1}" class="membership-badge badge-gold">
+                                    <i class="fas fa-crown"></i> Hội viên bậc vàng
+                                </span>
+                                <span th:if="*{rank == 2}" class="membership-badge badge-diamond">
+                                    <i class="fas fa-gem"></i> Hội viên bậc kim cương
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="membership-actions">
+                            <a th:if="*{rank == 0}" th:href="@{/customer/membership/register}" class="btn btn-secondary">
+                                <i class="fas fa-star"></i> Đăng ký hội viên
+                            </a>
+                            <a th:if="*{rank == 1}" th:href="@{/customer/membership/register}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-up"></i> Nâng cấp hội viên
+                            </a>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Họ và tên:</label>
-                        <input type="text" class="form-control" id="name" th:field="*{name}" required />
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Lưu thay đổi
+                        </button>
                     </div>
-
-                    <div class="mb-3">
-                        <label for="gender" class="form-label">Giới tính:</label>
-                        <select class="form-select" id="gender" th:field="*{gender}">
-                            <option value="Nam" th:selected="${customer.gender == 'Nam'}">Nam</option>
-                            <option value="Nu" th:selected="${customer.gender == 'Nu'}">Nữ</option>
-                            <option value="Khac" th:selected="${customer.gender == 'Khac'}">Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="nationality" class="form-label">Quốc tịch:</label>
-                        <input type="text" class="form-control" id="nationality" th:field="*{nationality}" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="dob" class="form-label">Ngày sinh:</label>
-                        <input type="date" class="form-control" id="dob"
-                            th:value="${customer.dob != null ? #temporals.format(customer.dob, 'yyyy-MM-dd') : ''}" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="rank" class="form-label">Cấp độ hội viên:</label>
-                        <input type="text" class="form-control readonly" id="rank" th:field="*{rank}" readonly />
-                        <span th:if="*{rank == 0}" class="badge bg-secondary">Khách hàng thông thường</span>
-                        <span th:if="*{rank == 1}" class="badge bg-warning text-dark">Hội viên bậc vàng</span>
-                        <span th:if="*{rank == 2}" class="badge bg-info text-dark">Hội viên bậc kim cương</span>
-                    </div>
-                    <div class="mb-3">
-                        <a th:if="*{rank == 0}" th:href="@{/customer/membership/register}" class="btn btn-sm btn-info mt-2">Đăng ký hội viên</a>
-                        <a th:if="*{rank == 1}" th:href="@{/customer/membership/register}" class="btn btn-sm btn-info mt-2">Nâng cấp hội viên</a>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Lưu thay đổi
-                    </button>
                 </form>
-                </div>
-        </div>
-        </div>
+            </div>
+        
     </div>
 
     <th:block th:fragment="viewScripts">
         <script>
-            console.log("JavaScript của trang test đã được tải!");
-            // Logic JS tùy chỉnh cho trang này (nếu có)
-            // Không cần include lại Bootstrap JS ở đây.
+            console.log("Customer profile page loaded successfully!");
+            
+            // Form validation
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                const requiredFields = ['email', 'name', 'nationality', 'dob'];
+                let isValid = true;
+                
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (!field.value.trim()) {
+                        field.classList.add('error');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('error');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+                }
+            });
+
+            // Remove error styling when user starts typing
+            document.querySelectorAll('.form-input, .form-select').forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('error');
+                });
+            });
         </script>
     </th:block>
-
 </body>
 </html>

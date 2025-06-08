@@ -1,0 +1,207 @@
+
+        /* CSS cụ thể cho trang lịch sử giao dịch - có thể chuyển vào style.css */
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .transactions-header h1 {
+            color: #333;
+            font-size: 2.2em; /* Đồng bộ với Movie page */
+            margin: 0;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .sort-controls label {
+            font-size: 1em; /* Đồng bộ */
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .sort-select {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.95em; /* Đồng bộ */
+            background-color: #f8f9fa;
+            color: #495057;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        .sort-select:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        .transactions-table-container {
+            overflow-x: auto; /* Cho phép cuộn ngang trên màn hình nhỏ */
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            background-color: #fff;
+        }
+
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em; /* Đồng bộ */
+            min-width: 700px; /* Đảm bảo bảng không quá nhỏ trên màn hình nhỏ */
+        }
+
+        .transactions-table thead th {
+            background-color: #f2f2f2;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer; /* Cho biết cột có thể sắp xếp */
+            position: sticky;
+            top: 0; /* Giữ tiêu đề bảng khi cuộn */
+            z-index: 1;
+        }
+
+        .transactions-table tbody td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+            color: #555;
+        }
+
+        .transactions-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .transactions-table tbody tr:hover {
+            background-color: #fdfdfd;
+        }
+
+        .transaction-movie-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 200px; /* Đảm bảo đủ chỗ cho tiêu đề phim */
+        }
+
+        .transaction-poster-small {
+            width: 60px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .transaction-movie-title {
+            font-weight: 600;
+            color: #007bff;
+            font-size: 1em; /* Đồng bộ */
+            line-height: 1.3;
+        }
+
+        .transaction-price-column,
+        .transaction-discount-column {
+            font-weight: bold;
+            color: #28a745; /* Màu xanh lá cây cho giá */
+            white-space: nowrap; /* Ngăn xuống dòng */
+        }
+        .transaction-discount-column {
+            color: #fd7e14; /* Màu cam cho giảm giá */
+        }
+
+        .transaction-rate-badge {
+            background-color: #6c757d; /* Màu xám mặc định */
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+        .transaction-rate-badge.rate-0 { background-color: #dc3545; } /* Red for 0 star (if 0 is possible) */
+        .transaction-rate-badge.rate-1 { background-color: #ffc107; } /* Yellow for 1 star */
+        .transaction-rate-badge.rate-2 { background-color: #ffc107; }
+        .transaction-rate-badge.rate-3 { background-color: #28a745; } /* Green for 3 stars */
+        .transaction-rate-badge.rate-4 { background-color: #28a745; }
+        .transaction-rate-badge.rate-5 { background-color: #007bff; } /* Blue for 5 stars */
+
+
+        .no-transactions {
+            text-align: center;
+            padding: 50px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #6c757d;
+            font-size: 1.1em; /* Đồng bộ */
+        }
+        .no-transactions h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.8em; /* Đồng bộ */
+        }
+
+        /* Đồng bộ kích thước phông chữ và căn lề theo movie page */
+        p strong {
+            font-size: 0.95em; /* Đồng bộ */
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .transactions-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .sort-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .sort-select {
+                width: 100%;
+            }
+
+            .transactions-table, .transactions-table tbody, .transactions-table th, .transactions-table td, .transactions-table tr {
+                display: block; /* Chuyển sang hiển thị khối cho mỗi hàng/cột */
+            }
+            .transactions-table thead {
+                display: none; /* Ẩn tiêu đề bảng */
+            }
+            .transactions-table tr {
+                margin-bottom: 15px;
+                border: 1px solid #dee2e6;
+                border-radius: 8px;
+            }
+            .transactions-table td {
+                border-bottom: 1px solid #eee;
+                position: relative;
+                padding-left: 50%; /* Tạo không gian cho label giả */
+                text-align: right;
+            }
+            .transactions-table td:last-child {
+                border-bottom: 0;
+            }
+            .transactions-table td::before {
+                content: attr(data-label); /* Sử dụng data-label cho nội dung */
+                position: absolute;
+                left: 15px;
+                width: calc(50% - 30px);
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 600;
+                color: #495057;
+            }
+            .transaction-poster-small {
+                width: 50px; /* Nhỏ hơn trên mobile */
+                height: 75px;
+            }
+        }

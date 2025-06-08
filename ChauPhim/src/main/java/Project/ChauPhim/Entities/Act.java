@@ -12,6 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 // Define the composite key class first
+@SuppressWarnings("serial")
 class ActId implements Serializable {
     private Long actorID;
     private Long movieID;

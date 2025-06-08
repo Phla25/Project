@@ -33,6 +33,13 @@ public class OrderDAO {
         return query.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Orders> findAllOrders() {
+        String sql = "SELECT * FROM \"Orders\"";
+        Query query = entityManager.createNativeQuery(sql, Orders.class);
+        return query.getResultList();
+    }
+
     // Tìm order theo ID
     public Orders findById(Long orderID) {
         return entityManager.find(Orders.class, orderID);
@@ -95,16 +102,6 @@ public class OrderDAO {
         query.setParameter("orderID", orderID);
         query.executeUpdate();
     }
-
-    // Xóa order (nếu cần)
-    @Transactional
-    public void deleteById(Long orderID) {
-        Orders order = findById(orderID);
-        if (order != null) {
-            entityManager.remove(order);
-        }
-    }
-
     // Tìm orders trong khoảng thời gian
     @SuppressWarnings("unchecked")
     public List<Orders> findByCustomerIDAndDateRange(Long customerID, LocalDate startDate, LocalDate endDate) {

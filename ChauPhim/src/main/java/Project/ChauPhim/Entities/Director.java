@@ -15,7 +15,9 @@ import jakarta.persistence.UniqueConstraint;
 		uniqueConstraints = @UniqueConstraint(name = "Director_imageURL_key", columnNames = "imageURL"))
 public class Director {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(
+		strategy = GenerationType.SEQUENCE
+	)
 	@Column(name = "\"directorID\"", nullable = false)
 	private Long directorID;
 	
@@ -36,6 +38,9 @@ public class Director {
 	
 	@Column(name = "bio", nullable = true)
 	private String bio;
+
+	@Column(name = "nationality", length = 128, nullable = true)
+	private String nationality;
 
 	public Long getDirectorID() {
 		return directorID;
@@ -91,6 +96,15 @@ public class Director {
 
 	public void setBio(String bio) {
 		this.bio = bio;
+	}
+
+	public String getNationality() {
+		return nationality;
+	}
+
+	public void setNationality(String nationality)
+	{
+		this.nationality = nationality;
 	}
 }
 

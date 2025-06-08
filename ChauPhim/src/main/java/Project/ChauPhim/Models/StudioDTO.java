@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Project.ChauPhim.Entities.Movie;
+import Project.ChauPhim.Entities.Studio;
 
 public class StudioDTO {
 	private String name;	// NOT NULL
@@ -17,6 +18,13 @@ public class StudioDTO {
 		this.name = name;
 		this.year = year;
 		this.country = country;
+	}
+
+	public StudioDTO(Studio studio) {
+		super();
+		this.name = studio.getName();
+		this.year = studio.getYear();
+		this.country = studio.getCountry();
 	}
 
 	public String getName() {

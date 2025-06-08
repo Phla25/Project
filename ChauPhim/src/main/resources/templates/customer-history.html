@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: html (
+          customPageTitle='Dashboard - ChauPhim',
+          pageTitle=~{::viewTitle},
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/customer-theme.css}">
+    </th:block>
+</head>
+
+<body>
+    <div th:fragment="viewContent" class="main-content-area">
+        
+            <div class="header">
+                <h1> Lịch sử mua hàng của bạn</h1>
+                
+                <div class="controls">
+                    <div class="sort-filter">
+                        <label for="sortSelect">Sắp xếp theo:</label>
+                        <select id="sortSelect" class="sort-select">
+                            <option value="dateDesc">Ngày giao dịch (Mới nhất)</option>
+                            <option value="dateAsc">Ngày giao dịch (Cũ nhất)</option>
+                            <option value="totalPriceDesc">Tổng giá (Giảm dần)</option>
+                            <option value="totalPriceAsc">Tổng giá (Tăng dần)</option>
+                            <option value="rateDesc">Đánh giá (Cao nhất)</option>
+                            <option value="rateAsc">Đánh giá (Thấp nhất)</option>
+                            <option value="movieTitleAsc">Tên phim (A-Z)</option>
+                            <option value="movieTitleDesc">Tên phim (Z-A)</option>
+                            <option value="directorNameAsc">Đạo diễn (A-Z)</option>
+                            <option value="directorNameDesc">Đạo diễn (Z-A)</option>
+                            <option value="genreAsc">Thể loại (A-Z)</option>
+                            <option value="genreDesc">Thể loại (Z-A)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Transactions State -->
+            <div th:if="${orders.isEmpty()}" class="no-transactions">
+                <div class="empty-state">
+                    <i class="fas fa-receipt empty-icon"></i>
+                    <h3>Bạn chưa có giao dịch nào</h3>
+                    <p>Hãy khám phá các bộ phim và đặt mua ngay!</p>
+                    <a th:href="@{/dashboard}" class="btn btn-primary">
+                        <i class="fas fa-film"></i> Xem Phim Ngay
+                    </a>
+                </div>
+            </div>
+
+            <!-- Transactions Grid -->
+            <div th:unless="${orders.isEmpty()}" class="transactions-container">
+                <div class="results-count" id="resultsCount" style="display: none;"></div>
+                <div class="transactions-grid" id="transactionsList">
+                    <!-- Transaction cards will be rendered here by JavaScript -->
+                </div>
+            </div>
+    </div>
+
+    <th:block th:fragment="viewScripts">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            const ordersData = /*[[${orders}]]*/ [];
+            const fallbackMoviePoster = 'https://placehold.co/300x400/cccccc/333333?text=No+Poster';
+
+            function formatPriceToUSD(price) {
+                if (price == null || isNaN(price)) {
+                    return '0.00$';
+                }
+                const numPrice = parseFloat(price);
+                const fixedPrice = numPrice.toFixed(2);
+                const parts = fixedPrice.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return parts.join('.') + '$';
+            }
+
+            function formatDate(localDateValue) {
+                let date;
+                if (localDateValue instanceof Array) {
+                    date = new Date(localDateValue[0], localDateValue[1] - 1, localDateValue[2]);
+                } else if (typeof localDateValue === 'string') {
+                    date = new Date(localDateValue);
+                } else {
+                    return 'N/A';
+                }
+                
+                if (isNaN(date.getTime())) return 'Ngày không hợp lệ';
+                
+                return date.toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+
+            function getRatingStars(rating) {
+                if (!rating || rating <= 0) {
+                    return '<span class="no-rating">Chưa đánh giá</span>';
+                }
+                
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        stars += '<i class="fas fa-star star-filled"></i>';
+                    } else {
+                        stars += '<i class="far fa-star star-empty"></i>';
+                    }
+                }
+                return `<div class="rating-stars">${stars}</div>`;
+            }
+
+            function renderTransactions(ordersToRender) {
+                const container = document.getElementById('transactionsList');
+                const resultsCount = document.getElementById('resultsCount');
+                
+                if (!ordersToRender || ordersToRender.length === 0) {
+                    container.innerHTML = '';
+                    resultsCount.style.display = 'none';
+                    return;
+                }
+
+                // Update results count
+                resultsCount.textContent = `Hiển thị ${ordersToRender.length} giao dịch`;
+                resultsCount.style.display = 'block';
+
+                container.innerHTML = '';
+
+                ordersToRender.forEach(order => {
+                    const movieTitle = order.movie && order.movie.title ? order.movie.title : 'N/A';
+                    const moviePoster = order.movie && order.movie.posterImageURL ? order.movie.posterImageURL : fallbackMoviePoster;
+                    const customerUsername = order.customer && order.customer.username ? order.customer.username : 'N/A';
+                    const directorName = order.movie && order.movie.director && order.movie.director.name ? order.movie.director.name : 'N/A';
+                    const movieGenre = order.movie && order.movie.genre ? order.movie.genre : 'N/A';
+                    const transactionDate = order.date ? formatDate(order.date) : 'N/A';
+                    const totalPriceFormatted = formatPriceToUSD(order.totalPrice);
+                    const ratingDisplay = getRatingStars(order.rate);
+
+                    const transactionCard = document.createElement('div');
+                    transactionCard.className = 'transaction-card';
+                    
+                    transactionCard.innerHTML = `
+                        <div class="transaction-poster">
+                            <img src="${moviePoster}" alt="${movieTitle}" onerror="this.src='${fallbackMoviePoster}'">
+                        </div>
+                        <div class="transaction-content">
+                            <div class="transaction-header">
+                                <h3 class="transaction-movie-title">${movieTitle}</h3>
+                                <div class="transaction-price">${totalPriceFormatted}</div>
+                            </div>
+                            <div class="transaction-meta">
+                                <p><strong>Đạo diễn:</strong> ${directorName}</p>
+                                <p><strong>Thể loại:</strong> <span class="genre-badge">${movieGenre}</span></p>
+                                <p><strong>Ngày mua:</strong> ${transactionDate}</p>
+                                <p><strong>Người dùng:</strong> ${customerUsername}</p>
+                            </div>
+                            <div class="transaction-rating">
+                                <strong>Đánh giá:</strong>
+                                ${ratingDisplay}
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(transactionCard);
+                });
+            }
+
+            function sortTransactions(criteria) {
+                const sortedData = [...ordersData].sort((a, b) => {
+                    let valA, valB;
+
+                    switch (criteria) {
+                        case 'dateAsc':
+                        case 'dateDesc':
+                            // Handle different date formats more robustly
+                            if (a.date instanceof Array && a.date.length >= 3) {
+                                valA = new Date(a.date[0], a.date[1] - 1, a.date[2]);
+                            } else if (typeof a.date === 'string') {
+                                valA = new Date(a.date);
+                            } else {
+                                valA = new Date(0); // fallback to epoch
+                            }
+                            
+                            if (b.date instanceof Array && b.date.length >= 3) {
+                                valB = new Date(b.date[0], b.date[1] - 1, b.date[2]);
+                            } else if (typeof b.date === 'string') {
+                                valB = new Date(b.date);
+                            } else {
+                                valB = new Date(0); // fallback to epoch
+                            }
+                            
+                            // Handle invalid dates
+                            if (isNaN(valA.getTime())) valA = new Date(0);
+                            if (isNaN(valB.getTime())) valB = new Date(0);
+                            
+                            return criteria === 'dateAsc' ? valA.getTime() - valB.getTime() : valB.getTime() - valA.getTime();
+                        
+                        case 'totalPriceAsc':
+                        case 'totalPriceDesc':
+                            valA = parseFloat(a.totalPrice) || 0;
+                            valB = parseFloat(b.totalPrice) || 0;
+                            return criteria === 'totalPriceAsc' ? valA - valB : valB - valA;
+
+                        case 'rateAsc':
+                        case 'rateDesc':
+                            valA = parseFloat(a.rate) || 0;
+                            valB = parseFloat(b.rate) || 0;
+                            return criteria === 'rateAsc' ? valA - valB : valB - valA;
+
+                        case 'movieTitleAsc':
+                        case 'movieTitleDesc':
+                            valA = (a.movie && a.movie.title) ? a.movie.title.toLowerCase() : '';
+                            valB = (b.movie && b.movie.title) ? b.movie.title.toLowerCase() : '';
+                            if (valA < valB) return criteria === 'movieTitleAsc' ? -1 : 1;
+                            if (valA > valB) return criteria === 'movieTitleAsc' ? 1 : -1;
+                            return 0;
+
+                        case 'customerUsernameAsc':
+                        case 'customerUsernameDesc':
+                            valA = (a.customer && a.customer.username) ? a.customer.username.toLowerCase() : '';
+                            valB = (b.customer && b.customer.username) ? b.customer.username.toLowerCase() : '';
+                            if (valA < valB) return criteria === 'customerUsernameAsc' ? -1 : 1;
+                            if (valA > valB) return criteria === 'customerUsernameAsc' ? 1 : -1;
+                            return 0;
+                        
+                        case 'directorNameAsc':
+                        case 'directorNameDesc':
+                            valA = (a.movie && a.movie.director && a.movie.director.name) ? a.movie.director.name.toLowerCase() : '';
+                            valB = (b.movie && b.movie.director && b.movie.director.name) ? b.movie.director.name.toLowerCase() : '';
+                            if (valA < valB) return criteria === 'directorNameAsc' ? -1 : 1;
+                            if (valA > valB) return criteria === 'directorNameAsc' ? 1 : -1;
+                            return 0;
+
+                        case 'genreAsc':
+                        case 'genreDesc':
+                            valA = (a.movie && a.movie.genre) ? a.movie.genre.toLowerCase() : '';
+                            valB = (b.movie && b.movie.genre) ? b.movie.genre.toLowerCase() : '';
+                            if (valA < valB) return criteria === 'genreAsc' ? -1 : 1;
+                            if (valA > valB) return criteria === 'genreAsc' ? 1 : -1;
+                            return 0;
+
+                        default:
+                            return 0;
+                    }
+                });
+                renderTransactions(sortedData);
+            }
+            // Event listeners
+            document.getElementById('sortSelect').addEventListener('change', function() {
+                sortTransactions(this.value);
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Default sort by newest date
+                document.getElementById('sortSelect').value = 'dateDesc';
+                sortTransactions('dateDesc'); 
+            });
+
+            /*]]>*/
+        </script>
+    </th:block>
+</body>
+</html>

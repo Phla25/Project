@@ -1,0 +1,331 @@
+/* static/css/manager-theme.css */
+
+/* :root Variables (Tùy chọn, nhưng tốt cho sự nhất quán) */
+:root {
+    --manager-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --manager-text-color-base: #343a40;
+    --manager-text-color-headings: #212529;
+    --manager-text-color-muted: #6c757d;
+
+    --manager-bg-page: #f8f9fa;
+    --manager-bg-container: #ffffff;
+    --manager-bg-input: #f8f9fa; /* Giống như trang movies */
+    --manager-bg-table-header: #f1f3f5; /* Nền nhẹ cho header bảng */
+
+    --manager-primary-color: #007bff;
+    --manager-success-color: #28a745;
+    --manager-warning-color: #ffc107;
+    --manager-info-color: #17a2b8;
+    --manager-danger-color: #dc3545;
+
+    --manager-border-color: #ced4da; /* Cho input, table borders */
+    --manager-border-color-light: #e9ecef; /* Cho card borders, table dividers */
+
+    --manager-font-size-h1: 2.2rem;
+    --manager-font-size-h2: 1.8rem;
+    --manager-font-size-h3: 1.5rem;
+    --manager-font-size-base: 1rem; /* 16px */
+    --manager-font-size-sm: 0.875rem; /* 14px */
+    --manager-font-size-xs: 0.75rem; /* 12px */
+
+    --manager-border-radius-lg: 12px; /* Container, modal */
+    --manager-border-radius-md: 8px;  /* Card, input, button lớn */
+    --manager-border-radius-sm: 6px;  /* Button nhỏ, ảnh */
+
+    --manager-spacing-unit: 8px;
+    --manager-padding-container: calc(var(--manager-spacing-unit) * 3.75); /* 30px */
+    --manager-margin-container-vertical: calc(var(--manager-spacing-unit) * 3.75);
+    --manager-gap-base: calc(var(--manager-spacing-unit) * 2); /* 16px */
+    --manager-gap-md: calc(var(--manager-spacing-unit) * 1.5); /* 12px */
+    --manager-gap-sm: var(--manager-spacing-unit); /* 8px */
+}
+
+/* --- Global --- */
+/* Áp dụng class này cho thẻ <body> trong layouts/manager-layout.html */
+body.manager-layout-active {
+    background-color: var(--manager-bg-page);
+    font-family: var(--manager-font-family);
+    color: var(--manager-text-color-base);
+    font-size: var(--manager-font-size-base);
+    line-height: 1.6;
+}
+
+/* Class cho div bọc nội dung chính của mỗi trang quản lý */
+.manager-content-wrapper {
+    max-width: 1200px;
+    margin: var(--manager-margin-container-vertical) auto;
+    background-color: var(--manager-bg-container);
+    padding: var(--manager-padding-container);
+    border-radius: var(--manager-border-radius-lg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Typography --- */
+.manager-content-wrapper h1,
+.manager-content-wrapper h2,
+.manager-content-wrapper h3,
+.manager-content-wrapper h4,
+.manager-content-wrapper h5,
+.manager-content-wrapper h6 {
+    color: var(--manager-text-color-headings);
+    font-weight: 600;
+}
+
+.manager-content-wrapper h1 {
+    font-size: var(--manager-font-size-h1);
+    /* margin-bottom được xử lý bởi .manager-page-header hoặc context cụ thể */
+}
+.manager-content-wrapper h2 { font-size: var(--manager-font-size-h2); margin-bottom: var(--manager-gap-base); }
+.manager-content-wrapper h3 { font-size: var(--manager-font-size-h3); margin-bottom: var(--manager-gap-md); }
+
+/* --- Page Header (Tiêu đề trang và nút control) --- */
+.manager-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--manager-padding-container); /* Khoảng 30px */
+    flex-wrap: wrap;
+    gap: var(--manager-gap-base);
+}
+.manager-page-header h1 {
+    margin-bottom: 0; /* Để H1 không tạo thêm khoảng cách dọc không cần thiết */
+    white-space: nowrap; /* Tránh H1 bị xuống dòng nếu quá dài */
+}
+
+.manager-header-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--manager-gap-md, 12px);
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.manager-header-controls .manager-search-container {
+    min-width: 250px;
+    max-width: 350px;
+    margin-bottom: 0; /* Remove any bottom margin that might interfere */
+}
+
+.manager-header-controls .manager-btn {
+    flex-shrink: 0;
+    white-space: nowrap; /* Prevent button text from wrapping */
+}
+
+/* --- Forms --- */
+.manager-form-control { /* Dùng cho input, select, textarea chung */
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--manager-text-color-base);
+    background-color: var(--manager-bg-input);
+    background-clip: padding-box;
+    border: 1px solid var(--manager-border-color);
+    border-radius: var(--manager-border-radius-md);
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+.manager-form-control:focus {
+    color: var(--manager-text-color-base);
+    background-color: var(--manager-bg-container);
+    border-color: var(--manager-primary-color);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(var(--manager-primary-color), 0.25); /* Sửa lại để dùng var() đúng cách */
+}
+
+.manager-search-container { /* Dùng cho div.search-container */
+    margin-bottom: var(--manager-gap-base);
+    position: relative;
+}
+.manager-search-container .search-icon { /* Class cho icon tìm kiếm */
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--manager-text-color-muted);
+    z-index: 2; /* Để icon nổi lên trên input */
+}
+.manager-search-container .manager-form-control {
+    padding-left: 40px; /* Để có chỗ cho icon search */
+}
+
+/* --- Buttons --- */
+.manager-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--manager-gap-sm);
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: var(--manager-border-radius-md);
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    text-decoration: none;
+}
+.manager-btn i.fas, .manager-btn i.far, .manager-btn i.fab { /* Target các loại icon FontAwesome */
+    line-height: 1;
+    margin-right: var(--manager-gap-sm); /* Thêm nếu gap không hoạt động với display:inline-flex trên một số trình duyệt cũ */
+}
+.manager-btn i.fas:last-child, .manager-btn i.far:last-child, .manager-btn i.fab:last-child { /* Nếu icon là phần tử cuối */
+    margin-right: 0;
+}
+
+.manager-btn-success {
+    color: #fff;
+    background-color: var(--manager-success-color);
+    border-color: var(--manager-success-color);
+}
+.manager-btn-success:hover {
+    color: #fff;
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.manager-btn-warning {
+    color: var(--manager-text-color-headings);
+    background-color: var(--manager-warning-color);
+    border-color: var(--manager-warning-color);
+}
+.manager-btn-warning:hover {
+    color: var(--manager-text-color-headings);
+    background-color: #e0a800;
+    border-color: #d39e00;
+}
+
+.manager-btn-sm {
+    padding: 8px 15px;
+    font-size: 0.875rem; /* Cập nhật cho nhất quán với font-size-sm */
+    border-radius: var(--manager-border-radius-sm);
+}
+
+/* --- Tables --- */
+/* Class này sẽ được thêm vào thẻ table cùng với class .table của Bootstrap nếu muốn kế thừa style Bootstrap */
+/* Hoặc dùng riêng nếu không dùng Bootstrap table */
+.manager-table {
+    width: 100%;
+    margin-bottom: var(--manager-gap-base);
+    color: var(--manager-text-color-base);
+    border-collapse: collapse; /* Hoặc separate nếu muốn border-spacing */
+    /* border: 1px solid var(--manager-border-color-light); */ /* Border bao ngoài table */
+    /* border-radius: var(--manager-border-radius-sm); */ /* Bo góc cho table nếu có border */
+    /* overflow: hidden; */ /* Cần thiết nếu table có border-radius và cell có background */
+}
+
+.manager-table th,
+.manager-table td {
+    padding: var(--manager-gap-md); /* 12px */
+    vertical-align: middle;
+    border-top: 1px solid var(--manager-border-color-light);
+    text-align: left;
+}
+
+.manager-table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid var(--manager-border-color);
+    font-weight: 600;
+    background-color: var(--manager-bg-table-header);
+    cursor: pointer; /* Cho biết có thể sort */
+    white-space: nowrap; /* Tránh vỡ dòng tiêu đề */
+}
+.manager-table thead th:first-child {
+    /* border-top-left-radius: var(--manager-border-radius-sm); */ /* Nếu table có bo góc */
+}
+.manager-table thead th:last-child {
+    /* border-top-right-radius: var(--manager-border-radius-sm); */
+}
+
+.manager-table tbody tr:hover {
+    background-color: rgba(0,0,0,.04);
+}
+.manager-table tbody td {
+    font-size: var(--manager-font-size-sm); /* 14px cho nội dung bảng */
+}
+
+.manager-table th .sort-icon {
+    margin-left: var(--manager-gap-sm);
+    color: var(--manager-text-color-muted);
+    font-size: 0.8em; /* Kích thước icon sort */
+}
+.manager-table th.asc .sort-icon.fa-sort-up,
+.manager-table th.desc .sort-icon.fa-sort-down {
+    color: var(--manager-primary-color);
+}
+
+/* Class cho div bọc table để cuộn ngang trên mobile */
+.manager-table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border: 1px solid var(--manager-border-color-light); /* Thêm border cho khối cuộn */
+    border-radius: var(--manager-border-radius-sm);
+}
+.manager-table-responsive > .manager-table {
+    border: none; /* Bỏ border của table bên trong nếu wrapper đã có */
+    margin-bottom: 0; /* Bỏ margin bottom của table bên trong */
+}
+
+
+/* --- Placeholder cho danh sách rỗng --- */
+.manager-no-items {
+    text-align: center;
+    color: var(--manager-text-color-muted);
+    padding: var(--manager-padding-container);
+    background-color: var(--manager-bg-input);
+    border-radius: var(--manager-border-radius-md);
+    margin-top: var(--manager-gap-base);
+    border: 1px dashed var(--manager-border-color-light); /* Border dash cho khác biệt */
+}
+.manager-no-items .no-items-icon { /* Class mới cho icon */
+    font-size: 3em;
+    margin-bottom: var(--manager-gap-base);
+    display: block;
+    color: var(--manager-text-color-muted);
+}
+.manager-no-items h3 {
+    color: var(--manager-text-color-headings);
+    font-size: var(--manager-font-size-h3); /* Đồng bộ với H3 chung */
+    margin-bottom: var(--manager-gap-sm);
+}
+.manager-no-items p {
+    font-size: var(--manager-font-size-base);
+    margin-bottom: 0;
+}
+
+
+/* --- Responsive Adjustments (General) --- */
+@media (max-width: 768px) {
+    .manager-page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--manager-gap-md);
+    }
+    
+    .manager-page-header h1 {
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: var(--manager-gap-sm);
+    }
+    
+    .manager-header-controls {
+        flex-direction: column; /* Stack vertically on mobile */
+        align-items: stretch;
+        gap: var(--manager-gap-sm);
+    }
+    
+    .manager-header-controls .manager-search-container {
+        min-width: auto;
+        max-width: none;
+        width: 100%;
+    }
+    
+    .manager-header-controls .manager-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

@@ -1,12 +1,15 @@
 package Project.ChauPhim.DAOs;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 
 import Project.ChauPhim.Entities.Actor;
 import Project.ChauPhim.Entities.Movie;
@@ -20,7 +23,7 @@ import jakarta.transaction.Transactional;
 public class MovieDAO {
     @Autowired
     private EntityManager entityManager;
-    
+   
     @Autowired
     private ActRepository actRepository;
 
@@ -48,7 +51,7 @@ public class MovieDAO {
         }
         return movie;
     }
-    
+
     /**
      * Add a new movie with complete details
      */
@@ -70,6 +73,7 @@ public class MovieDAO {
                     .executeUpdate();
     }
     
+
     
     /**
      * Find movies by actor name
@@ -106,6 +110,7 @@ public class MovieDAO {
         String sql = "SELECT * FROM \"Movie\" WHERE LOWER(title) LIKE ?";
         Query query = entityManager.createNativeQuery(sql, Movie.class);
         query.setParameter(1, title.toLowerCase());
+
         return query.getResultList();
     }
     
@@ -144,6 +149,7 @@ public class MovieDAO {
     }
     
     /**
+
      * Find all movies with pagination
      */
     @SuppressWarnings("unchecked")
@@ -242,6 +248,7 @@ public class MovieDAO {
         // Thực thi câu truy vấn
         query.executeUpdate();
     }
+
     /**
      * Update specific movie information
      */
@@ -282,22 +289,6 @@ public class MovieDAO {
         }
         
         query.executeUpdate();
-    }
-    
-    /**
-     * Delete a movie
-     */
-    @Transactional
-    public void deleteMovie(Long movieId) {
-        // First delete from Act table to maintain referential integrity
-        entityManager.createNativeQuery("DELETE FROM \"Act\" WHERE \"movieID\" = ?")
-                    .setParameter(1, movieId)
-                    .executeUpdate();
-        
-        // Then delete the movie
-        entityManager.createNativeQuery("DELETE FROM \"Movie\" WHERE \"movieID\" = ?")
-                    .setParameter(1, movieId)
-                    .executeUpdate();
     }
     
     /**
@@ -350,19 +341,18 @@ public class MovieDAO {
 	        Query query = entityManager.createNativeQuery(sql, Movie.class);
 	        query.setMaxResults(limit);
 	        return query.getResultList();
+
 	}
 	
-	@SuppressWarnings("unchecked")
-	public List<String> getDirectorName(Long directorID) {
-		String sql = "SELECT name FROM \"Movie\" JOIN \"Director\" USING (\"directorID\") WHERE \"directorID\" = ?";
+	public String getDirectorName(Long directorID) {
+		String sql = "SELECT DISTINCT name FROM \"Movie\" JOIN \"Director\" USING (\"directorID\") WHERE \"directorID\" = ?";
 		Query query = entityManager.createNativeQuery(sql).setParameter(1, directorID);
-		return query.getResultList();
+		return (String) query.getSingleResult();
 	}
     
-	@SuppressWarnings("unchecked")
-	public List<String> getStudioName(Long studioID) {
-		String sql = "SELECT name FROM \"Movie\" JOIN \"Studio\" USING (\"studioID\") WHERE \"studioID\" = ?";
+	public String getStudioName(Long studioID) {
+		String sql = "SELECT DISTINCT name FROM \"Movie\" JOIN \"Studio\" USING (\"studioID\") WHERE \"studioID\" = ?";
 		Query query = entityManager.createNativeQuery(sql).setParameter(1, studioID);
-		return query.getResultList();
+		return (String) query.getSingleResult();
 	}
 }

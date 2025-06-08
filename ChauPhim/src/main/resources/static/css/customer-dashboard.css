@@ -1,0 +1,393 @@
+/* style.css */
+
+/* Reset hoặc ghi đè nhẹ nhàng để không ảnh hưởng layout chung */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #343a40;
+    background-color: #f8f9fa;
+}
+
+.main-content-area {
+    padding: 20px;
+    min-height: calc(100vh - 60px); /* Adjust based on header/footer height */
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px; /* Padding for the container */
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 30px; /* Internal padding for the white content area */
+}
+
+/* Header and Controls */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.header h1 {
+    color: #333;
+    font-size: 2.2em;
+    margin: 0;
+}
+
+.controls {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.search-filter,
+.genre-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-input,
+.genre-select {
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1em;
+    width: 200px; /* Adjust as needed */
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.search-input:focus,
+.genre-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Nút "Thêm Phim" đã bị loại bỏ, giữ lại style này nếu có nút khác dùng */
+.add-movie-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.add-movie-btn:hover {
+    background-color: #218838;
+}
+
+/* Loading and Results Count */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px;
+    font-size: 1.1em;
+    color: #6c757d;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.results-count {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: #555;
+    text-align: center;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    display: block; /* Ensure it's block to take full width */
+}
+
+/* --- Movie Card Layout --- */
+.movies-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px; /* Spacing between cards */
+    padding: 20px 0; /* Vertical padding */
+    justify-content: center; /* Center the grid items within the container */
+    align-items: stretch; /* Ensure cards stretch to fill row height */
+}
+
+.movie-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 480px; /* Ensure consistent height for cards */
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.movie-card-poster {
+    width: 100%;
+    height: 300px; /* Fixed height for consistent poster display */
+    object-fit: cover; /* Crop image to fit */
+    border-bottom: 1px solid #eee;
+    background-color: #f0f0f0; /* Fallback background for image */
+}
+
+.movie-card-content {
+    padding: 18px;
+    flex-grow: 1; /* Allows content to expand and push actions to the bottom */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.movie-card-title {
+    font-size: 1.6em;
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 10px;
+    line-height: 1.3;
+    min-height: 2.6em; /* Ensure consistent height for titles (2 lines of text) */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit to 2 lines */
+    -webkit-box-orient: vertical;
+}
+
+.movie-card-meta p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 0.95em;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Spacing between label and value */
+}
+
+.movie-card-meta p strong {
+    color: #333;
+    min-width: 80px; /* Align labels for consistency */
+}
+
+.movie-card-genre {
+    background-color: #e0f7fa;
+    color: #007bb6;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 0.85em;
+}
+
+.movie-card-price {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.1em;
+}
+
+.movie-card-price-unset {
+    color: #dc3545;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.movie-card-actors {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+.movie-card-actions {
+    display: flex;
+    justify-content: center; /* Căn giữa nút "Đặt mua" */
+    gap: 10px;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+/* Button Styling (standardized) */
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95em;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-grow: 1; /* Allow buttons to expand */
+    text-align: center;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* New: Style for "Đặt mua" button */
+.btn-success {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838; /* Darker green on hover */
+    transform: translateY(-1px);
+}
+
+/* No Movies/Actors Found */
+.no-movies,
+.no-actors { /* .no-actors có thể bị loại bỏ nếu không còn modal diễn viên */
+    text-align: center;
+    padding: 40px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    margin-top: 20px;
+    color: #6c757d;
+}
+
+.no-movies h3,
+.no-actors h3 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.no-movies p,
+.no-actors p {
+    margin-bottom: 20px;
+}
+
+.error-container {
+    text-align: center;
+    padding: 30px;
+    background-color: #f8d7da; /* Light red background */
+    border: 1px solid #f5c6cb; /* Slightly darker red border */
+    border-radius: 8px;
+    color: #721c24; /* Dark red text */
+    margin-top: 20px;
+}
+
+.error-container h3 {
+    color: #721c24;
+    margin-bottom: 10px;
+}
+
+.error-container p {
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) { /* Tablet and smaller */
+    .movies-list {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); /* 3-4 columns */
+    }
+}
+
+@media (max-width: 768px) { /* Smaller tablets and phones */
+    .container {
+        padding: 20px;
+        margin: 15px auto;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .search-filter, .genre-filter {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 5px;
+    }
+
+    .search-filter label, .genre-filter label {
+        text-align: left;
+    }
+
+    .search-input, .genre-select, .add-movie-btn {
+        width: 100%;
+        min-width: unset;
+    }
+
+    /* Movie cards on small screens */
+    .movies-list {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* 2-3 columns */
+        gap: 15px; /* Reduce gap on smaller screens */
+    }
+
+    .movie-card {
+        min-height: auto; /* Allow height to adjust */
+    }
+
+    .movie-card-poster {
+        height: 250px; /* Adjust poster height for small screens */
+    }
+
+    .movie-card-actions {
+        flex-direction: column; /* Stack buttons on small screens */
+        gap: 8px; /* Reduce gap between stacked buttons */
+    }
+}
+
+@media (max-width: 480px) { /* Extra small screens (mobile phones) */
+    .movies-list {
+        grid-template-columns: 1fr; /* Single column layout for very small screens */
+    }
+    .movie-card-poster {
+        height: 300px; /* Maybe a bit taller for single column */
+    }
+    .movie-card-title {
+        font-size: 1.4em;
+    }
+}

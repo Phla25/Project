@@ -13,6 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.OneToMany;
+
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 
@@ -29,6 +30,7 @@ public class ActDAO {
     @ManyToMany
     @JsonIgnore  // Thêm dòng này  
     private List<Movie> movies;
+
     /**
      * Add a new actor-movie relationship with role information
      */
@@ -92,21 +94,6 @@ public class ActDAO {
         return query.getResultList();
     }
     
-    /**
-     * Remove an actor from a movie
-     */
-    @Transactional
-    public void removeAct(Long actorId, Long movieId) {
-        String sql = "DELETE FROM \"Act\" WHERE \"actorID\" = ? AND \"movieID\" = ?";
-        entityManager.createNativeQuery(sql)
-                    .setParameter(1, actorId)
-                    .setParameter(2, movieId)
-                    .executeUpdate();
-    }
-    
-    /**
-     * Update the role of an actor in a movie
-     */
     @Transactional
     public void updateRole(Long actorId, Long movieId, String newRole) {
         String sql = "UPDATE \"Act\" SET role = ? WHERE \"actorID\" = ? AND \"movieID\" = ?";
@@ -146,5 +133,4 @@ public class ActDAO {
                                   .setParameter(1, movieId)
                                   .getSingleResult();
     }
-    
 }

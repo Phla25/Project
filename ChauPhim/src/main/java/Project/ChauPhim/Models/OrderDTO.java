@@ -7,20 +7,20 @@ public class OrderDTO {
     private LocalDate date;	// NOT NULL
     private CustomerDTO customer;	// NOT NULL
     private int rate;
-    private DiscountDTO discount;
     private double totalPrice;
 	private Long customerID;
-	public OrderDTO(MovieDTO movie, LocalDate date, CustomerDTO customer, int rate, DiscountDTO discount,
+
+	public OrderDTO(MovieDTO movie, LocalDate date, CustomerDTO customer, int rate,
 			double totalPrice, Long customerID) {
 		super();
 		this.movie = movie;
 		this.date = date;
 		this.customer = customer;
 		this.rate = rate;
-		this.discount = discount;
 		this.totalPrice = totalPrice;
 		this.customerID = customerID;
 	}
+	
 	public OrderDTO() {}
 	public Long getCustomerID() {
 		return customerID;
@@ -51,12 +51,6 @@ public class OrderDTO {
 	}
 	public void setRate(int rate) {
 		this.rate = rate;
-	}
-	public DiscountDTO getDiscount() {
-		return discount;
-	}
-	public void setDiscount(DiscountDTO discount) {
-		this.discount = discount;
 	}
 	public double getTotalPrice() {
 		return totalPrice;

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/manager-layout :: html (
+          customPageTitle='Dashboard - Quản lý hệ thống',
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/manager-theme.css}">
+        </th:block>
+</head>
+
+<body>
+    <div th:fragment="viewContent">
+        <div class="manager-content-wrapper">
+            <div class="manager-page-header">
+                <h1>Quản Lý Người Dùng</h1>
+                <div th:unless="${customers == null || customers.isEmpty()}" class="manager-header-controls">
+                    <div class="manager-search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="userSearchInput" class="manager-form-control" placeholder="Tìm kiếm theo tên đăng nhập, email, ID...">
+                    </div>
+                    <div class="manager-search-container">
+                        <label for="sortSelect" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--manager-text-color-muted); z-index: 2; font-size: 0.875rem;">Sắp xếp:</label>
+                        <select id="sortSelect" class="manager-form-control" style="padding-left: 70px;">
+                            <option value="usernameAsc">Tên đăng nhập (A-Z)</option>
+                            <option value="usernameDesc">Tên đăng nhập (Z-A)</option>
+                            <option value="emailAsc">Email (A-Z)</option>
+                            <option value="emailDesc">Email (Z-A)</option>
+                            <option value="dobDesc">Ngày sinh (Mới nhất)</option>
+                            <option value="dobAsc">Ngày sinh (Cũ nhất)</option>
+                            <option value="rankDesc">Hạng (Cao nhất)</option>
+                            <option value="rankAsc">Hạng (Thấp nhất)</option>
+                            <option value="customerIDAsc">ID người dùng (Tăng dần)</option>
+                            <option value="customerIDDesc">ID người dùng (Giảm dần)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${customers == null || customers.isEmpty()}" class="manager-no-items">
+                <i class="fas fa-users no-items-icon"></i>
+                <h3>Chưa có người dùng nào</h3>
+                <p>Hệ thống hiện chưa có dữ liệu người dùng.</p>
+            </div>
+
+            <div th:unless="${customers == null || customers.isEmpty()}" class="manager-table-responsive">
+                <table class="manager-table">
+                    <thead>
+                        <tr>
+                            <th data-sort-key="customerID">
+                                ID
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th data-sort-key="username">
+                                Tên đăng nhập
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th data-sort-key="email">
+                                Email
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th data-sort-key="dob">
+                                Ngày sinh
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                            <th data-sort-key="rank">
+                                Hạng
+                                <i class="fas fa-sort sort-icon"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersListBody">
+                        <!-- Content will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:fragment="viewScripts">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            // Đổi tên biến từ ordersData thành customersData
+            const customersData = /*[[${customers}]]*/ [];
+            let filteredUsers = [...customersData]; // Array to hold filtered results
+
+            function formatDate(localDateValue) {
+                let date;
+                if (localDateValue instanceof Array) {
+                    date = new Date(localDateValue[0], localDateValue[1] - 1, localDateValue[2]);
+                } else if (typeof localDateValue === 'string') {
+                    date = new Date(localDateValue);
+                } else {
+                    return 'N/A';
+                }
+                
+                if (isNaN(date.getTime())) return 'Ngày không hợp lệ';
+                
+                return date.toLocaleDateString('vi-VN', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+
+            // Search function
+            function searchUsers(searchTerm) {
+                const term = searchTerm.toLowerCase().trim();
+                
+                if (term === '') {
+                    filteredUsers = [...customersData];
+                } else {
+                    filteredUsers = customersData.filter(customer => {
+                        const customerID = (customer.customerID || '').toString().toLowerCase();
+                        const username = (customer.username || '').toLowerCase();
+                        const email = (customer.email || '').toLowerCase();
+                        const rank = (customer.rank || '').toString().toLowerCase();
+                        
+                        return customerID.includes(term) || 
+                               username.includes(term) || 
+                               email.includes(term) || 
+                               rank.includes(term);
+                    });
+                }
+                
+                // Apply current sort to filtered results
+                const currentSort = document.getElementById('sortSelect').value;
+                sortUsers(currentSort, false); // false means don't reset filteredUsers
+            }
+
+            // Đổi tên hàm và điều chỉnh render logic cho Customers
+            function renderUsers(usersToRender) {
+                const tbody = document.getElementById('usersListBody');
+                tbody.innerHTML = '';
+
+                if (!usersToRender || usersToRender.length === 0) {
+                    return;
+                }
+
+                usersToRender.forEach(customer => {
+                    const row = document.createElement('tr');
+
+                    // Lấy các thuộc tính từ CustomerDTO
+                    const customerID = customer.customerID || 'N/A';
+                    const username = customer.username || 'N/A';
+                    const email = customer.email || 'N/A';
+                    const dob = customer.dob ? formatDate(customer.dob) : 'N/A';
+                    const rank = customer.rank || 0; // Mặc định là 0 nếu rank là null/undefined
+
+                    row.innerHTML = `
+                        <td data-label="ID">${customerID}</td>
+                        <td data-label="Tên đăng nhập">${username}</td>
+                        <td data-label="Email">${email}</td>
+                        <td data-label="Ngày sinh">${dob}</td>
+                        <td data-label="Hạng"><span style="background-color: var(--manager-primary-color); color: white; padding: 4px 8px; border-radius: var(--manager-border-radius-sm); font-size: var(--manager-font-size-xs); font-weight: 600;">Rank ${rank}</span></td>
+                        `;
+                    tbody.appendChild(row);
+                });
+            }
+
+            // Updated sort function to work with filtered data
+            function sortUsers(criteria, resetFilter = true) {
+                // Use filtered data or full data based on resetFilter parameter
+                const dataToSort = resetFilter ? customersData : filteredUsers;
+                
+                const sortedData = [...dataToSort].sort((a, b) => {
+                    let valA, valB;
+
+                    switch (criteria) {
+                        case 'usernameAsc':
+                        case 'usernameDesc':
+                            valA = (a.username || '').toLowerCase();
+                            valB = (b.username || '').toLowerCase();
+                            if (valA < valB) return criteria === 'usernameAsc' ? -1 : 1;
+                            if (valA > valB) return criteria === 'usernameAsc' ? 1 : -1;
+                            return 0;
+
+                        case 'emailAsc':
+                        case 'emailDesc':
+                            valA = (a.email || '').toLowerCase();
+                            valB = (b.email || '').toLowerCase();
+                            if (valA < valB) return criteria === 'emailAsc' ? -1 : 1;
+                            if (valA > valB) return criteria === 'emailAsc' ? 1 : -1;
+                            return 0;
+                        
+                        case 'dobAsc':
+                        case 'dobDesc':
+                            // Chuyển đổi LocalDate (mảng [year, month, day]) sang Date object
+                            valA = a.dob ? new Date(a.dob[0], a.dob[1] - 1, a.dob[2]) : new Date(0); // Dùng Date(0) làm fallback
+                            valB = b.dob ? new Date(b.dob[0], b.dob[1] - 1, b.dob[2]) : new Date(0);
+                            return criteria === 'dobAsc' ? valA.getTime() - valB.getTime() : valB.getTime() - valA.getTime();
+
+                        case 'rankAsc':
+                        case 'rankDesc':
+                            valA = a.rank || 0;
+                            valB = b.rank || 0;
+                            return criteria === 'rankAsc' ? valA - valB : valB - valA;
+
+                        case 'customerIDAsc':
+                        case 'customerIDDesc':
+                            valA = a.customerID || 0;
+                            valB = b.customerID || 0;
+                            return criteria === 'customerIDAsc' ? valA - valB : valB - valA;
+
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Update filteredUsers if we're working with filtered data
+                if (!resetFilter) {
+                    filteredUsers = sortedData;
+                }
+                
+                renderUsers(sortedData);
+                updateSortIcons(criteria);
+            }
+
+            // Function to update sort icons
+            function updateSortIcons(currentSort) {
+                const headers = document.querySelectorAll('.manager-table thead th[data-sort-key]');
+                headers.forEach(header => {
+                    const sortKey = header.dataset.sortKey;
+                    const icon = header.querySelector('.sort-icon');
+                    
+                    // Reset all icons
+                    icon.className = 'fas fa-sort sort-icon';
+                    header.classList.remove('asc', 'desc');
+                    
+                    // Set active icon based on current sort
+                    if (currentSort.startsWith(sortKey)) {
+                        if (currentSort.endsWith('Asc')) {
+                            icon.className = 'fas fa-sort-up sort-icon';
+                            header.classList.add('asc');
+                        } else {
+                            icon.className = 'fas fa-sort-down sort-icon';
+                            header.classList.add('desc');
+                        }
+                    }
+                });
+            }
+
+            // Search input event listener
+            document.getElementById('userSearchInput').addEventListener('input', function() {
+                searchUsers(this.value);
+            });
+
+            // Cập nhật event listener cho sortSelect
+            document.getElementById('sortSelect').addEventListener('change', function() {
+                sortUsers(this.value);
+            });
+
+            // Cập nhật event listener cho header cột
+            document.querySelectorAll('.manager-table thead th[data-sort-key]').forEach(header => {
+                header.addEventListener('click', function() {
+                    const sortKey = this.dataset.sortKey;
+                    let currentSortOption = document.getElementById('sortSelect').value;
+                    let newSortValue;
+
+                    // Toggle between Asc and Desc if already sorting by this key
+                    if (currentSortOption.startsWith(sortKey)) {
+                        if (currentSortOption.endsWith('Asc')) {
+                            newSortValue = sortKey + 'Desc';
+                        } else {
+                            newSortValue = sortKey + 'Asc';
+                        }
+                    } else {
+                        // Default to ascending if not currently sorting by this key
+                        newSortValue = sortKey + 'Asc';
+                    }
+                    
+                    document.getElementById('sortSelect').value = newSortValue;
+                    sortUsers(newSortValue);
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Sắp xếp mặc định theo tên đăng nhập (A-Z) khi tải trang
+                document.getElementById('sortSelect').value = 'usernameAsc';
+                sortUsers('usernameAsc'); 
+            });
+
+            /*]]>*/
+        </script>
+    </th:block>
+</body>
+</html>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import Project.ChauPhim.Entities.Act;
 import Project.ChauPhim.Entities.Actor;
+@SuppressWarnings("serial")
 class ActId implements Serializable {
     private Long actorID;
     private Long movieID;

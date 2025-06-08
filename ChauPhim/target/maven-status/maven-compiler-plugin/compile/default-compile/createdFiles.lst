@@ -2,9 +2,9 @@ Project\ChauPhim\Entities\Customer.class
 Project\ChauPhim\Entities\Movie.class
 Project\ChauPhim\Services\CustomManagerDetailsService.class
 Project\ChauPhim\Models\ManagerDTO.class
-Project\ChauPhim\Entities\Cart.class
 Project\ChauPhim\Controllers\ManagerController.class
 Project\ChauPhim\DAOs\ManagerDAO.class
+Project\ChauPhim\DAOs\OrderDAO.class
 Project\ChauPhim\Models\ActorDTO.class
 Project\ChauPhim\DAOs\CustomerDAO.class
 Project\ChauPhim\Services\AppUserService.class
@@ -14,6 +14,7 @@ Project\ChauPhim\Services\ManagerDashboardService.class
 Project\ChauPhim\ChauPhimApplication.class
 Project\ChauPhim\Models\AppUser.class
 Project\ChauPhim\Services\CustomerService.class
+Project\ChauPhim\DAOs\ActId.class
 Project\ChauPhim\DAOs\ActorDAO.class
 Project\ChauPhim\Entities\ActId.class
 Project\ChauPhim\Models\OrderDTO.class
@@ -21,11 +22,11 @@ Project\ChauPhim\Entities\Act.class
 Project\ChauPhim\DAOs\StudioDAO.class
 Project\ChauPhim\Services\CustomCustomerDetailsService.class
 Project\ChauPhim\Models\CustomerDTO.class
-Project\ChauPhim\Entities\Discount.class
 Project\ChauPhim\Entities\Orders.class
 Project\ChauPhim\DAOs\MovieDAO.class
 Project\ChauPhim\DAOs\ActDAO.class
 Project\ChauPhim\Models\MovieDTO.class
+Project\ChauPhim\DAOs\ActRepository.class
 Project\ChauPhim\Entities\Actor.class
 Project\ChauPhim\Entities\Studio.class
 Project\ChauPhim\Models\Person.class

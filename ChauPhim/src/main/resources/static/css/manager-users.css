@@ -1,0 +1,149 @@
+/* Basic table styling for readability, adjust as needed */
+        .main-content-area {
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        .transactions-header { /* Đổi tên class này nếu muốn, nhưng giữ nguyên để tái sử dụng CSS */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .transactions-header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .sort-controls label {
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .sort-select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .no-records { /* Đổi tên class cho phù hợp */
+            text-align: center;
+            padding: 50px 0;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .no-records h3 {
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .no-records p {
+            color: #777;
+            font-size: 1.1em;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .users-table-container { /* Đổi tên class cho phù hợp */
+            overflow-x: auto;
+        }
+        .users-table { /* Đổi tên class cho phù hợp */
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+        .users-table thead th {
+            background-color: #f2f2f2;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            position: relative;
+        }
+        .users-table thead th:hover {
+            background-color: #e6e6e6;
+        }
+        .users-table tbody td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+        .users-table tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        .users-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .user-rank-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff; /* Example color for rank */
+        }
+
+        /* Sorting indicators */
+        .users-table thead th.sorted-asc::after {
+            content: " \25B2"; /* Up arrow */
+            font-size: 0.7em;
+            margin-left: 5px;
+        }
+        .users-table thead th.sorted-desc::after {
+            content: " \25BC"; /* Down arrow */
+            font-size: 0.7em;
+            margin-left: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .users-table thead {
+                display: none; /* Hide table headers on small screens */
+            }
+            .users-table, .users-table tbody, .users-table tr, .users-table td {
+                display: block;
+                width: 100%;
+            }
+            .users-table tr {
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            }
+            .users-table td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+                border: none;
+            }
+            .users-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: calc(50% - 30px);
+                text-align: left;
+                font-weight: bold;
+                color: #555;
+            }
+            .transactions-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .sort-controls {
+                margin-top: 15px;
+                width: 100%;
+            }
+            .sort-select {
+                width: 100%;
+            }
+        }

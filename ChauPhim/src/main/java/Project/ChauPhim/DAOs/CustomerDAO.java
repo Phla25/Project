@@ -33,6 +33,14 @@ public class CustomerDAO {
         }
 	}
 
+    @SuppressWarnings("unchecked")
+    public List<Customer> findAllCustomers() {
+        String sql = "SELECT * FROM \"Customer\"";
+        Query query = entityManager.createNativeQuery(sql, Customer.class);
+        List<Customer> customers = query.getResultList();
+        return customers;
+    }
+
 	public void addCustomer(Customer customer) {
 		// Tạo câu lệnh SQL gốc
         String sql = "INSERT INTO \"Customer\" (\"username\", \"password\", \"email\", \"name\", \"dob\", \"rank\") VALUES (?, ?, ?, ?, ?, ?)";
@@ -124,7 +132,7 @@ public class CustomerDAO {
     
     if (updatedRows == 0) {
         throw new RuntimeException("Không tìm thấy khách hàng với username: " + username);
-    }
+    	}
     }
 
     @Transactional

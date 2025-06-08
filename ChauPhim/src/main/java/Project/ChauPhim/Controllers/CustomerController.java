@@ -3,12 +3,14 @@ package Project.ChauPhim.Controllers;
 import java.math.BigDecimal;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,22 +20,23 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import Project.ChauPhim.DAOs.ActorDAO;
 import Project.ChauPhim.DAOs.CustomerDAO;
+import Project.ChauPhim.DAOs.DirectorDAO;
 import Project.ChauPhim.DAOs.MovieDAO;
 import Project.ChauPhim.DAOs.OrderDAO;
 import Project.ChauPhim.DAOs.StudioDAO;
-import Project.ChauPhim.Entities.Actor;
+import Project.ChauPhim.Entities.Act;
 import Project.ChauPhim.Entities.Customer;
 import Project.ChauPhim.Entities.Movie;
 import Project.ChauPhim.Entities.Orders;
 import Project.ChauPhim.Entities.Studio;
 import Project.ChauPhim.Models.CustomerDTO;
+import Project.ChauPhim.Models.DirectorDTO;
 import Project.ChauPhim.Models.MovieDTO;
 import Project.ChauPhim.Models.OrderDTO;
 import Project.ChauPhim.Models.StudioDTO;
@@ -52,12 +55,12 @@ public class CustomerController {
 
     @Autowired
     private OrderDAO orderDAO;
-    
-    @Autowired
-    private ActorDAO actorDAO;
 
     @Autowired
     private StudioDAO studioDAO;
+
+    @Autowired
+    private DirectorDAO directorDAO;
 
     @GetMapping("/customer-register")
     public String showSignInPage(Model model) {
@@ -127,6 +130,27 @@ public class CustomerController {
             Customer customer = customerDAO.findByUserName(username);
             model.addAttribute("customer", customer);
             return "customer-profile";
+        } else {
+            return "redirect:/customer-login";
+        }
+    }
+
+    @GetMapping("/customer/history")
+    public String viewHistory(Model model, Principal principal) {
+        if (principal != null) {
+            String username = principal.getName();
+            System.out.println("Username từ Principal: " + username);
+            Customer customer = customerDAO.findByUserName(username);
+            model.addAttribute("customer", customer);
+            
+            // Lấy danh sách các đơn hàng của khách hàng
+            List<Orders> orders = orderDAO.findByCustomerID(customer.getCustomerID());
+            List<OrderDTO> orderDTOs = orders.stream()
+                .map(this::convertToOrderDTO)
+                .collect(Collectors.toList());
+            model.addAttribute("orders", orderDTOs);
+
+            return "customer-history";
         } else {
             return "redirect:/customer-login";
         }
@@ -253,31 +277,7 @@ public class CustomerController {
                 // Lấy thông tin khách hàng
                 Customer customer = customerDAO.findByUserName(username);
                 model.addAttribute("customer", customer);
-
-                // Lấy số dư
-                BigDecimal balance = customerDAO.getCustomerBalance(username);
-                model.addAttribute("balance", balance);
-
-                System.out.println("Dang o trong Dashboard");
-                // Lấy cấp bậc hội viên
-                int rank = customer.getRank();
-                String rankName;
-                switch (rank) {
-                    case 0:
-                        rankName = "Thành viên thường";
-                        break;
-                    case 1:
-                        rankName = "Hội viên Vàng";
-                        break;
-                    case 2:
-                        rankName = "Hội viên Kim Cương";
-                        break;
-                    default:
-                        rankName = "Không xác định";
-                }
-                model.addAttribute("rankName", rankName);
-
-                // Lấy danh sách phim mới nhất - tích hợp từ CustomerDashboardDAO (đã bỏ đi từ trước)
+                
                 List<Movie> movies = movieDAO.findAllMovies();
                 model.addAttribute("movies", movies);
 
@@ -289,6 +289,64 @@ public class CustomerController {
         } else {
             return "redirect:/customer-login";
         }
+    }    
+
+    @GetMapping("/dashboard")
+    @ResponseBody
+    public ResponseEntity<List<Map<String, Object>>> getMovies(
+            @RequestParam(value = "genre", required = false) String genre,
+            @RequestParam(value = "title", required = false) String title) {
+        List<Movie> movies;
+        if (title != null && !title.trim().isEmpty()) {
+            movies = movieDAO.findMoviesByTitle(title.trim());
+        } else if (genre != null && !genre.trim().isEmpty()) {
+            movies = movieDAO.findMoviesByGenre(genre.trim());
+        } else {
+            movies = movieDAO.findAllMovies();
+        }
+
+        List<Map<String, Object>> movieMaps = movies.stream().map(movie -> {
+            Map<String, Object> movieMap = new HashMap<>();
+            movieMap.put("movieID", movie.getMovieID());
+            movieMap.put("title", movie.getTitle());
+            movieMap.put("posterImageURL", movie.getPosterImageURL());
+            movieMap.put("releaseDate", movie.getReleaseDate());
+            movieMap.put("genre", movie.getGenre());
+            movieMap.put("price", movie.getPrice());
+            movieMap.put("studioID", movie.getStudioID());
+            movieMap.put("directorID", movie.getDirectorID());
+            movieMap.put("discountID", movie.getDiscountID());
+
+            if (movie.getDirectorID() != null) {
+                movieMap.put("directorName", movieDAO.getDirectorName(movie.getDirectorID()));
+            } else {
+                movieMap.put("directorName", "Unknown Director");
+            }
+            if (movie.getStudioID() != null) {
+                movieMap.put("studioName", movieDAO.getStudioName(movie.getStudioID()));
+            } else {
+                movieMap.put("studioName", "Unknown Studio");
+            }
+
+            List<Act> acts = movie.getActs();
+            //logger.info("Movie ID: {}, Acts size: {}", movie.getMovieID(), acts.size());
+            List<Map<String, Object>> actors = acts.stream()
+                    .filter(act -> act.getActor() != null && act.getActor().getName() != null)
+                    .map(act -> {
+                        Map<String, Object> actorMap = new HashMap<>();
+                        actorMap.put("actorID", act.getActor().getActorID());
+                        actorMap.put("name", act.getActor().getName());
+                        actorMap.put("role", act.getRole() != null ? act.getRole() : "Supporting Actor");
+                        return actorMap;
+                    })
+                    .collect(Collectors.toList());
+            movieMap.put("actors", actors);
+            //logger.info("Movie ID: {}, Actors mapped: {}", movie.getMovieID(), actors);
+
+            return movieMap;
+        }).toList();
+
+        return ResponseEntity.ok(movieMaps);
     }
     
     @GetMapping("/customer/orders/create")
@@ -390,7 +448,9 @@ public class CustomerController {
                 
                 model.addAttribute("cartMovies", cartMovies);
                 model.addAttribute("totalPrice", totalPrice);
-                model.addAttribute("customer", convertToCustomerDTO(customer));
+
+                model.addAttribute("customer", customer);
+
                 
                 return "customer-cart";
                 
@@ -482,6 +542,7 @@ public class CustomerController {
             }
         } else {
             return "redirect:/customer-login";
+
         }
     }
 
@@ -640,40 +701,6 @@ public class CustomerController {
     */ 
 
     // Helper methods để chuyển đổi giữa Entity và DTO
-    private MovieDTO convertToMovieDTO(Movie movie) {
-        MovieDTO dto = new MovieDTO(movie.getTitle(), movie.getPosterImageURL());
-        
-        // Set movieID để có thể sử dụng trong các form
-        dto.setMovieID(movie.getMovieID());
-        dto.setReleaseDate(movie.getReleaseDate());
-        dto.setGenre(movie.getGenre());
-        dto.setPrice(movie.getPrice());
-        
-        return dto;
-    }
-
-    private CustomerDTO convertToCustomerDTO(Customer customer) {
-        CustomerDTO dto = new CustomerDTO(
-            customer.getCustomerID(),
-            customer.getUsername(), 
-            null, 
-            customer.getEmail(), 
-            customer.getRank(), 
-            customer.getDob()
-        );
-        
-        return dto;
-    }
-
-    private Orders convertToOrderEntity(OrderDTO orderDTO) {
-        Orders order = new Orders();
-        order.setMovieID(orderDTO.getMovie().getMovieID()); // Sửa từ getMovieID()
-        order.setCustomerID(orderDTO.getCustomerID()); // Sửa từ getMovieID()
-        order.setDate(orderDTO.getDate());
-        order.setRate(orderDTO.getRate());
-        // Không set quantity và totalPrice vì Orders entity không có
-        return order;
-    }
 
     private OrderDTO convertToOrderDTO(Orders order) {
         // Lấy thông tin Movie và Customer từ database
@@ -684,7 +711,7 @@ public class CustomerController {
         MovieDTO movieDTO = convertToMovieDTO(movie);
 
         // Tạo CustomerDTO sử dụng method đã viết
-        CustomerDTO customerDTO = convertToCustomerDTO(customer);
+        CustomerDTO customerDTO = new CustomerDTO(customer);
 
         // Sử dụng constructor của OrderDTO
         OrderDTO dto = new OrderDTO(
@@ -692,11 +719,37 @@ public class CustomerController {
             order.getDate(),    // LocalDate date
             customerDTO,        // CustomerDTO customer
             order.getRate(),    // int rate
-            null,              // DiscountDTO discount (null vì không có)
             movie.getPrice(),   // double totalPrice (= giá phim vì quantity = 1)
             customer.getCustomerID()
         );
 
         return dto;
+    }
+
+    private MovieDTO convertToMovieDTO(Movie movie) {
+        MovieDTO movieDTO = new MovieDTO(
+            movie.getTitle(),
+            movie.getPosterImageURL()
+        );
+
+        movieDTO.setMovieID(movie.getMovieID());
+        movieDTO.setReleaseDate(movie.getReleaseDate());
+        movieDTO.setGenre(movie.getGenre());
+        movieDTO.setPrice(movie.getPrice());
+
+        // Lấy thông tin Director và Studio
+        if (movie.getDirectorID() != null) {
+            movieDTO.setDirector(new DirectorDTO(
+                directorDAO.findById(movie.getDirectorID())
+            ));
+        }
+        if (movie.getStudioID() != null) {
+            Studio studio = studioDAO.findById(movie.getStudioID());
+            if (studio != null) {
+                movieDTO.setStudio(new StudioDTO(studio));
+            }
+        }
+
+        return movieDTO;
     }
 }

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/customer-layout :: html (
+          customPageTitle='Dashboard - ChauPhim',
+          pageTitle=~{::viewTitle},
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
+<head>
+    <th:block th:fragment="viewHead">
+        <style>
+            .gallery-item {
+                position: relative;
+                overflow: hidden;
+                border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            }
+            .gallery-item:hover {
+                transform: scale(1.03);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            }
+            .gallery-item img {
+                width: 100%;
+                height: 250px; /* Fixed height for consistency */
+                object-fit: cover; /* Ensures images cover the area without distortion */
+                display: block;
+                border-radius: 8px;
+            }
+            .image-overlay {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0));
+                color: white;
+                padding: 10px;
+                text-align: center;
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+            }
+            .gallery-item:hover .image-overlay {
+                opacity: 1;
+            }
+            .image-overlay h5 {
+                margin-bottom: 0;
+                font-size: 1.1em;
+            }
+        </style>
+    </th:block>
+</head>
+
+<body> 
+    <div th:fragment="viewContent">
+
+        <div class="container mt-4">
+            <h2 class="mb-4 text-center">
+                <i class="fas fa-images"></i> Bộ sưu tập hình ảnh phim
+            </h2>
+            <p class="lead text-center text-muted mb-5">
+                Khám phá những khoảnh khắc và khung cảnh đẹp nhất từ các bộ phim của chúng tôi.
+            </p>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://m.media-amazon.com/images/M/MV5BMjAxMzY4Mzc4Ml5BMl5BanBnXkFtZTcwMjEwMjA3Ng@@._V1_FMjpg_UX1000_.jpg" alt="Inception Screenshot">
+                        <div class="image-overlay">
+                            <h5>Inception</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://prod-images.shorthand.com/production/image/33139/gallery/5f488f76-c567-46ba-a10c-939e60249c5e.jpeg" alt="Lost in Translation Screenshot">
+                        <div class="image-overlay">
+                            <h5>Lost in Translation</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://i.pinimg.com/originals/9f/f6/8c/9ff68cb478b0d2d385f958801d9f481c.jpg" alt="Seven Samurai Screenshot">
+                        <div class="image-overlay">
+                            <h5>Seven Samurai</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://www.hollywoodreporter.com/wp-content/uploads/2019/10/parasite-still-h_2019.jpg?width=1296" alt="Parasite Screenshot">
+                        <div class="image-overlay">
+                            <h5>Parasite</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://images.alphacoders.com/264/thumb-1920-264627.jpg" alt="Spirited Away Screenshot">
+                        <div class="image-overlay">
+                            <h5>Spirited Away</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://www.denofgeek.com/wp-content/uploads/2021/10/dune-timothee-chalamet-zendaya.jpg?fit=1200%2C675" alt="Dune Screenshot">
+                        <div class="image-overlay">
+                            <h5>Dune</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://ew.com/thmb/x2523XgQWb5n0a4uP3P40rQ5k_8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/life-of-pi-04-1-8a9d15ff1d564551b9e6727228800206.jpg" alt="Life of Pi Screenshot">
+                        <div class="image-overlay">
+                            <h5>Life of Pi</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://image.stern.de/32412800/t/30/v2/w1440/2/selma-bild--264567491-jpg--890984812f86237c.jpg" alt="Selma Screenshot">
+                        <div class="image-overlay">
+                            <h5>Selma</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://m.media-amazon.com/images/M/MV5BOGZmNTE2YTktNWY0Mi00ZjEyLWEyMDktZTU5YWE3OGE3YjgyXkEyXkFqcGdeQWlnb3JnZXNjcmVlbiBPamVjdHM._V1_.jpg" alt="Oldboy Screenshot">
+                        <div class="image-overlay">
+                            <h5>Oldboy</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://static.tvtropes.org/pmwiki/pub/images/the_hurt_locker_movie_poster_8069.jpg" alt="The Hurt Locker Screenshot">
+                        <div class="image-overlay">
+                            <h5>The Hurt Locker</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://s.abcnews.com/images/Entertainment/gty_gravity_1_jt_131005_16x9_992.jpg" alt="Gravity Screenshot">
+                        <div class="image-overlay">
+                            <h5>Gravity</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://static.onecms.io/wp-content/uploads/sites/6/2019/10/jojo-rabbit-2000.jpg" alt="Jojo Rabbit Screenshot">
+                        <div class="image-overlay">
+                            <h5>Jojo Rabbit</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://static.rogerebert.com/uploads/review/primary_image/reviews/nomadland-movie-review-2021/nomadland-movie-review-2021.jpg" alt="Nomadland Screenshot">
+                        <div class="image-overlay">
+                            <h5>Nomadland</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://w0.peakpx.com/wallpaper/109/670/HD-wallpaper-the-dark-knight-joker-heath-ledger.jpg" alt="The Dark Knight Screenshot">
+                        <div class="image-overlay">
+                            <h5>The Dark Knight</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://images.alphacoders.com/645/thumb-1920-645479.jpg" alt="My Neighbor Totoro Screenshot">
+                        <div class="image-overlay">
+                            <h5>My Neighbor Totoro</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://media.architecturaldigest.com/photos/5d3b6f002f23b700085a1112/16:9/w_2560%2Cc_limit/OUATIH_Still_02.jpg" alt="Once Upon a Time in Hollywood Screenshot">
+                        <div class="image-overlay">
+                            <h5>Once Upon a Time in Hollywood</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://www.newyorker.com/wp-content/uploads/2018/12/Brody-Roma-1200.jpg" alt="Roma Screenshot">
+                        <div class="image-overlay">
+                            <h5>Roma</h5>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="gallery-item">
+                        <img src="https://w.forbesimg.com/a9712536c4b22340332f143715c0e257/blade-runner-2049.jpg?width=1200&height=675&fit=crop" alt="Blade Runner 2049 Screenshot">
+                        <div class="image-overlay">
+                            <h5>Blade Runner 2049</h5>
+                        </div>
+                    </div>
+                </div>
+
+            </div> </div> </div>
+<th:block th:fragment="viewScripts">
+    <script>
+        console.log("JavaScript của trang test đã được tải!");
+        // Logic JS tùy chỉnh cho trang này (nếu có)
+        // Không cần include lại Bootstrap JS ở đây.
+    </script>
+</th:block>
+
+</body>
+</html>

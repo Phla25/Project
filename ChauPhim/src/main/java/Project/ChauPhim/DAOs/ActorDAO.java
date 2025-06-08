@@ -186,22 +186,6 @@ public class ActorDAO {
     }
     
     /**
-     * Delete an actor
-     */
-    @Transactional
-    public void deleteActor(Long actorId) {
-        // First delete from Act table to maintain referential integrity
-        entityManager.createNativeQuery("DELETE FROM \"Act\" WHERE \"actorID\" = ?")
-                    .setParameter(1, actorId)
-                    .executeUpdate();
-        
-        // Then delete the actor
-        entityManager.createNativeQuery("DELETE FROM \"Actor\" WHERE \"actorID\" = ?")
-                    .setParameter(1, actorId)
-                    .executeUpdate();
-    }
-    
-    /**
      * Count total actors
      */
     public Long countActors() {

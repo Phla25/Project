@@ -1,853 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/manager-layout :: html (
+          customPageTitle='Quản Lý Diễn Viên - ChauPhimManager',
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actor Management</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        h1 {
-            color: #333;
-            font-size: 2.5rem;
-            font-weight: 300;
-        }
-
-        .controls {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .name-filter, .gender-filter {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .name-filter label, .gender-filter label {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .name-input, .gender-select {
-            padding: 12px 20px;
-            border: 2px solid #e0e6ed;
-            border-radius: 12px;
-            font-size: 16px;
-            background: white;
-            transition: all 0.3s ease;
-            min-width: 150px;
-        }
-
-        .name-input:focus, .gender-select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .name-input {
-            cursor: text;
-        }
-
-        .add-actor-btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .add-actor-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        .loading-container {
-            text-align: center;
-            padding: 50px;
-            display: none;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .actors-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .actor-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 1px solid #e0e6ed;
-        }
-
-        .actor-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-        }
-
-        .actor-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: linear-gradient(45deg, #f0f2f5, #e2e8f0);
-        }
-
-        .actor-info {
-            padding: 20px;
-        }
-
-        .actor-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .actor-meta {
-            color: #666;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .actor-gender {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .actor-bio {
-            font-style: italic;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .actor-id {
-            font-weight: 600;
-            color: #555;
-        }
-
-        .update-btn {
-            background: #ffc107;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            display: inline-block;
-        }
-
-        .update-btn:hover {
-            background: #e0a800;
-            transform: translateY(-1px);
-        }
-
-        .no-actors {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            grid-column: 1 / -1;
-            padding: 50px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-
-        .error-container {
-            text-align: center;
-            color: #dc3545;
-            grid-column: 1 / -1;
-            padding: 50px;
-            background: #f8d7da;
-            border-radius: 15px;
-            border: 1px solid #f5c6cb;
-        }
-
-        .results-count {
-            margin-bottom: 20px;
-            color: #666;
-            font-size: 1rem;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 2% auto;
-            padding: 0;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
-            animation: modalSlideIn 0.4s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.7) translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .modal-header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 25px 30px;
-            border-radius: 20px 20px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h2 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .close {
-            color: white;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .close:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 35px;
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e6ed;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .required {
-            color: #e74c3c;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 30px;
-            padding-top: 25px;
-            border-top: 1px solid #e0e6ed;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            min-width: 100px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-1px);
-        }
-
-        .alert {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background: #d1edff;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .form-loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .form-loading .spinner {
-            width: 30px;
-            height: 30px;
-            border-width: 3px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 5% auto;
-            }
-            
-            .modal-body {
-                padding: 25px;
-            }
-            
-            .actors-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-
-            .header {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .controls {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/manager-actors.css}">
+    </th:block>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Actor Management</h1>
-            
-            <div class="controls">
-                <div class="name-filter">
-                    <label for="nameSearch">Search by Name:</label>
-                    <input type="text" id="nameSearch" class="name-input" placeholder="Enter actor name">
-                </div>
-                <div class="gender-filter">
-                    <label for="genderSelect">Filter by Gender:</label>
-                    <select id="genderSelect" class="gender-select">
-                        <option value="">All Genders</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
+    <div th:fragment="viewContent" class="main-content-area">
+        <div class="container">
+            <div class="header">
+                <h1>Quản Lý Diễn Viên</h1>
                 
-                <button id="openModalBtn" class="add-actor-btn">
-                    ✨ Add New Actor
-                </button>
-            </div>
-        </div>
-
-        <div id="loadingContainer" class="loading-container">
-            <div class="spinner"></div>
-            <p>Loading actors...</p>
-        </div>
-
-        <div id="resultsCount" class="results-count" style="display: none;"></div>
-
-        <div class="actors-grid" id="actorsGrid">
-            <!-- Actors will be loaded here dynamically -->
-        </div>
-    </div>
-
-    <div id="actorModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Add New Actor</h2>
-                <span class="close">×</span>
-            </div>
-            <div class="modal-body">
-                <div id="alertContainer"></div>
-                
-                <form id="actorForm">
-                    <input type="hidden" id="actorID" name="actorID">
-                    <div class="form-group">
-                        <label for="name">Actor Name <span class="required">*</span></label>
-                        <input type="text" id="name" name="name" class="form-control" required>
+                <div class="controls">
+                    <div class="name-filter">
+                        <label for="nameSearch">Tìm theo tên:</label>
+                        <input type="text" id="nameSearch" class="name-input" placeholder="Nhập tên diễn viên">
                     </div>
-
-                    <div class="form-group">
-                        <label for="imageURL">Image URL <span class="required">*</span></label>
-                        <input type="url" id="imageURL" name="imageURL" class="form-control" 
-                               placeholder="https://example.com/image.jpg" required>
+                    <div class="gender-filter">
+                        <label for="genderSelect">Lọc theo giới tính:</label>
+                        <select id="genderSelect" class="gender-select">
+                            <option value="">Tất cả giới tính</option>
+                            <option value="Male">Nam</option>
+                            <option value="Female">Nữ</option>
+                            <option value="Other">Khác</option>
+                        </select>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <select id="gender" name="gender" class="form-control">
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="dob">Date of Birth</label>
-                            <input type="date" id="dob" name="dob" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="rankGroup">
-                        <label for="rank">Rank</label>
-                        <input type="number" id="rank" name="rank" class="form-control" min="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bio">Biography</label>
-                        <textarea id="bio" name="bio" class="form-control" rows="4"></textarea>
-                    </div>
-
-                    <div class="form-loading">
-                        <div class="spinner"></div>
-                        <p id="formLoadingText">Adding actor...</p>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">Add Actor</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let allActors = [];
-
-        // DOM elements
-        const nameSearch = document.getElementById('nameSearch');
-        const genderSelect = document.getElementById('genderSelect');
-        const actorsGrid = document.getElementById('actorsGrid');
-        const loadingContainer = document.getElementById('loadingContainer');
-        const resultsCount = document.getElementById('resultsCount');
-        const modal = document.getElementById('actorModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const openBtn = document.getElementById('openModalBtn');
-        const closeBtn = document.querySelector('.close');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const form = document.getElementById('actorForm');
-        const alertContainer = document.getElementById('alertContainer');
-        const formLoading = document.querySelector('.form-loading');
-        const formLoadingText = document.getElementById('formLoadingText');
-        const submitBtn = document.getElementById('submitBtn');
-        const actorIDInput = document.getElementById('actorID');
-        const rankGroup = document.getElementById('rankGroup');
-
-        let currentActors = allActors;
-        let isUpdateMode = false;
-
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadActorsFromBackend();
-        });
-
-        // Load actors from backend
-        async function loadActorsFromBackend(name = '', gender = '') {
-            showLoading(true);
-            
-            try {
-                let url = '/actors';
-                const params = new URLSearchParams();
-                if (name) params.append('name', name);
-                if (gender) params.append('gender', gender);
-                if (params.toString()) url += `?${params.toString()}`;
-                
-                const response = await fetch(url, {
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                if (response.ok) {
-                    allActors = await response.json();
-                    currentActors = allActors;
-                    loadActors();
-                    updateResultsCount(name, gender);
-                } else {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-            } catch (error) {
-                console.error('Error loading actors:', error);
-                showError('Failed to load actors. Please check your connection and try again.');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Name search functionality
-        nameSearch.addEventListener('input', debounce(function() {
-            const searchTerm = this.value.trim();
-            loadActorsFromBackend(searchTerm, genderSelect.value);
-        }, 300));
-
-        // Gender filter functionality
-        genderSelect.addEventListener('change', function() {
-            const selectedGender = this.value;
-            loadActorsFromBackend(nameSearch.value.trim(), selectedGender);
-        });
-
-        // Load and display actors
-        function loadActors() {
-            if (!currentActors || currentActors.length === 0) {
-                actorsGrid.innerHTML = `
-                    <div class="no-actors">
-                        <h3>No actors found</h3>
-                        <p>Try adjusting your search or add some actors!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            actorsGrid.innerHTML = currentActors.map(actor => `
-                <div class="actor-card">
-                    <img src="${actor.imageURL || ''}" 
-                         alt="${actor.name || 'No Name'}" 
-                         class="actor-image"
-                         onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDI4MCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyODAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjBGMkY1Ii8+CjxwYXRoIGQ9Ik0xNDAgMTAwTDEyMCA4MEwxNjAgODBMMTQwIDEwMFoiIGZpbGw9IiNEREREREQiLz4KPHN2Zz4K'">
                     
-                    <div class="actor-info">
-                        <h3 class="actor-name">${actor.name || 'No Name'}</h3>
-                        <div class="actor-meta">
-                            <span class="actor-id">ID: ${actor.actorID || 'N/A'}</span>
-                            ${actor.gender ? `<span class="actor-gender">${actor.gender}</span>` : ''}
-                            ${actor.dob ? `<span>DOB: ${formatDate(actor.dob)}</span>` : ''}
-                            ${actor.bio ? `<span class="actor-bio">${actor.bio}</span>` : ''}
-                        </div>
-                        <button class="update-btn" onclick="openUpdateModal(${actor.actorID})">Update</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Open update modal with pre-filled data
-        function openUpdateModal(actorID) {
-            const actor = currentActors.find(a => a.actorID === actorID);
-            if (!actor) {
-                showAlert('Actor not found.', 'error');
-                return;
-            }
-
-            isUpdateMode = true;
-            modalTitle.textContent = 'Update Actor';
-            submitBtn.textContent = 'Update Actor';
-            formLoadingText.textContent = 'Updating actor...';
-            rankGroup.style.display = 'none';
-
-            // Populate form fields
-            document.getElementById('actorID').value = actor.actorID || '';
-            document.getElementById('name').value = actor.name || '';
-            document.getElementById('imageURL').value = actor.imageURL || '';
-            document.getElementById('gender').value = actor.gender || '';
-            document.getElementById('dob').value = actor.dob ? new Date(actor.dob).toISOString().split('T')[0] : '';
-            document.getElementById('bio').value = actor.bio || '';
-
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        }
-
-        // Show error message
-        function showError(message) {
-            actorsGrid.innerHTML = `
-                <div class="error-container">
-                    <h3>⚠️ Error Loading Actors</h3>
-                    <p>${message}</p>
-                    <button onclick="loadActorsFromBackend()" class="btn btn-primary" style="margin-top: 15px;">
-                        Retry
+                    <button id="openModalBtn" class="add-actor-btn">
+                        Thêm Diễn Viên Mới
                     </button>
                 </div>
-            `;
-        }
+            </div>
 
-        // Update results count
-        function updateResultsCount(name, gender) {
-            const count = currentActors.length;
-            let filterText = '';
-            if (name && gender) {
-                filterText = ` matching "${name}" in "${gender}"`;
-            } else if (name) {
-                filterText = ` matching "${name}"`;
-            } else if (gender) {
-                filterText = ` in "${gender}"`;
-            }
-            resultsCount.textContent = `Found ${count} actor${count !== 1 ? 's' : ''}${filterText}`;
-            resultsCount.style.display = 'block';
-        }
+            <div id="loadingContainer" class="loading-container">
+                <div class="spinner"></div>
+                <p>Đang tải diễn viên...</p>
+            </div>
 
-        // Show/hide loading
-        function showLoading(show) {
-            loadingContainer.style.display = show ? 'block' : 'none';
-            actorsGrid.style.display = show ? 'none' : 'grid';
-        }
+            <div id="resultsCount" class="results-count" style="display: none;"></div>
 
-        // Format date
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            if (isNaN(date)) return 'Invalid Date';
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
-        }
-
-        // Modal functionality
-        openBtn.addEventListener('click', () => {
-            isUpdateMode = false;
-            modalTitle.textContent = 'Add New Actor';
-            submitBtn.textContent = 'Add Actor';
-            formLoadingText.textContent = 'Adding actor...';
-            rankGroup.style.display = 'block';
-            form.reset();
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        });
-
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            form.reset();
-            alertContainer.innerHTML = '';
-            formLoading.style.display = 'none';
-            submitBtn.disabled = false;
-            isUpdateMode = false;
-            rankGroup.style.display = 'block';
-        }
-
-        closeBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.style.display === 'block') {
-                closeModal();
-            }
-        });
-
-        // Form submission
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            formLoading.style.display = 'block';
-            submitBtn.disabled = true;
-            alertContainer.innerHTML = '';
-
-            const formData = new FormData(form);
-            const actorID = formData.get('actorID');
-            const url = isUpdateMode ? `/manager/actors/${actorID}` : '/manager/actors';
-            const method = isUpdateMode ? 'PUT' : 'POST';
-
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                const result = await response.json();
-                
-                formLoading.style.display = 'none';
-                submitBtn.disabled = false;
-
-                if (result.success) {
-                    showAlert(result.message, 'success');
-                    setTimeout(() => {
-                        closeModal();
-                        loadActorsFromBackend(nameSearch.value.trim(), genderSelect.value);
-                    }, 1500);
-                } else {
-                    showAlert(result.message, 'error');
-                }
-            } catch (error) {
-                formLoading.style.display = 'none';
-                submitBtn.disabled = false;
-                showAlert(`An error occurred while ${isUpdateMode ? 'updating' : 'adding'} the actor. Please try again.`, 'error');
-                console.error('Error:', error);
-            }
-        });
-
-        // Show alert function
-        function showAlert(message, type) {
-            alertContainer.innerHTML = `
-                <div class="alert alert-${type}">
-                    ${message}
+            <div class="actors-grid" id="actorsGrid">
                 </div>
-            `;
-            alertContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        </div>
 
-        // Debounce function to limit API calls during typing
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func.apply(this, args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-    </script>
+        <div id="actorModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modalTitle">Thêm Diễn Viên Mới</h2>
+                    <span class="close" role="button" aria-label="Đóng cửa sổ thêm/sửa diễn viên">×</span>
+                </div>
+                <div class="modal-body">
+                    <div id="alertContainer"></div>
+                    
+                    <form id="actorForm">
+                        <input type="hidden" id="actorID" name="actorID">
+                        <div class="form-group">
+                            <label for="name">Tên Diễn Viên <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" required aria-required="true">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageURL">URL Ảnh Chân Dung <span class="required">*</span></label>
+                            <input type="url" id="imageURL" name="imageURL" class="form-control" 
+                                   placeholder="https://example.com/image.jpg" required aria-required="true">
+                        </div>
+
+                        <div class="form-row two-columns">
+                            <div class="form-group">
+                                <label for="gender">Giới Tính</label>
+                                <select id="gender" name="gender" class="form-control">
+                                    <option value="">Chọn giới tính</option>
+                                    <option value="Male">Nam</option>
+                                    <option value="Female">Nữ</option>
+                                    <option value="Other">Khác</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dob">Ngày Sinh</label>
+                                <input type="date" id="dob" name="dob" class="form-control">
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="rankGroup">
+                            <label for="rank">Thứ Hạng</label>
+                            <input type="number" id="rank" name="rank" class="form-control" min="0" placeholder="Nhập thứ hạng">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio">Tiểu Sử</label>
+                            <textarea id="bio" name="bio" class="form-control" rows="4" placeholder="Nhập tiểu sử diễn viên"></textarea>
+                        </div>
+
+                        <div class="form-loading">
+                            <div class="spinner"></div>
+                            <p id="formLoadingText">Đang thêm diễn viên...</p>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary" id="cancelBtn" aria-label="Hủy">Hủy</button>
+                            <button type="submit" class="btn btn-primary" id="submitBtn" aria-label="Thêm Diễn Viên">Thêm Diễn Viên</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block th:fragment="viewScripts">
+        <script th:src="@{/js/manager-actors.js}"></script>
+    </th:block>
 </body>
 </html>

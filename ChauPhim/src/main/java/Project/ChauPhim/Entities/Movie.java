@@ -3,7 +3,6 @@ package Project.ChauPhim.Entities;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -21,7 +20,9 @@ import jakarta.persistence.UniqueConstraint;
         uniqueConstraints = @UniqueConstraint(name = "Movie_posterImageURL_key", columnNames = "posterImageURL"))
 public class Movie {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE
+    )
     @Column(name = "\"movieID\"", nullable = false)
     private Long movieID;
     
@@ -50,8 +51,10 @@ public class Movie {
     private Long discountID;
     
     // Add relationship to Act entities
+
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Act> acts = new ArrayList<>();
+
     public Long getMovieID() {
         return movieID;
     }
@@ -132,5 +135,6 @@ public class Movie {
 		this.acts = acts;
 	}
     
+
 
 }

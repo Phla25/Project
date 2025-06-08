@@ -158,22 +158,6 @@ public class StudioDAO {
     }
     
     /**
-     * Delete a studio
-     */
-    @Transactional
-    public void deleteStudio(Long studioId) {
-        // Update movies to set studioID to null
-        entityManager.createNativeQuery("UPDATE \"Movie\" SET \"studioID\" = NULL WHERE \"studioID\" = ?")
-                    .setParameter(1, studioId)
-                    .executeUpdate();
-        
-        // Then delete the studio
-        entityManager.createNativeQuery("DELETE FROM \"Studio\" WHERE \"studioID\" = ?")
-                    .setParameter(1, studioId)
-                    .executeUpdate();
-    }
-    
-    /**
      * Count total studios
      */
     public Long countStudios() {

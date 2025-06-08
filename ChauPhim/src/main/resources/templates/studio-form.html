@@ -1,100 +1,187 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/manager-layout :: html (
+          customPageTitle=${studio.studioID} ? 'Edit Studio - ChauPhimManager' : 'Add Studio - ChauPhimManager',
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
 <head>
-    <meta charset="UTF-8">
-    <title th:text="${studio.studioID} ? 'Edit Studio' : 'Add Studio'"></title>
-    <style>
-        /* Same CSS as manager-studios.html */
-        .form-group {
-            margin-bottom: 25px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-        .form-control {
-            width: 100%;
-            padding: 15px;
-            border: 2px solid #e0e6ed;
-            border-radius: 12px;
-            font-size: 16px;
-            background: #f8f9fa;
-        }
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-        }
-        .required {
-            color: #e74c3c;
-        }
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 30px;
-        }
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        .btn-primary:hover {
-            background: #764ba2;
-        }
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-    </style>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/manager-dashboard.css}">
+        <style>
+            /* Cấu trúc cơ bản cho form */
+            .container {
+                max-width: 700px;
+                margin: 3rem auto; /* Căn giữa và khoảng cách */
+                background-color: #fff;
+                border: 1px solid #ddd; /* Đường viền đơn giản */
+                border-radius: 0.25rem; /* Bo góc nhẹ */
+                padding: 1.5rem;
+            }
+
+            h1 {
+                color: #333;
+                font-size: 2rem; /* Kích thước tiêu đề */
+                font-weight: 500; /* Đậm vừa */
+                margin-bottom: 1.5rem; /* Khoảng cách dưới tiêu đề */
+                text-align: center;
+            }
+
+            .form-label {
+                font-weight: 600;
+                color: #555;
+                margin-bottom: 0.4rem; /* Khoảng cách nhỏ hơn */
+                display: block;
+            }
+
+            .form-control, .form-select {
+                width: 100%; /* Đảm bảo chiếm toàn bộ chiều rộng */
+                padding: 0.6rem 0.8rem; /* Padding vừa phải */
+                border: 1px solid #ced4da;
+                border-radius: 0.25rem; /* Bo góc nhỏ hơn */
+                font-size: 0.95rem;
+                /* Loại bỏ transition, box-shadow inset */
+            }
+
+            .form-control:focus, .form-select:focus {
+                border-color: #66b3ff; /* Màu focus đơn giản */
+                outline: none; /* Bỏ outline mặc định */
+                /* Loại bỏ box-shadow focus */
+            }
+
+            .required {
+                color: #dc3545; /* Màu đỏ cơ bản */
+                font-weight: normal;
+            }
+
+            .mb-3 {
+                margin-bottom: 1rem; /* Khoảng cách giữa các nhóm form-group */
+            }
+
+            .btn-group {
+                display: flex;
+                gap: 0.8rem; /* Khoảng cách giữa các nút */
+                justify-content: flex-end;
+                margin-top: 1.5rem; /* Khoảng cách trên */
+                padding-top: 1rem; /* Padding trên */
+                border-top: 1px solid #eee; /* Đường phân cách nhạt */
+            }
+
+            /* Nút Primary (Save) */
+            .btn-primary {
+                background-color: #007bff; /* Màu xanh dương đơn giản */
+                color: white;
+                border: 1px solid #007bff;
+                padding: 0.6rem 1.2rem;
+                border-radius: 0.25rem;
+                font-size: 0.9rem;
+                font-weight: 500;
+                text-decoration: none;
+                /* Loại bỏ box-shadow, transform, filter */
+            }
+
+            .btn-primary:hover {
+                background-color: #0056b3; /* Đậm hơn khi hover */
+                border-color: #004085;
+            }
+
+            /* Nút Secondary (Cancel) */
+            .btn-secondary {
+                background-color: #6c757d; /* Màu xám Bootstrap */
+                color: white;
+                border: 1px solid #6c757d;
+                padding: 0.6rem 1.2rem;
+                border-radius: 0.25rem;
+                font-size: 0.9rem;
+                font-weight: 500;
+                text-decoration: none;
+                /* Loại bỏ transition, transform */
+            }
+            .btn-secondary:hover {
+                background-color: #5a6268;
+                border-color: #545b62;
+            }
+
+            /* Icon trong nút */
+            .btn .fas {
+                margin-right: 0.4rem; /* Khoảng cách nhỏ hơn */
+            }
+
+            /* Responsive adjustments (giữ nguyên để đảm bảo hiển thị tốt trên di động) */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 1rem;
+                    margin: 1rem auto;
+                }
+                h1 {
+                    font-size: 1.8rem;
+                }
+                .btn-group {
+                    flex-direction: column; /* Stack nút trên mobile */
+                    align-items: stretch; /* Kéo dài nút ra */
+                }
+                .btn-group .btn {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
+        </style>
+    </th:block>
 </head>
 <body>
-    <div class="container">
-        <h1 th:text="${studio.studioID} ? 'Edit Studio' : 'Add Studio'"></h1>
-        <form th:action="@{/manager/studios/save}" th:object="${studio}" method="post">
-            <input type="hidden" th:field="*{studioID}">
-            <div class="form-group">
-                <label for="name">Studio Name <span class="required">*</span></label>
-                <input type="text" th:field="*{name}" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="country">Country</label>
-                <select th:field="*{country}" class="form-control">
-                    <option value="">Select Country</option>
-                    <option value="USA">USA</option>
-                    <option value="UK">UK</option>
-                    <option value="Japan">Japan</option>
-                    <option value="South Korea">South Korea</option>
-                    <option value="France">France</option>
-                    <option value="Canada">Canada</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="India">India</option>
-                    <option value="China">China</option>
-                    <option value="Vietnam">Vietnam</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="year">Year Founded</label>
-                <input type="number" th:field="*{year}" class="form-control" min="1800" max="2025">
-            </div>
-            <div class="btn-group">
-                <a th:href="@{/manager/studios}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </form>
+    <div th:fragment="viewContent">
+        <div class="container">
+            <h1 th:text="${studio.studioID} ? 'Chỉnh sửa Studio' : 'Thêm Studio Mới'"></h1>
+            <form th:action="@{/manager/studios/save}" th:object="${studio}" method="post">
+                <input type="hidden" th:field="*{studioID}">
+
+                <div class="mb-3">
+                    <label for="name" class="form-label">Tên Studio <span class="required">*</span></label>
+                    <input type="text" th:field="*{name}" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="country" class="form-label">Quốc gia</label>
+                    <select th:field="*{country}" class="form-select">
+                        <option value="">Chọn Quốc gia</option>
+                        <option value="USA">USA</option>
+                        <option value="UK">UK</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="France">France</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Australia">Australia</option>
+                        <option value="Germany">Germany</option>
+                        <option value="India">India</option>
+                        <option value="China">China</option>
+                        <option value="Vietnam">Vietnam</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="year" class="form-label">Năm thành lập</label>
+                    <input type="number" th:field="*{year}" class="form-control" min="1800" max="2025">
+                </div>
+
+                <div class="btn-group">
+                    <a th:href="@{/manager/studios}" class="btn btn-secondary">
+                        <i class="fas fa-times-circle"></i> Hủy
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <th:block th:fragment="viewScripts">
+        <script>
+            console.log("JavaScript của form Studio đã được tải!");
+            // Logic JS tùy chỉnh cho form này (nếu có), ví dụ: validation nâng cao
+        </script>
+    </th:block>
 </body>
 </html>

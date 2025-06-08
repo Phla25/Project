@@ -36,14 +36,22 @@ import Project.ChauPhim.DAOs.DirectorDAO;
 import Project.ChauPhim.DAOs.ManagerDAO;
 import Project.ChauPhim.DAOs.MovieDAO;
 import Project.ChauPhim.DAOs.StudioDAO;
+import Project.ChauPhim.DAOs.OrderDAO;
 import Project.ChauPhim.Entities.Act;
 import Project.ChauPhim.Entities.Actor;
+import Project.ChauPhim.Entities.Customer;
 import Project.ChauPhim.Entities.Director;
 import Project.ChauPhim.Entities.Manager;
 import Project.ChauPhim.Entities.Movie;
 import Project.ChauPhim.Entities.Studio;
+import Project.ChauPhim.Entities.Orders;
+import Project.ChauPhim.Models.CustomerDTO;
+import Project.ChauPhim.Models.DirectorDTO;
 import Project.ChauPhim.Models.MovieDTO;
+import Project.ChauPhim.Models.OrderDTO;
+import Project.ChauPhim.Models.StudioDTO;
 import Project.ChauPhim.Services.ManagerDashboardService;
+import Project.ChauPhim.DAOs.CustomerDAO;
 
 @Controller
 public class ManagerController {
@@ -63,6 +71,11 @@ public class ManagerController {
     private ManagerDashboardService dashboardService;
     @Autowired
     private ActRepository actRepository;
+    @Autowired
+    private OrderDAO orderDAO;
+    @Autowired
+    private CustomerDAO customerDAO;
+    
     
     private static final Logger logger = LoggerFactory.getLogger(ManagerController.class);
     
@@ -76,8 +89,7 @@ public class ManagerController {
     @Transactional
     public String processRegisterManager(@ModelAttribute("manager") Manager manager, Model model) {
         try {
-            Manager existingManager = managerDAO.findByUserName(manager.getUsername());
-            if (existingManager != null) {
+            if (managerDAO.existsByUsername(manager.getUsername()) == true) {
                 model.addAttribute("error", "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.");
                 return "manager-register";
             }
@@ -89,7 +101,6 @@ public class ManagerController {
             return "manager-register";
         }
     }
-
     @GetMapping("/manager-login")
     public String showLoginPage() {
         return "manager-login";
@@ -141,7 +152,8 @@ public class ManagerController {
         Map<String, Long> monthlySalesData = new HashMap<>();
         for (int i = 5; i >= 0; i--) {
             int month = currentMonth - i;
-            int year = currentYear;
+            @SuppressWarnings("unused")
+			int year = currentYear;
             if (month <= 0) {
                 month += 12;
                 year -= 1;
@@ -194,7 +206,8 @@ public class ManagerController {
         Map<String, Long> monthlySalesData = new HashMap<>();
         for (int i = 5; i >= 0; i--) {
             int month = currentMonth - i;
-            int year = currentYear;
+            @SuppressWarnings("unused")
+			int year = currentYear;
             if (month <= 0) {
                 month += 12;
                 year -= 1;
@@ -332,15 +345,6 @@ public class ManagerController {
         }).toList();
 
         return ResponseEntity.ok(movieMaps);
-    }
-
-    private MovieDTO convertToMovieDTO(Movie movie) {
-        MovieDTO dto = new MovieDTO(movie.getTitle(), movie.getPosterImageURL());
-        dto.setMovieID(movie.getMovieID());
-        dto.setReleaseDate(movie.getReleaseDate());
-        dto.setGenre(movie.getGenre());
-        dto.setPrice(movie.getPrice());
-        return dto;
     }
 
     @PutMapping("/manager/movies/{id}")
@@ -829,5 +833,93 @@ public class ManagerController {
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(actorMaps);
+    }
+
+    @GetMapping("/manager/orders")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String showOrdersPage(Model model) {
+        // Lấy tất cả các đơn hàng từ DAO
+        List<Orders> orders = orderDAO.findAllOrders();
+
+        // Chuyển đổi danh sách Orders Entity sang danh sách OrderDTO
+        // để gửi đến View (Thymeleaf)
+        List<OrderDTO> orderDTOs = orders.stream()
+                .map(this::convertToOrderDTO) // Sử dụng phương thức chuyển đổi
+                .collect(Collectors.toList());
+
+        // Thêm danh sách OrderDTO vào Model để Thymeleaf có thể truy cập
+        model.addAttribute("orders", orderDTOs);
+
+        // Trả về tên view Thymeleaf
+        return "manager-orders";
+    }
+
+    @GetMapping("manager/users")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String showUsersPage(Model model) {
+        // Lấy tất cả các khách hàng từ DAO
+        List<Customer> customers = customerDAO.findAllCustomers();
+
+        // Chuyển đổi danh sách Customer Entity sang danh sách CustomerDTO
+        List<CustomerDTO> customerDTOs = customers.stream()
+                .map(CustomerDTO::new) // Sử dụng constructor của CustomerDTO
+                .collect(Collectors.toList());
+
+        // Thêm danh sách CustomerDTO vào Model để Thymeleaf có thể truy cập
+        model.addAttribute("customers", customerDTOs);
+
+        // Trả về tên view Thymeleaf
+        return "manager-users";
+    }
+
+    private OrderDTO convertToOrderDTO(Orders order) {
+        // Lấy thông tin Movie và Customer từ database
+        Movie movie = movieDAO.findById(order.getMovieID());
+        Customer customer = customerDAO.findById(order.getCustomerID());
+
+        // Tạo MovieDTO sử dụng method đã viết
+        MovieDTO movieDTO = convertToMovieDTO(movie);
+
+        // Tạo CustomerDTO sử dụng method đã viết
+        CustomerDTO customerDTO = new CustomerDTO(customer);
+
+        // Sử dụng constructor của OrderDTO
+        OrderDTO dto = new OrderDTO(
+            movieDTO,           // MovieDTO movie
+            order.getDate(),    // LocalDate date
+            customerDTO,        // CustomerDTO customer
+            order.getRate(),    // int rate
+            movie.getPrice(),   // double totalPrice (= giá phim vì quantity = 1)
+            customer.getCustomerID()
+        );
+
+        return dto;
+    }
+
+    private MovieDTO convertToMovieDTO(Movie movie) {
+        MovieDTO movieDTO = new MovieDTO(
+            movie.getTitle(),
+            movie.getPosterImageURL()
+        );
+
+        movieDTO.setMovieID(movie.getMovieID());
+        movieDTO.setReleaseDate(movie.getReleaseDate());
+        movieDTO.setGenre(movie.getGenre());
+        movieDTO.setPrice(movie.getPrice());
+
+        // Lấy thông tin Director và Studio
+        if (movie.getDirectorID() != null) {
+            movieDTO.setDirector(new DirectorDTO(
+                directorDAO.findById(movie.getDirectorID())
+            ));
+        }
+        if (movie.getStudioID() != null) {
+            Studio studio = studioDAO.findById(movie.getStudioID());
+            if (studio != null) {
+                movieDTO.setStudio(new StudioDTO(studio));
+            }
+        }
+
+        return movieDTO;
     }
 }

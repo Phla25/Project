@@ -24,6 +24,10 @@ public abstract class Person {
 		this.bio = bio;
 	}
 
+	public Person() {
+		super();
+	}
+
 	public String getName() {
 		return name;
 	}

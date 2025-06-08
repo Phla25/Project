@@ -1,0 +1,286 @@
+
+            /* Apply common manager page styles for body */
+            body.manager-page {
+                background-color: #f8f9fa;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #343a40;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Container styling (synced with Movie page) */
+            .container {
+                max-width: 1200px;
+                margin: 30px auto;
+                background-color: #ffffff;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            }
+
+            /* Header styling (synced with Movie page) */
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px; /* Changed from 1.5rem */
+                flex-wrap: wrap;
+                gap: 20px; /* Changed from 1rem */
+            }
+
+            h1 {
+                font-size: 2.2em; /* Changed from 2rem */
+                color: #212529; /* Darker color */
+                font-weight: 600; /* Bolder font */
+                display: flex; /* For icon alignment */
+                align-items: center;
+                gap: 0.75rem; /* Space between icon and text */
+            }
+            h1 .fas {
+                color: #3498db; /* Blue color for icon */
+                font-size: 1.2em; /* Adjusted icon size */
+            }
+
+            /* Add New Studio Button (synced with Movie page) */
+            .add-studio-btn {
+                background-color: #28a745;
+                color: white;
+                border: none; /* Removed border */
+                padding: 10px 20px; /* Changed from 0.6rem 1.2rem */
+                border-radius: 8px; /* Changed from 0.25rem */
+                cursor: pointer;
+                font-size: 1em; /* Changed from 0.9rem */
+                font-weight: 600; /* Bolder font */
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 0.5em; /* Changed from 0.4rem */
+                transition: background-color 0.2s ease, transform 0.1s ease; /* Added transform transition */
+            }
+            .add-studio-btn:hover {
+                background-color: #218838;
+                border-color: #1e7e34; /* Keep original border-color for consistency if needed, but removed border above */
+                transform: translateY(-2px); /* Subtle lift effect */
+            }
+
+            /* Search Bar (synced with Movie page) */
+            .search-container {
+                margin-bottom: 15px; /* Changed from 1rem */
+                display: flex;
+                align-items: center;
+                gap: 8px; /* Changed from 0.5rem */
+                background-color: #f8f9fa; /* Light background */
+                border-radius: 8px; /* Rounded corners */
+                padding: 5px 12px; /* Adjusted padding */
+                border: 1px solid #ced4da; /* Subtle border */
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); /* Inner shadow */
+            }
+            .search-container input[type="text"] {
+                flex-grow: 1;
+                padding: 5px 0; /* Adjusted padding */
+                border: none; /* Removed border */
+                background: transparent; /* Transparent background */
+                font-size: 0.95em; /* Changed from 0.9rem */
+                color: #34495e; /* Darker text color */
+            }
+            .search-container input[type="text"]:focus {
+                border-color: transparent; /* No specific border color change on focus for input itself */
+                outline: none;
+                box-shadow: none; /* No shadow on input focus, controlled by container */
+            }
+            .search-container .fas {
+                color: #95a5a6; /* Softer icon color */
+                font-size: 1.1rem; /* Slightly larger icon */
+            }
+
+            /* Table display for Studio list (kept table format, but synced styling) */
+            .studio-list-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 25px; /* Changed from 1.5rem */
+                border: 1px solid #e9ecef; /* Lighter border for the whole table */
+                border-radius: 8px; /* Rounded corners for the table */
+                overflow: hidden; /* Ensures border-radius applies to contents */
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Soft shadow for the table */
+            }
+
+            .studio-list-table th, .studio-list-table td {
+                padding: 12px 15px; /* Increased padding */
+                text-align: left;
+                vertical-align: middle;
+                border-bottom: 1px solid #f0f3f5; /* Light horizontal lines */
+                border-right: none; /* Removed vertical borders */
+                border-left: none; /* Removed vertical borders */
+            }
+
+            .studio-list-table th {
+                background-color: #e9ecef; /* Light gray header background */
+                color: #495057;
+                font-weight: 600; /* Bolder font */
+                font-size: 0.9em; /* Changed from 0.85rem */
+                text-transform: uppercase;
+                letter-spacing: 0.05em; /* Added letter spacing */
+                cursor: pointer;
+                position: relative;
+            }
+
+            .studio-list-table th:hover {
+                background-color: #dbe4e6; /* Slightly darker on hover */
+            }
+
+            .studio-list-table th .sort-icon {
+                margin-left: 0.5rem; /* Changed from 0.4rem */
+                font-size: 0.8em; /* Changed from 0.7em */
+                color: #7f8c8d; /* Softer color */
+                transition: transform 0.2s ease;
+            }
+
+            .studio-list-table th.asc .sort-icon.fa-sort-up {
+                color: #007bff; /* Blue when active */
+            }
+            .studio-list-table th.desc .sort-icon.fa-sort-down {
+                color: #007bff; /* Blue when active */
+            }
+            
+            .studio-list-table tbody tr {
+                background-color: #ffffff;
+                transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; /* Added transitions */
+            }
+
+            .studio-list-table tbody tr:nth-child(even) {
+                background-color: #fdfefe; /* Lighter zebra striping */
+            }
+
+            .studio-list-table tbody tr:hover {
+                background-color: #f5f5f5; /* Light hover effect */
+                transform: translateY(-1px); /* Subtle lift on hover */
+                box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07); /* More pronounced shadow on hover */
+            }
+            
+            /* Update Button in table (synced with Movie page) */
+            .update-btn {
+                background-color: #ffc107; /* Yellow color */
+                color: #343a40; /* Darker text color */
+                border: none; /* Removed border */
+                padding: 8px 15px; /* Changed from 0.4rem 0.8rem */
+                border-radius: 6px; /* Changed from 0.2rem */
+                font-size: 0.85em; /* Changed from 0.8rem */
+                font-weight: 600; /* Bolder font */
+                text-decoration: none;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.4em; /* Changed from 0.3rem */
+                transition: background-color 0.2s ease, transform 0.1s ease;
+            }
+            .update-btn:hover {
+                background-color: #e0a800; /* Darker yellow on hover */
+                border-color: #d39e00; /* Keep original border-color if needed, but removed border above */
+                transform: translateY(-1px);
+            }
+
+            /* Empty state message (synced with Movie page) */
+            .no-studios {
+                text-align: center;
+                color: #6c757d;
+                font-style: italic;
+                padding: 30px; /* Changed from 2rem */
+                background-color: #f1f3f5; /* Lighter background */
+                border: 1px solid #e9ecef; /* Solid border */
+                border-radius: 10px; /* Larger border-radius */
+                margin-top: 20px; /* Changed from 1rem */
+            }
+            .no-studios h3 {
+                font-size: 1.8rem; /* Larger font size */
+                color: #34495e; /* Darker color */
+                margin-bottom: 0.8rem; /* Larger margin */
+                font-weight: 600;
+            }
+            .no-studios p {
+                font-size: 1.1rem; /* Larger font size */
+                line-height: 1.6; /* Improved readability */
+            }
+            .no-studios .fas {
+                color: #b0c2c7; /* Lighter icon color */
+                margin-bottom: 1.5rem; /* Larger margin */
+                font-size: 4rem; /* Much larger icon */
+            }
+
+            /* Responsive adjustments (synced with Movie page) */
+            @media (max-width: 768px) {
+                .container {
+                    padding: 20px; /* Changed from 1rem */
+                    margin: 15px auto; /* Changed from 1rem auto */
+                }
+                .header {
+                    flex-direction: column;
+                    align-items: stretch; /* Changed from flex-start */
+                    gap: 15px; /* Changed from 0.8rem */
+                }
+                h1 {
+                    font-size: 1.8rem;
+                    justify-content: center; /* Center title on small screens */
+                }
+                h1 .fas {
+                    font-size: 1.5rem; /* Adjusted icon size */
+                }
+                .add-studio-btn {
+                    width: 100%;
+                    justify-content: center;
+                    padding: 0.8rem 1.5rem; /* Adjusted padding */
+                    font-size: 0.95rem; /* Adjusted font size */
+                }
+                .search-container {
+                    flex-direction: row; /* Keep input and icon inline on mobile */
+                    align-items: center; /* Align items center */
+                    width: 100%;
+                    gap: 8px; /* Adjusted gap */
+                    padding: 8px 12px; /* Adjusted padding */
+                }
+                .search-container input[type="text"] {
+                    width: 100%;
+                    padding: 0; /* Remove internal padding, controlled by parent */
+                }
+                /* Table responsive for small screens (original logic, enhanced styling) */
+                .studio-list-table, .studio-list-table thead, .studio-list-table tbody, .studio-list-table th, .studio-list-table td, .studio-list-table tr {
+                    display: block;
+                }
+                .studio-list-table thead tr {
+                    position: absolute;
+                    top: -9999px;
+                    left: -9999px;
+                }
+                .studio-list-table tr {
+                    border: 1px solid #e0e6e9; /* Lighter border */
+                    margin-bottom: 1rem; /* Larger margin */
+                    border-radius: 8px; /* Larger border-radius */
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Soft shadow */
+                }
+                .studio-list-table td {
+                    border: none;
+                    border-bottom: 1px solid #f0f3f5; /* Lighter border-bottom */
+                    position: relative;
+                    padding-left: 50%;
+                    text-align: right;
+                    font-size: 0.9rem;
+                }
+                .studio-list-table td:before {
+                    content: attr(data-label);
+                    position: absolute;
+                    left: 1rem; /* Increased left padding */
+                    width: calc(50% - 1.5rem); /* Adjusted width for label */
+                    padding-right: 0.5rem;
+                    white-space: nowrap;
+                    font-weight: 700; /* Bolder font */
+                    color: #555;
+                    text-align: left;
+                }
+                .studio-list-table td:last-child {
+                    border-bottom: none;
+                    text-align: center; /* Center action button on mobile */
+                }
+                .update-btn {
+                    width: auto; /* Allow button to size naturally */
+                    margin: auto; /* Center button horizontally */
+                    display: block; /* Make it a block element to take full width of available space if needed */
+                }
+            }

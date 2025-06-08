@@ -1,153 +1,172 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layouts/manager-layout :: html (
+          customPageTitle='Quản lý Studio - ChauPhim',
+          pageHead=~{::viewHead},
+          pageContent=~{::viewContent},
+          pageScripts=~{::viewScripts}
+      )}">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Management</title>
-    <style>
-        /* Same CSS as previous manager-studios.html, adapted for simplicity */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-        h1 {
-            color: #333;
-            font-size: 2.5rem;
-        }
-        .add-studio-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            text-decoration: none;
-        }
-        .add-studio-btn:hover {
-            background: #764ba2;
-        }
-        .studios-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-        .studio-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e0e6ed;
-        }
-        .studio-placeholder {
-            width: 100%;
-            height: 200px;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        .studio-info {
-            padding: 20px;
-        }
-        .studio-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        .studio-meta {
-            color: #666;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .studio-country {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            width: fit-content;
-        }
-        .update-btn {
-            background: #ffc107;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            margin-top: 10px;
-            display: inline-block;
-        }
-        .update-btn:hover {
-            background: #e0a800;
-        }
-        .no-studios {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 50px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-    </style>
+    <th:block th:fragment="viewHead">
+        <link rel="stylesheet" th:href="@{/css/manager-theme.css}" />
+        </th:block>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Studio Management</h1>
-            <a th:href="@{/manager/studios/add}" class="add-studio-btn">Add New Studio</a>
+    <div th:fragment="viewContent" class="manager-content-wrapper"> 
+        <div class="manager-page-header">
+        <h1>Quản lý Studio</h1>
+
+        <div th:unless="${studio == null || studio.isEmpty()}" class="manager-header-controls">
+            <div class="manager-search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="studioSearchInput" class="manager-form-control" placeholder="Tìm kiếm studio theo tên, quốc gia, ID...">
+            </div>
+            <a th:href="@{/manager/studios/add}" class="manager-btn manager-btn-success">
+                Thêm Studio Mới
+            </a>
         </div>
 
-        <div class="studios-grid">
-            <th:block th:if="${studio.isEmpty()}">
-                <div class="no-studios">
-                    <h3>No studios found</h3>
-                    <p>Add some studios!</p>
-                </div>
-            </th:block>
-            <th:block th:each="s : ${studio}">
-                <div class="studio-card">
-                    <div class="studio-placeholder">STUDIO</div>
-                    <div class="studio-info">
-                        <h3 class="studio-name" th:text="${s.name}">No Name</h3>
-                        <div class="studio-meta">
-                            <span class="studio-id" th:text="'ID: ' + ${s.studioID}">ID: N/A</span>
-                            <span class="studio-country" th:if="${s.country}" th:text="${s.country}"></span>
-                            <span th:if="${s.year}" th:text="'Founded: ' + ${s.year}"></span>
-                        </div>
-                        <a th:href="@{/manager/studios/edit/{id}(id=${s.studioID})}" class="update-btn">Update</a>
-                    </div>
-                </div>
-            </th:block>
         </div>
-    </div>
+
+            <div th:if="${studio == null || studio.isEmpty()}" class="manager-no-items"> <i class="fas fa-industry no-items-icon"></i> <h3>Chưa có studio nào</h3>
+                <p>Vui lòng thêm một số studio!</p>
+            </div>
+
+            
+
+                <div class="manager-table-responsive"> <table class="manager-table studio-list-table">
+                        <thead>
+                            <tr>
+                                <th data-sort="studioID">ID <span class="sort-icon fas fa-sort"></span></th>
+                                <th data-sort="name">Tên Studio <span class="sort-icon fas fa-sort"></span></th>
+                                <th data-sort="country">Quốc gia <span class="sort-icon fas fa-sort"></span></th>
+                                <th data-sort="year">Năm thành lập <span class="sort-icon fas fa-sort"></span></th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="s : ${studio}">
+                                <td data-label="ID"><span th:text="${s.studioID}">N/A</span></td>
+                                <td data-label="Tên Studio"><span th:text="${s.name}">No Name</span></td>
+                                <td data-label="Quốc gia"><span th:text="${s.country != null ? s.country : 'N/A'}">N/A</span></td>
+                                <td data-label="Năm thành lập"><span th:text="${s.year != null ? s.year : 'N/A'}">N/A</span></td>
+                                <td data-label="Hành động">
+                                    <a th:href="@{/manager/studios/edit/{id}(id=${s.studioID})}" class="manager-btn manager-btn-sm manager-btn-warning update-btn"> <i class="fas fa-edit"></i> Cập nhật
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    <th:block th:fragment="viewScripts">
+        <script>
+            console.log("JavaScript của trang quản lý Studio đã được tải (phiên bản giữ nguyên logic)!");
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Đảm bảo selector này khớp với class của table bạn đã định nghĩa
+                // Nếu bạn dùng <table class="manager-table studio-list-table"> thì querySelector('.studio-list-table') vẫn đúng
+                const table = document.querySelector('.studio-list-table');
+                if (!table) {
+                    console.warn("Không tìm thấy bảng với class '.studio-list-table'. Sort và Search có thể không hoạt động.");
+                    return;
+                }
+
+                const headers = table.querySelectorAll('thead th[data-sort]'); // Giữ nguyên selector cho JS
+                const tbody = table.querySelector('tbody');
+                if(!tbody) {
+                    console.warn("Không tìm thấy tbody trong bảng. Dữ liệu có thể không được sort/search đúng.");
+                    return;
+                }
+                let sortDirection = {};
+
+                headers.forEach(header => {
+                    const sortKey = header.dataset.sort;
+                    sortDirection[sortKey] = 'asc';
+                    const icon = header.querySelector('.sort-icon');
+                    if (icon) {
+                        icon.className = 'sort-icon fas fa-sort'; // Đảm bảo class icon đúng
+                    }
+                });
+
+                headers.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const sortKey = this.dataset.sort;
+                        const currentSortDir = sortDirection[sortKey];
+                        const newSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+
+                        headers.forEach(h => {
+                            h.classList.remove('asc', 'desc');
+                            const ico = h.querySelector('.sort-icon');
+                            if (ico) ico.className = 'sort-icon fas fa-sort';
+                        });
+
+                        this.classList.add(newSortDir);
+                        const icon = this.querySelector('.sort-icon');
+                        if (icon) {
+                            icon.className = `sort-icon fas ${newSortDir === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`;
+                        }
+                        sortDirection[sortKey] = newSortDir;
+                        sortTable(sortKey, newSortDir);
+                    });
+                });
+
+                function sortTable(column, direction) {
+                    const rows = Array.from(tbody.querySelectorAll('tr'));
+                    const isNumeric = (value) => !isNaN(value) && value !== null && value.trim() !== '' && value.toLowerCase() !== 'n/a';
+
+                    rows.sort((a, b) => {
+                        const headerElements = Array.from(headers); // Lấy lại danh sách headers mỗi lần sort
+                        const columnIndex = headerElements.findIndex(h => h.dataset.sort === column);
+                        if (columnIndex === -1) return 0;
+
+                        const aValueCell = a.querySelectorAll('td')[columnIndex];
+                        const bValueCell = b.querySelectorAll('td')[columnIndex];
+
+                        // Kiểm tra cell có tồn tại không trước khi lấy textContent
+                        if (!aValueCell || !bValueCell) return 0;
+
+                        const aValue = aValueCell.textContent.trim();
+                        const bValue = bValueCell.textContent.trim();
+                        let comparison = 0;
+
+                        if (column === 'studioID' || column === 'year') {
+                            const numA = isNumeric(aValue) ? parseFloat(aValue) : (direction === 'asc' ? Infinity : -Infinity);
+                            const numB = isNumeric(bValue) ? parseFloat(bValue) : (direction === 'asc' ? Infinity : -Infinity);
+                            comparison = numA - numB;
+                        } else {
+                            comparison = aValue.localeCompare(bValue, 'vi', { sensitivity: 'base' });
+                        }
+                        return direction === 'asc' ? comparison : -comparison;
+                    });
+                    rows.forEach(row => tbody.appendChild(row));
+                }
+
+                const searchInput = document.getElementById('studioSearchInput'); // Giữ nguyên ID cho JS
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function() {
+                        const filter = searchInput.value.toLowerCase();
+                        const rows = tbody.querySelectorAll('tr');
+                        rows.forEach(row => {
+                            let rowText = '';
+                            const cells = row.querySelectorAll('td');
+                            const headerElements = Array.from(headers); // Lấy lại danh sách headers
+
+                            cells.forEach((cell, index) => {
+                                // Đảm bảo headerElements[index] tồn tại
+                                if (headerElements[index] && headerElements[index].textContent.trim() !== 'Hành động') {
+                                    rowText += cell.textContent.toLowerCase() + ' ';
+                                }
+                            });
+                            row.style.display = rowText.includes(filter) ? '' : 'none';
+                        });
+                    });
+                }
+            });
+        </script>
+    </th:block>
 </body>
 </html>
